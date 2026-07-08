@@ -29,10 +29,10 @@ authCommands
     }
 
     try {
-      const data = (await api.post('/auth/login', {
+      const data = await api.post<{ access_token: string }>('/auth/login', {
         username: response.username,
         password: response.password,
-      })) as { access_token: string };
+      });
 
       const config = getGlobalConfig();
       config.token = data.access_token;

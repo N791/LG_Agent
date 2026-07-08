@@ -17,7 +17,7 @@ program.addCommand(authCommands);
 program.addCommand(courseCommands);
 program.addCommand(workspaceCommands);
 
-program.parseAsync(process.argv).catch((err) => {
+program.parseAsync(process.argv).catch((err: unknown) => {
   console.error('Fatal error:', err);
   process.exit(1);
 });

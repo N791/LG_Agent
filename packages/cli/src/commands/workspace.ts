@@ -8,14 +8,28 @@ import * as path from 'path';
 
 export const workspaceCommands = new Command('workspace').description('Workspace and execution');
 
+interface Task {
+  id: string;
+  courseId: string;
+  stage: string | number;
+  title: string;
+  [key: string]: unknown;
+}
+
+interface SandboxResult {
+  status: string;
+  score: number;
+  logs: string;
+}
+
 workspaceCommands
   .command('pull <taskId>')
   .description('Pull a task and create a local workspace')
   .option('-d, --dir <dir>', 'Directory to create workspace in (default: current directory)')
-  .action(async (taskId: string, options) => {
+  .action(async (taskId: string, options: { dir?: string }) => {
     try {
       console.log(chalk.cyan(`Fetching task [${taskId}]...`));
-      const task = await api.get(`/tasks/${taskId}`);
+      const task = await api.get<Task>(`/tasks/${taskId}`);
 
       const targetDir = options.dir ? path.resolve(process.cwd(), options.dir) : process.cwd();
 
@@ -35,7 +49,8 @@ workspaceCommands
       console.log(chalk.gray(`Next steps:`));
       console.log(chalk.gray(`  1. Write your code in index.js`));
       console.log(chalk.gray(`  2. Run 'lg-agent workspace submit' to test it in the sandbox`));
-    } catch (e: any) {
+    } catch (_e) {
+      const e = _e as Error;
       console.log(chalk.red(`Failed to pull task: ${e.message}`));
     }
   });
@@ -63,7 +78,7 @@ workspaceCommands
 
       console.log(chalk.cyan(`Submitting task [${config.taskId}] to Sandbox Engine...`));
 
-      const result = await api.post('/training/submit', {
+      const result = await api.post<SandboxResult>('/training/submit', {
         taskId: config.taskId,
         code,
       });
@@ -72,11 +87,12 @@ workspaceCommands
       console.log(
         `Status: ${result.status === 'PASSED' ? chalk.green('PASSED') : chalk.red(result.status)}`,
       );
-      console.log(`Score: ${result.score}`);
+      console.log(`Score: ${String(result.score)}`);
       console.log('\nLogs:');
       console.log(chalk.gray(result.logs));
       console.log(chalk.blue.bold('--------------------------------\n'));
-    } catch (e: any) {
+    } catch (_e) {
+      const e = _e as Error;
       console.log(chalk.red(`Failed to submit code: ${e.message}`));
     }
   });

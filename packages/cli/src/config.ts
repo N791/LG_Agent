@@ -23,8 +23,8 @@ export function getGlobalConfig(): AgentConfig {
   }
   try {
     const data = fs.readFileSync(CONFIG_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (e) {
+    return JSON.parse(data) as AgentConfig;
+  } catch (_e) {
     return { baseUrl: 'http://localhost:3000/api/v1' };
   }
 }
@@ -43,8 +43,8 @@ export function getWorkspaceConfig(): WorkspaceConfig | null {
   }
   try {
     const data = fs.readFileSync(wsPath, 'utf-8');
-    return JSON.parse(data);
-  } catch (e) {
+    return JSON.parse(data) as WorkspaceConfig;
+  } catch (_e) {
     return null;
   }
 }

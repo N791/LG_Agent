@@ -1,12 +1,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+export interface WorkspaceTaskConfig {
+  id: string;
+  title: string;
+  [key: string]: unknown;
+}
+
 export interface IWorkspaceProvider {
-  createWorkspace(targetDir: string, taskConfig: any): Promise<void>;
+  createWorkspace(targetDir: string, taskConfig: WorkspaceTaskConfig): Promise<void>;
 }
 
 export class LocalWorkspaceProvider implements IWorkspaceProvider {
-  async createWorkspace(targetDir: string, taskConfig: any): Promise<void> {
+  createWorkspace(targetDir: string, taskConfig: WorkspaceTaskConfig): Promise<void> {
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
@@ -29,5 +35,6 @@ export class LocalWorkspaceProvider implements IWorkspaceProvider {
     }
 
     console.log(`Workspace prepared at ${targetDir}`);
+    return Promise.resolve();
   }
 }
