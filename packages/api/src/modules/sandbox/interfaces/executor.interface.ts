@@ -1,3 +1,5 @@
+import { EnvRequirement } from '../env-detector.service';
+
 export interface ExecutionResult {
   passed: boolean;
   score: number;
@@ -10,6 +12,6 @@ export interface IExecutor {
     taskId: string,
     userId: string,
     code: string,
-    config: { testScript?: string; env?: Record<string, unknown> },
+    config: { testScript?: string | null; env?: EnvRequirement | null },
   ): Promise<ExecutionResult>;
 }

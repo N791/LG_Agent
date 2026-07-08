@@ -19,7 +19,10 @@ export class SandboxService {
     taskId: string,
     userId: string,
     code: string,
-    config: { env?: import('./env-detector.service').EnvRequirement; testScript?: string },
+    config: {
+      env?: import('./env-detector.service').EnvRequirement | null;
+      testScript?: string | null;
+    },
   ): Promise<ExecutionResult> {
     // Phase 1: Environment Detection
     const envCheck = await this.envDetector.checkEnvironment(config.env ?? null);

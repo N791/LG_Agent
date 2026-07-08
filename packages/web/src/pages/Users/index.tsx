@@ -18,7 +18,7 @@ const Users: React.FC = () => {
     try {
       setLoading(true);
       const res = await getUsers();
-      setData(res as User[]);
+      setData(res as unknown as User[]);
     } catch (_e) {
       // Handled globally
     } finally {
@@ -29,7 +29,7 @@ const Users: React.FC = () => {
   const fetchOrgs = async () => {
     try {
       const res = await getOrganizations();
-      setOrganizations(res as Organization[]);
+      setOrganizations(res as unknown as Organization[]);
     } catch (_e) {
       // Handled globally
     }
@@ -62,8 +62,8 @@ const Users: React.FC = () => {
   const handleSubmit = async () => {
     try {
       const values = (await form.validateFields()) as Record<string, unknown>;
-      if (!values.password) {
-        delete values.password; // Do not send empty password if editing
+      if (!values['password']) {
+        delete values['password']; // Do not send empty password if editing
       }
 
       if (editingId) {

@@ -28,14 +28,14 @@ const Tasks: React.FC = () => {
   const [form] = Form.useForm();
 
   const state = location.state as Record<string, unknown> | null;
-  const courseTitle = (state?.courseTitle as string | undefined) ?? '课程';
+  const courseTitle = (state?.['courseTitle'] as string | undefined) ?? '课程';
 
   const fetchTasks = async () => {
     if (!courseId) return;
     try {
       setLoading(true);
       const res = await getTasks({ courseId });
-      setData(res as Task[]);
+      setData(res as unknown as Task[]);
     } catch (_e) {
       // Handled globally
     } finally {
@@ -97,13 +97,13 @@ const Tasks: React.FC = () => {
       const payload = {
         ...values,
         courseId,
-        envConfig: JSON.parse((values.envConfig as string) || '{}') as Record<string, unknown>,
-        sandboxConfig: JSON.parse((values.sandboxConfig as string) || '{}') as Record<
+        envConfig: JSON.parse((values['envConfig'] as string) || '{}') as Record<string, unknown>,
+        sandboxConfig: JSON.parse((values['sandboxConfig'] as string) || '{}') as Record<
           string,
           unknown
         >,
-        testConfig: JSON.parse((values.testConfig as string) || '{}') as Record<string, unknown>,
-        promptConfig: JSON.parse((values.promptConfig as string) || '{}') as Record<
+        testConfig: JSON.parse((values['testConfig'] as string) || '{}') as Record<string, unknown>,
+        promptConfig: JSON.parse((values['promptConfig'] as string) || '{}') as Record<
           string,
           unknown
         >,

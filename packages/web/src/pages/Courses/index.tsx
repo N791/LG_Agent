@@ -32,7 +32,7 @@ const Courses: React.FC = () => {
     try {
       setLoading(true);
       const res = await getCourses(userRole === 'ADMIN' ? {} : { organizationId: userOrgId });
-      setData(res as Course[]);
+      setData(res as unknown as Course[]);
     } catch (_e) {
       // Handled globally
     } finally {
@@ -44,7 +44,7 @@ const Courses: React.FC = () => {
     if (userRole !== 'ADMIN') return;
     try {
       const res = await getOrganizations();
-      setOrganizations(res as Organization[]);
+      setOrganizations(res as unknown as Organization[]);
     } catch (_e) {
       // Handled globally
     }

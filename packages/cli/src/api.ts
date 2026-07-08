@@ -26,7 +26,8 @@ export async function request<T = unknown>(
     let errMsg = response.statusText;
     try {
       const errBody = (await response.json()) as Record<string, unknown>;
-      errMsg = typeof errBody.message === 'string' ? errBody.message : JSON.stringify(errBody);
+      errMsg =
+        typeof errBody['message'] === 'string' ? errBody['message'] : JSON.stringify(errBody);
     } catch (_e) {
       errMsg = await response.text();
     }
@@ -35,8 +36,8 @@ export async function request<T = unknown>(
 
   const resJson = (await response.json()) as Record<string, unknown>;
   // Support transform interceptor wrapping data
-  if (resJson.data !== undefined && (resJson.code === 200 || resJson.code === 201)) {
-    return resJson.data as T;
+  if (resJson['data'] !== undefined && (resJson['code'] === 200 || resJson['code'] === 201)) {
+    return resJson['data'] as T;
   }
   return resJson as T;
 }

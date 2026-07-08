@@ -36,7 +36,7 @@ export class TrainingService {
       // 3. Fetch task config from DB
       const taskConfig = {
         testScript: (task.testConfig as { script?: string } | null)?.script ?? null,
-        env: task.envConfig as import('../sandbox/env-detector.service').EnvRequirement,
+        env: task.envConfig as import('../sandbox/env-detector.service').EnvRequirement | null,
       };
 
       // 4. Pass to SandboxEngine
@@ -46,8 +46,8 @@ export class TrainingService {
       const finalResult = this.scoreCalculator.calculate({
         testPassed: result.passed,
         compilePassed: result.passed,
-        exitCode: result.report.exitCode as number | undefined,
-        message: result.report.message as string | undefined,
+        exitCode: result.report['exitCode'] as number | undefined,
+        message: result.report['message'] as string | undefined,
       });
 
       // 6. Update submission
@@ -57,7 +57,7 @@ export class TrainingService {
           status: finalResult.passed ? 'PASSED' : 'FAILED',
           score: finalResult.totalScore,
           logs: result.logs,
-          report: finalResult.details as unknown as Record<string, unknown>, // Save detailed evaluation report
+          report: finalResult.details as import('@prisma/client').Prisma.InputJsonObject, // Save detailed evaluation report
         },
       });
 

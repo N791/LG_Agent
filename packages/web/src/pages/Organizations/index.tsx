@@ -20,7 +20,7 @@ const Organizations: React.FC = () => {
     try {
       setLoading(true);
       const res = await getOrganizations();
-      setData(res as Organization[]);
+      setData(res as unknown as Organization[]);
     } catch (_e) {
       // Error handled by interceptor
     } finally {

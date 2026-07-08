@@ -8,7 +8,8 @@ import Organizations from '../pages/Organizations';
 import Courses from '../pages/Courses';
 import Tasks from '../pages/Tasks';
 
-export const router = createBrowserRouter([
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const router: any = createBrowserRouter([
   {
     path: '/login',
     element: <Login />,

@@ -30,7 +30,8 @@ request.interceptors.response.use(
       message.error(msg ?? 'Request failed');
       return Promise.reject(new Error(msg ?? 'Error'));
     }
-    return data;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+    return data as any;
   },
   (error: import('axios').AxiosError<{ message?: string }>) => {
     if (error.response?.status === 401) {
