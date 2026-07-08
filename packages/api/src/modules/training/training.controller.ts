@@ -10,7 +10,10 @@ export class TrainingController {
 
   @Post('submit')
   @Roles('TRAINEE', 'ADMIN', 'MENTOR')
-  async submit(@Request() req: { user: { id: string } }, @Body() body: { taskId: string; code: string }) {
+  async submit(
+    @Request() req: { user: { id: string } },
+    @Body() body: { taskId: string; code: string },
+  ) {
     const userId = req.user.id;
     return this.trainingService.submitTask(body.taskId, userId, body.code);
   }

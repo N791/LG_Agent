@@ -9,11 +9,14 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
-  create(@Request() req: { user: { id: string, organizationId: string } }, @Body() createCourseDto: Prisma.CourseUncheckedCreateInput) {
+  create(
+    @Request() req: { user: { id: string; organizationId: string } },
+    @Body() createCourseDto: Prisma.CourseUncheckedCreateInput,
+  ) {
     // Inject user context from JWT
     const user = req.user;
     createCourseDto.createdById = user.id;
-    
+
     // If not provided by frontend, force the org ID to be the user's org
     if (!createCourseDto.organizationId) {
       createCourseDto.organizationId = user.organizationId;

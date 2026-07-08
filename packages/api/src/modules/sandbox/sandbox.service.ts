@@ -15,7 +15,12 @@ export class SandboxService {
     this.executor = this.dockerExecutor;
   }
 
-  async runTask(taskId: string, userId: string, code: string, config: { env?: import('./env-detector.service').EnvRequirement, testScript?: string }): Promise<ExecutionResult> {
+  async runTask(
+    taskId: string,
+    userId: string,
+    code: string,
+    config: { env?: import('./env-detector.service').EnvRequirement; testScript?: string },
+  ): Promise<ExecutionResult> {
     // Phase 1: Environment Detection
     const envCheck = await this.envDetector.checkEnvironment(config.env ?? null);
     if (!envCheck.passed) {

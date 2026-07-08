@@ -4,19 +4,23 @@ import { WorkspaceService } from './workspace.service';
 import { spawn } from 'child_process';
 import * as os from 'os';
 
-
 @Injectable()
 export class DockerExecutor implements IExecutor {
   private readonly logger = new Logger(DockerExecutor.name);
 
   constructor(private readonly workspaceService: WorkspaceService) {}
 
-  async execute(taskId: string, userId: string, code: string, config: { testScript?: string, env?: { node?: boolean } }): Promise<ExecutionResult> {
+  async execute(
+    taskId: string,
+    userId: string,
+    code: string,
+    config: { testScript?: string; env?: { node?: boolean } },
+  ): Promise<ExecutionResult> {
     const workspace = this.workspaceService.createWorkspace(userId, taskId);
-    
+
     try {
       this.workspaceService.writeFiles(workspace, code, config);
-      
+
       const image = config.env?.node ? 'node:20-alpine' : 'node:20-alpine'; // Hardcode node:20-alpine for MVP
       const executionTimeoutMs = 30000; // 30 seconds
 
@@ -24,29 +28,37 @@ export class DockerExecutor implements IExecutor {
       // But using POSIX style paths is safer for Linux environments.
       const hostPath = workspace.path;
       if (os.platform() === 'win32') {
-         // Windows docker desktop usually requires paths to be correctly passed.
-         // Let's rely on standard path format. Docker handles it.
-         // However, WSL docker might have issues. We'll stick to standard for now.
+        // Windows docker desktop usually requires paths to be correctly passed.
+        // Let's rely on standard path format. Docker handles it.
+        // However, WSL docker might have issues. We'll stick to standard for now.
       }
-      
+
       const targetScript = config.testScript ? 'test.js' : 'index.js';
       const containerCmd = `npm install --no-audit --no-fund && node ${targetScript}`;
 
       const args = [
         'run',
         '--rm',
-        '-v', `${hostPath}:/app`,
-        '-w', '/app',
+        '-v',
+        `${hostPath}:/app`,
+        '-w',
+        '/app',
         '--memory=256m',
         '--cpus=0.5',
         image,
-        'sh', '-c', containerCmd
+        'sh',
+        '-c',
+        containerCmd,
       ];
 
       this.logger.log(`Executing Docker Sandbox for Workspace: ${workspace.workspaceId}`);
-      
-      const { stdout, stderr, exitCode } = await this.spawnCommand('docker', args, executionTimeoutMs);
-      
+
+      const { stdout, stderr, exitCode } = await this.spawnCommand(
+        'docker',
+        args,
+        executionTimeoutMs,
+      );
+
       const logs = stdout + (stderr ? `\n[STDERR]\n${stderr}` : '');
       const passed = exitCode === 0;
 
@@ -54,16 +66,17 @@ export class DockerExecutor implements IExecutor {
         passed,
         score: passed ? 100 : 0,
         logs: logs.trim(),
-        report: { exitCode, message: passed ? 'All tests passed' : 'Execution failed' }
+        report: { exitCode, message: passed ? 'All tests passed' : 'Execution failed' },
       };
-
     } catch (error: unknown) {
-      this.logger.error(`Docker execution failed for ${workspace.workspaceId}: ${(error as Error).message}`);
+      this.logger.error(
+        `Docker execution failed for ${workspace.workspaceId}: ${(error as Error).message}`,
+      );
       return {
         passed: false,
         score: 0,
         logs: `[Sandbox Engine Error]\n${(error as Error).message}`,
-        report: { error: (error as Error).message }
+        report: { error: (error as Error).message },
       };
     } finally {
       // Always cleanup workspace to prevent leak
@@ -71,7 +84,11 @@ export class DockerExecutor implements IExecutor {
     }
   }
 
-  private spawnCommand(command: string, args: string[], timeoutMs: number): Promise<{ stdout: string; stderr: string; exitCode: number | null }> {
+  private spawnCommand(
+    command: string,
+    args: string[],
+    timeoutMs: number,
+  ): Promise<{ stdout: string; stderr: string; exitCode: number | null }> {
     return new Promise((resolve, reject) => {
       let stdout = '';
       let stderr = '';

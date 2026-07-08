@@ -23,16 +23,16 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state)?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || '/';
 
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
       const data: any = await request.post('/auth/login', values);
-      
+
       const token = data.access_token;
       const decoded = parseJwt(token);
-      
+
       dispatch(
         setAuth({
           token,
@@ -42,9 +42,9 @@ const Login: React.FC = () => {
             role: decoded.role,
             organizationId: decoded.organizationId || '', // Make sure API returns it in JWT payload or it will be empty
           },
-        })
+        }),
       );
-      
+
       message.success('登录成功');
       navigate(from, { replace: true });
     } catch (error) {
@@ -57,36 +57,18 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          LG Agent
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          人工智能辅助学习平台
-        </p>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">LG Agent</h2>
+        <p className="mt-2 text-center text-sm text-gray-600">人工智能辅助学习平台</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <Form
-            name="login_form"
-            onFinish={onFinish}
-            layout="vertical"
-            size="large"
-          >
-            <Form.Item
-              name="username"
-              rules={[{ required: true, message: '请输入用户名！' }]}
-            >
-              <Input
-                prefix={<UserOutlined className="text-gray-400" />}
-                placeholder="用户名"
-              />
+          <Form name="login_form" onFinish={onFinish} layout="vertical" size="large">
+            <Form.Item name="username" rules={[{ required: true, message: '请输入用户名！' }]}>
+              <Input prefix={<UserOutlined className="text-gray-400" />} placeholder="用户名" />
             </Form.Item>
 
-            <Form.Item
-              name="password"
-              rules={[{ required: true, message: '请输入密码！' }]}
-            >
+            <Form.Item name="password" rules={[{ required: true, message: '请输入密码！' }]}>
               <Input.Password
                 prefix={<LockOutlined className="text-gray-400" />}
                 placeholder="密码"
@@ -94,12 +76,7 @@ const Login: React.FC = () => {
             </Form.Item>
 
             <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="w-full"
-                loading={loading}
-              >
+              <Button type="primary" htmlType="submit" className="w-full" loading={loading}>
                 登录
               </Button>
             </Form.Item>

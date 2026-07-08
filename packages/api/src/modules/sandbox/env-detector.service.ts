@@ -16,7 +16,9 @@ export interface EnvRequirement {
 export class EnvDetectorService {
   private readonly logger = new Logger(EnvDetectorService.name);
 
-  async checkEnvironment(envConfig: EnvRequirement | null): Promise<{ passed: boolean; message?: string }> {
+  async checkEnvironment(
+    envConfig: EnvRequirement | null,
+  ): Promise<{ passed: boolean; message?: string }> {
     if (!envConfig) {
       return { passed: true };
     }
@@ -54,7 +56,9 @@ export class EnvDetectorService {
       this.logger.debug(`[EnvDetector] ${name} is available.`);
     } catch (_error) {
       this.logger.error(`[EnvDetector] ${name} is missing or command failed: ${command}`);
-      throw new Error(`${name} is required but not found or accessible in the host environment. Please install ${name}.`);
+      throw new Error(
+        `${name} is required but not found or accessible in the host environment. Please install ${name}.`,
+      );
     }
   }
 }

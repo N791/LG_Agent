@@ -128,7 +128,13 @@ const Users: React.FC = () => {
       key: 'action',
       render: (_: any, record: any) => (
         <div className="flex gap-2">
-          <Button type="link" icon={<EditOutlined />} onClick={() => { showModal(record); }}>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => {
+              showModal(record);
+            }}
+          >
             编辑
           </Button>
           <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(record.id)}>
@@ -145,7 +151,13 @@ const Users: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">用户管理</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => { showModal(); }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            showModal();
+          }}
+        >
           新增用户
         </Button>
       </div>
@@ -182,10 +194,7 @@ const Users: React.FC = () => {
             <Input.Password placeholder="输入密码" />
           </Form.Item>
 
-          <Form.Item
-            name="nickname"
-            label="昵称"
-          >
+          <Form.Item name="nickname" label="昵称">
             <Input placeholder="输入用户显示昵称" />
           </Form.Item>
 
@@ -197,11 +206,7 @@ const Users: React.FC = () => {
             <Input placeholder="输入邮箱" />
           </Form.Item>
 
-          <Form.Item
-            name="role"
-            label="角色"
-            rules={[{ required: true, message: '请选择角色' }]}
-          >
+          <Form.Item name="role" label="角色" rules={[{ required: true, message: '请选择角色' }]}>
             <Select placeholder="选择角色">
               <Option value="ADMIN">系统管理员</Option>
               <Option value="MENTOR">导师</Option>
@@ -215,8 +220,10 @@ const Users: React.FC = () => {
             rules={[{ required: true, message: '请选择所属企业' }]}
           >
             <Select placeholder="选择企业">
-              {organizations.map(org => (
-                <Option key={org.id} value={org.id}>{org.name}</Option>
+              {organizations.map((org) => (
+                <Option key={org.id} value={org.id}>
+                  {org.name}
+                </Option>
               ))}
             </Select>
           </Form.Item>

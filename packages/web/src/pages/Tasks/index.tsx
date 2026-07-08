@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, Form, Input, InputNumber, message, Popconfirm, Breadcrumb } from 'antd';
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Popconfirm,
+  Breadcrumb,
+} from 'antd';
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { getTasks, createTask, updateTask, deleteTask } from '../../services/api';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
@@ -15,9 +25,9 @@ const Tasks: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form] = Form.useForm();
-  
+
   // Extract course title from location state if passed, otherwise just show ID
-  const courseTitle = (location.state)?.courseTitle || '课程';
+  const courseTitle = location.state?.courseTitle || '课程';
 
   const fetchTasks = async () => {
     if (!courseId) return;
@@ -56,7 +66,7 @@ const Tasks: React.FC = () => {
         envConfig: '{\n  \n}',
         sandboxConfig: '{\n  \n}',
         testConfig: '{\n  \n}',
-        promptConfig: '{\n  \n}'
+        promptConfig: '{\n  \n}',
       });
     }
     setIsModalVisible(true);
@@ -81,7 +91,7 @@ const Tasks: React.FC = () => {
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      
+
       // Parse JSON strings back to objects before sending to API
       const payload = {
         ...values,
@@ -138,7 +148,12 @@ const Tasks: React.FC = () => {
       key: 'action',
       render: (_: any, record: any) => (
         <div className="flex gap-2">
-          <Button type="link" onClick={() => { showModal(record); }}>
+          <Button
+            type="link"
+            onClick={() => {
+              showModal(record);
+            }}
+          >
             编辑配置
           </Button>
           <Popconfirm title="确定要删除该任务吗?" onConfirm={() => handleDelete(record.id)}>
@@ -155,7 +170,13 @@ const Tasks: React.FC = () => {
     <div>
       <Breadcrumb className="mb-4">
         <Breadcrumb.Item>
-          <a onClick={() => { navigate('/courses'); }}>课程管理</a>
+          <a
+            onClick={() => {
+              navigate('/courses');
+            }}
+          >
+            课程管理
+          </a>
         </Breadcrumb.Item>
         <Breadcrumb.Item>{courseTitle}</Breadcrumb.Item>
         <Breadcrumb.Item>任务管理</Breadcrumb.Item>
@@ -163,10 +184,23 @@ const Tasks: React.FC = () => {
 
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <Button icon={<ArrowLeftOutlined />} onClick={() => { navigate('/courses'); }}>返回</Button>
+          <Button
+            icon={<ArrowLeftOutlined />}
+            onClick={() => {
+              navigate('/courses');
+            }}
+          >
+            返回
+          </Button>
           <h1 className="text-2xl font-bold mb-0">任务管理</h1>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => { showModal(); }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            showModal();
+          }}
+        >
           新增任务
         </Button>
       </div>
@@ -216,7 +250,7 @@ const Tasks: React.FC = () => {
             >
               <TextArea rows={6} className="font-mono text-sm" />
             </Form.Item>
-            
+
             <Form.Item
               name="sandboxConfig"
               label="沙盒配置 (JSON)"
@@ -232,7 +266,7 @@ const Tasks: React.FC = () => {
             >
               <TextArea rows={6} className="font-mono text-sm" />
             </Form.Item>
-            
+
             <Form.Item
               name="promptConfig"
               label="AI Prompt 设定 (JSON)"

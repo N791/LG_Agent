@@ -16,12 +16,16 @@ request.interceptors.request.use(
     }
     return config;
   },
-  (error: unknown) => Promise.reject(error instanceof Error ? error : new Error(String(error)))
+  (error: unknown) => Promise.reject(error instanceof Error ? error : new Error(String(error))),
 );
 
 request.interceptors.response.use(
   (response) => {
-    const { code, message: msg, data } = response.data as { code: number, message: string, data: unknown };
+    const {
+      code,
+      message: msg,
+      data,
+    } = response.data as { code: number; message: string; data: unknown };
     if (code !== 200 && code !== 201) {
       message.error(msg ?? 'Request failed');
       return Promise.reject(new Error(msg ?? 'Error'));
@@ -39,7 +43,7 @@ request.interceptors.response.use(
       message.error(error.response?.data?.message ?? 'Network Error');
     }
     return Promise.reject(error instanceof Error ? error : new Error(String(error)));
-  }
+  },
 );
 
 export default request;

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, message, Popconfirm, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getOrganizations, createOrganization, updateOrganization, deleteOrganization } from '../../services/api';
+import {
+  getOrganizations,
+  createOrganization,
+  updateOrganization,
+  deleteOrganization,
+} from '../../services/api';
 
 const Organizations: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
@@ -86,9 +91,7 @@ const Organizations: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status: number) => (
-        <Tag color={status === 1 ? 'success' : 'default'}>
-          {status === 1 ? '正常' : '禁用'}
-        </Tag>
+        <Tag color={status === 1 ? 'success' : 'default'}>{status === 1 ? '正常' : '禁用'}</Tag>
       ),
     },
     {
@@ -102,7 +105,13 @@ const Organizations: React.FC = () => {
       key: 'action',
       render: (_: any, record: any) => (
         <div className="flex gap-2">
-          <Button type="link" icon={<EditOutlined />} onClick={() => { showModal(record); }}>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => {
+              showModal(record);
+            }}
+          >
             编辑
           </Button>
           <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(record.id)}>
@@ -119,7 +128,13 @@ const Organizations: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">组织管理</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => { showModal(); }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            showModal();
+          }}
+        >
           新增组织
         </Button>
       </div>

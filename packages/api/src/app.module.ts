@@ -16,14 +16,14 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 
 @Module({
   imports: [
-    PrismaModule, 
-    OrganizationsModule, 
-    UsersModule, 
-    CoursesModule, 
-    TasksModule, 
-    SandboxModule, 
-    TrainingModule, 
-    AuthModule
+    PrismaModule,
+    OrganizationsModule,
+    UsersModule,
+    CoursesModule,
+    TasksModule,
+    SandboxModule,
+    TrainingModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

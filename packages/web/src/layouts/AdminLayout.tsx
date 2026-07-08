@@ -56,7 +56,14 @@ const AdminLayout: React.FC = () => {
 
   return (
     <Layout className="min-h-screen">
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => { setCollapsed(value); }} theme="light">
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => {
+          setCollapsed(value);
+        }}
+        theme="light"
+      >
         <div className="h-16 flex items-center justify-center font-bold text-xl tracking-tight border-b border-gray-100">
           {collapsed ? 'LG' : 'LG Agent'}
         </div>
@@ -65,7 +72,9 @@ const AdminLayout: React.FC = () => {
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menuItems}
-          onClick={({ key }) => { navigate(key); }}
+          onClick={({ key }) => {
+            navigate(key);
+          }}
           className="mt-2 border-r-0"
         />
       </Sider>

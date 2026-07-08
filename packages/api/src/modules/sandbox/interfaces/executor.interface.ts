@@ -6,5 +6,10 @@ export interface ExecutionResult {
 }
 
 export interface IExecutor {
-  execute(taskId: string, userId: string, code: string, config: { testScript?: string, env?: Record<string, unknown> }): Promise<ExecutionResult>;
+  execute(
+    taskId: string,
+    userId: string,
+    code: string,
+    config: { testScript?: string; env?: Record<string, unknown> },
+  ): Promise<ExecutionResult>;
 }

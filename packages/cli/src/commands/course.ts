@@ -30,16 +30,16 @@ courseCommands
   .action(async (courseId: string) => {
     try {
       // Assuming tasks are nested or can be filtered. For MVP, we'll fetch course details
-      // Wait, we have GET /tasks?courseId=... 
+      // Wait, we have GET /tasks?courseId=...
       // Let's assume the API returns all tasks for now, and filter locally if API doesn't support query yet.
       const tasks = await api.get('/tasks');
       const courseTasks = tasks.filter((t: any) => t.courseId === courseId);
-      
+
       if (courseTasks.length === 0) {
         console.log(chalk.yellow('No tasks found for this course.'));
         return;
       }
-      
+
       console.log(chalk.blue.bold(`\nTasks for Course [${courseId}]:`));
       courseTasks.forEach((t: any) => {
         console.log(`  - [${t.id}] Stage ${t.stage}: ${t.title}`);

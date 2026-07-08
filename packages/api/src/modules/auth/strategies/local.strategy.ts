@@ -9,7 +9,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(username: string, password: string): Promise<Partial<import('@prisma/client').User>> {
+  async validate(
+    username: string,
+    password: string,
+  ): Promise<Partial<import('@prisma/client').User>> {
     const user = await this.authService.validateUser(username, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

@@ -11,7 +11,12 @@ const execPromise = util.promisify(exec);
 export class LocalExecutor implements IExecutor {
   private readonly logger = new Logger(LocalExecutor.name);
 
-  async execute(taskId: string, userId: string, code: string, config: { testScript?: string, env?: { node?: boolean } }): Promise<ExecutionResult> {
+  async execute(
+    taskId: string,
+    userId: string,
+    code: string,
+    config: { testScript?: string; env?: { node?: boolean } },
+  ): Promise<ExecutionResult> {
     const workspaceId = `ws_${userId}_${taskId}_${Date.now().toString()}`;
     const workspacePath = path.join(process.cwd(), 'temp_workspaces', workspaceId);
 
@@ -39,7 +44,9 @@ export class LocalExecutor implements IExecutor {
           await execPromise('npm install', { cwd: workspacePath, timeout: 30000 }); // 30s for npm install
           this.logger.log(`npm install completed in ${workspaceId}`);
         } catch (installErr: unknown) {
-          this.logger.warn(`npm install failed in ${workspaceId}: ${(installErr as Error).message}`);
+          this.logger.warn(
+            `npm install failed in ${workspaceId}: ${(installErr as Error).message}`,
+          );
           // We can proceed even if it fails, or we could throw. Let's proceed for now.
         }
       }
@@ -48,17 +55,17 @@ export class LocalExecutor implements IExecutor {
       // To simulate isolation, we might just run node index.js or test.js
       let cmd = `node index.js`;
       if (testFile) {
-         // E.g. we could run a test runner, or just execute the test file which requires index.js
-         cmd = `node test.js`;
+        // E.g. we could run a test runner, or just execute the test file which requires index.js
+        cmd = `node test.js`;
       }
 
-      const { stdout, stderr } = await execPromise(cmd, { 
+      const { stdout, stderr } = await execPromise(cmd, {
         cwd: workspacePath,
-        timeout: 5000 // 5 seconds limit for pseudo-sandbox
+        timeout: 5000, // 5 seconds limit for pseudo-sandbox
       });
 
       this.logger.log(`Execution success in ${workspaceId}`);
-      
+
       // Clean up workspace
       fs.rmSync(workspacePath, { recursive: true, force: true });
 
@@ -69,9 +76,13 @@ export class LocalExecutor implements IExecutor {
         report: { message: 'All tests passed' },
       };
     } catch (error: unknown) {
-      const execError = error as { stdout?: Buffer | string, stderr?: Buffer | string, message: string };
+      const execError = error as {
+        stdout?: Buffer | string;
+        stderr?: Buffer | string;
+        message: string;
+      };
       this.logger.error(`Execution failed in ${workspaceId}`, execError.message);
-      
+
       // Clean up workspace even on failure
       if (fs.existsSync(workspacePath)) {
         fs.rmSync(workspacePath, { recursive: true, force: true });
@@ -80,7 +91,12 @@ export class LocalExecutor implements IExecutor {
       return {
         passed: false,
         score: 0,
-        logs: String(execError.stdout ?? '') + '\n' + String(execError.stderr ?? '') + '\n' + execError.message,
+        logs:
+          String(execError.stdout ?? '') +
+          '\n' +
+          String(execError.stderr ?? '') +
+          '\n' +
+          execError.message,
         report: { error: execError.message },
       };
     }

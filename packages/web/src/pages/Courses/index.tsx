@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Select, message, Popconfirm, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { getCourses, createCourse, updateCourse, deleteCourse, getOrganizations } from '../../services/api';
+import {
+  getCourses,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+  getOrganizations,
+} from '../../services/api';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +23,7 @@ const Courses: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  
+
   const userRole = useSelector((state: RootState) => state.auth.user?.role);
   const userOrgId = useSelector((state: RootState) => state.auth.user?.organizationId); // Assuming we added it to JWT and store, but we can rely on backend fallback if missing.
 
@@ -133,9 +139,7 @@ const Courses: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status: number) => (
-        <Tag color={status === 1 ? 'success' : 'default'}>
-          {status === 1 ? '已发布' : '草稿'}
-        </Tag>
+        <Tag color={status === 1 ? 'success' : 'default'}>{status === 1 ? '已发布' : '草稿'}</Tag>
       ),
     },
     {
@@ -149,10 +153,20 @@ const Courses: React.FC = () => {
       key: 'action',
       render: (_: any, record: any) => (
         <div className="flex gap-2">
-          <Button type="link" onClick={() => { navigate(`/courses/${record.id}/tasks`, { state: { courseTitle: record.title } }); }}>
+          <Button
+            type="link"
+            onClick={() => {
+              navigate(`/courses/${record.id}/tasks`, { state: { courseTitle: record.title } });
+            }}
+          >
             任务管理
           </Button>
-          <Button type="link" onClick={() => { showModal(record); }}>
+          <Button
+            type="link"
+            onClick={() => {
+              showModal(record);
+            }}
+          >
             编辑
           </Button>
           <Button type="link" onClick={() => handlePublish(record)}>
@@ -172,7 +186,13 @@ const Courses: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">课程管理</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => { showModal(); }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            showModal();
+          }}
+        >
           新增课程
         </Button>
       </div>
@@ -201,10 +221,7 @@ const Courses: React.FC = () => {
             <Input placeholder="输入课程标题" />
           </Form.Item>
 
-          <Form.Item
-            name="description"
-            label="课程简介"
-          >
+          <Form.Item name="description" label="课程简介">
             <TextArea rows={4} placeholder="输入课程详细描述" />
           </Form.Item>
 
@@ -223,8 +240,10 @@ const Courses: React.FC = () => {
               rules={[{ required: !editingId, message: '请选择所属企业' }]}
             >
               <Select placeholder="选择企业 (仅Admin可见)">
-                {organizations.map(org => (
-                  <Option key={org.id} value={org.id}>{org.name}</Option>
+                {organizations.map((org) => (
+                  <Option key={org.id} value={org.id}>
+                    {org.name}
+                  </Option>
                 ))}
               </Select>
             </Form.Item>
