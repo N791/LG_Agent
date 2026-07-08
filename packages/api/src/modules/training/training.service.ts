@@ -35,7 +35,7 @@ export class TrainingService {
     try {
       // 3. Fetch task config from DB
       const taskConfig = {
-        testScript: (task.testConfig as { script?: string })?.script ?? null,
+        testScript: (task.testConfig as { script?: string } | null)?.script ?? null,
         env: task.envConfig as import('../sandbox/env-detector.service').EnvRequirement,
       };
 
