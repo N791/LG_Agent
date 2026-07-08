@@ -8,6 +8,12 @@ import Organizations from '../pages/Organizations';
 import Courses from '../pages/Courses';
 import Tasks from '../pages/Tasks';
 
+/*
+  Temporary Workaround
+  Root Cause: pnpm strict isolation causes TS2742 where @remix-run/router is required but not directly referenced.
+  Issue: #TODO-1
+  Removal Condition: Remove when react-router-dom types are correctly resolved or @remix-run/router is added to devDependencies.
+*/
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const router: any = createBrowserRouter([
   {

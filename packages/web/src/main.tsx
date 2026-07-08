@@ -14,6 +14,12 @@ if (rootElement) {
     <StrictMode>
       <Provider store={store}>
         <ConfigProvider locale={zhCN}>
+          {/* 
+            Temporary Workaround
+            Root Cause: router is temporarily typed as 'any' to avoid TS2742 (@remix-run/router inference error).
+            Issue: #TODO-1 
+            Removal Condition: Remove when @remix-run/router types are explicitly imported or dependency issue is fixed.
+          */}
           {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
           <RouterProvider router={router} />
         </ConfigProvider>

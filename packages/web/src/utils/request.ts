@@ -30,6 +30,12 @@ request.interceptors.response.use(
       message.error(msg ?? 'Request failed');
       return Promise.reject(new Error(msg ?? 'Error'));
     }
+    /*
+      Temporary Workaround
+      Root Cause: AxiosInterceptorFulfilled expects AxiosResponse<any>, but we extract and return 'data' directly to simplify API consumption.
+      Issue: #TODO-2
+      Removal Condition: Remove when a proper generic wrapper for Axios interceptors is implemented to handle response unwrapping gracefully.
+    */
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return data as any;
   },
