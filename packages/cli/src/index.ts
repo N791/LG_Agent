@@ -1,25 +1,23 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
-import chalk from 'chalk';
-import * as dotenv from 'dotenv';
-import { registerInitCommand } from './commands/init';
 
-// Load environment variables
-dotenv.config();
+import { Command } from 'commander';
+import { authCommands } from './commands/auth';
+import { courseCommands } from './commands/course';
+import { workspaceCommands } from './commands/workspace';
 
 const program = new Command();
 
 program
   .name('lg-agent')
-  .description(chalk.blue('AI 沉浸式企业入职引擎 CLI 客户端'))
+  .description('AI Immersive Onboarding Engine - CLI Client')
   .version('0.1.0');
 
-// Register commands
-registerInitCommand(program);
+// Register nested commands but also flatten some common ones for ease of use
+program.addCommand(authCommands);
+program.addCommand(courseCommands);
+program.addCommand(workspaceCommands);
 
-// Parse arguments
-program.parse(process.argv);
-
-if (!process.argv.slice(2).length) {
-  program.outputHelp();
-}
+program.parseAsync(process.argv).catch((err) => {
+  console.error('Fatal error:', err);
+  process.exit(1);
+});

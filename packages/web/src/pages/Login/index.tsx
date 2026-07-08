@@ -1,0 +1,113 @@
+import React, { useState } from 'react';
+import { Form, Input, Button, message } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useDispatch } from 'react-redux';
+import { setAuth } from '../../store/slices/authSlice';
+import { useNavigate, useLocation } from 'react-router-dom';
+import request from '../../utils/request';
+
+// Function to decode JWT to extract user info simply (for demo/prototype purposes)
+function parseJwt(token: string) {
+  try {
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return null;
+    return JSON.parse(atob(base64Url));
+  } catch (e) {
+    return null;
+  }
+}
+
+const Login: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state)?.from?.pathname || '/';
+
+  const onFinish = async (values: any) => {
+    try {
+      setLoading(true);
+      const data: any = await request.post('/auth/login', values);
+      
+      const token = data.access_token;
+      const decoded = parseJwt(token);
+      
+      dispatch(
+        setAuth({
+          token,
+          user: {
+            id: decoded.sub,
+            username: decoded.username,
+            role: decoded.role,
+            organizationId: decoded.organizationId || '', // Make sure API returns it in JWT payload or it will be empty
+          },
+        })
+      );
+      
+      message.success('登录成功');
+      navigate(from, { replace: true });
+    } catch (error) {
+      // Error handled by interceptor
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          LG Agent
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          人工智能辅助学习平台
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <Form
+            name="login_form"
+            onFinish={onFinish}
+            layout="vertical"
+            size="large"
+          >
+            <Form.Item
+              name="username"
+              rules={[{ required: true, message: '请输入用户名！' }]}
+            >
+              <Input
+                prefix={<UserOutlined className="text-gray-400" />}
+                placeholder="用户名"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: '请输入密码！' }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined className="text-gray-400" />}
+                placeholder="密码"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full"
+                loading={loading}
+              >
+                登录
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;

@@ -7,14 +7,89 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Model placeholders for Epic 2
+enum Role {
+  ADMIN
+  MENTOR
+  TRAINEE
+}
 
 model Organization {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @db.VarChar
-  code      String   @db.VarChar
-  status    Int      @db.SmallInt
+  code      String   @unique @db.VarChar
+  status    Int      @default(1) @db.SmallInt
   createdAt DateTime @default(now()) @map("created_at")
 
+  users     User[]
+  courses   Course[]
+
   @@map("organizations")
+}
+
+model User {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  username       String       @unique @db.VarChar
+  password       String       @db.VarChar
+  nickname       String?      @db.VarChar
+  email          String?      @db.VarChar
+  role           Role         @default(TRAINEE)
+  status         Int          @default(1) @db.SmallInt
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  coursesCreated Course[]     @relation("CourseCreator")
+  submissions    Submission[]
+
+  @@map("users")
+}
+
+model Course {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  title          String       @db.VarChar
+  description    String?      @db.Text
+  version        String       @db.VarChar
+  status         Int          @default(0) @db.SmallInt // 0: 草稿, 1: 已发布
+  createdById    String       @map("created_by") @db.Uuid
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdBy      User         @relation("CourseCreator", fields: [createdById], references: [id])
+  tasks          Task[]
+
+  @@map("courses")
+}
+
+model Task {
+  id             String       @id @default(uuid()) @db.Uuid
+  courseId       String       @map("course_id") @db.Uuid
+  title          String       @db.VarChar
+  stage          Int          @db.Integer
+  envConfig      Json         @map("env_config") @db.JsonB
+  sandboxConfig  Json         @map("sandbox_config") @db.JsonB
+  testConfig     Json         @map("test_config") @db.JsonB
+  promptConfig   Json         @map("prompt_config") @db.JsonB
+
+  course         Course       @relation(fields: [courseId], references: [id])
+  submissions    Submission[]
+
+  @@map("tasks")
+}
+
+model Submission {
+  id             String       @id @default(uuid()) @db.Uuid
+  taskId         String       @map("task_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  status         String       @default("PENDING") @db.VarChar // PENDING, RUNNING, PASSED, FAILED
+  score          Int          @default(0) @db.SmallInt
+  logs           String?      @db.Text
+  report         Json?        @db.JsonB
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  task           Task         @relation(fields: [taskId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@map("submissions")
 }

@@ -124,4 +124,4 @@ pnpm typecheck
 
 ## License
 
-UNLICENSED — 企业内部项目
+待定
