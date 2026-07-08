@@ -11,13 +11,14 @@ import {
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
+import { Course, Organization } from '../../types';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 const Courses: React.FC = () => {
-  const [data, setData] = useState<any[]>([]);
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [data, setData] = useState<Course[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -31,8 +32,8 @@ const Courses: React.FC = () => {
     try {
       setLoading(true);
       const res = await getCourses(userRole === 'ADMIN' ? {} : { organizationId: userOrgId });
-      setData(res as any);
-    } catch (e) {
+      setData(res as Course[]);
+    } catch (_e) {
       // Handled globally
     } finally {
       setLoading(false);
@@ -43,18 +44,18 @@ const Courses: React.FC = () => {
     if (userRole !== 'ADMIN') return;
     try {
       const res = await getOrganizations();
-      setOrganizations(res as any);
-    } catch (e) {
+      setOrganizations(res as Organization[]);
+    } catch (_e) {
       // Handled globally
     }
   };
 
   useEffect(() => {
-    fetchCourses();
-    fetchOrgs();
+    void fetchCourses();
+    void fetchOrgs();
   }, [userRole]);
 
-  const showModal = (record?: any) => {
+  const showModal = (record?: Course) => {
     if (record) {
       setEditingId(record.id);
       form.setFieldsValue(record);
@@ -73,17 +74,17 @@ const Courses: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields();
+      const values = (await form.validateFields()) as Record<string, unknown>;
       if (editingId) {
         await updateCourse(editingId, values);
-        message.success('更新成功');
+        void message.success('更新成功');
       } else {
         await createCourse(values);
-        message.success('创建成功');
+        void message.success('创建成功');
       }
       setIsModalVisible(false);
-      fetchCourses();
-    } catch (e) {
+      void fetchCourses();
+    } catch (_e) {
       // Validate failed or API error
     }
   };
@@ -91,20 +92,20 @@ const Courses: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteCourse(id);
-      message.success('删除成功');
-      fetchCourses();
-    } catch (e) {
+      void message.success('删除成功');
+      void fetchCourses();
+    } catch (_e) {
       // Error handled by interceptor
     }
   };
 
-  const handlePublish = async (record: any) => {
+  const handlePublish = async (record: Course) => {
     try {
       const newStatus = record.status === 0 ? 1 : 0;
       await updateCourse(record.id, { status: newStatus });
-      message.success(newStatus === 1 ? '发布成功' : '已取消发布');
-      fetchCourses();
-    } catch (e) {
+      void message.success(newStatus === 1 ? '发布成功' : '已取消发布');
+      void fetchCourses();
+    } catch (_e) {
       // Error handled
     }
   };
@@ -125,8 +126,8 @@ const Courses: React.FC = () => {
     {
       title: '创建人',
       dataIndex: ['createdBy', 'nickname'],
-      key: 'createdBy',
-      render: (text: string, record: any) => text || record.createdBy?.username || '-',
+      render: (text: string | undefined, record: Course) =>
+        text ?? record.createdBy?.username ?? '-',
     },
     {
       title: '所属组织',
@@ -151,7 +152,7 @@ const Courses: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: Course) => (
         <div className="flex gap-2">
           <Button
             type="link"
@@ -169,10 +170,10 @@ const Courses: React.FC = () => {
           >
             编辑
           </Button>
-          <Button type="link" onClick={() => handlePublish(record)}>
+          <Button type="link" onClick={() => void handlePublish(record)}>
             {record.status === 0 ? '发布' : '下架'}
           </Button>
-          <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title="确定要删除吗?" onConfirm={() => void handleDelete(record.id)}>
             <Button type="link" danger>
               删除
             </Button>
@@ -208,7 +209,7 @@ const Courses: React.FC = () => {
       <Modal
         title={editingId ? '编辑课程' : '新增课程'}
         open={isModalVisible}
-        onOk={handleSubmit}
+        onOk={() => void handleSubmit()}
         onCancel={handleCancel}
         width={600}
       >

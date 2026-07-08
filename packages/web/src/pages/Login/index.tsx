@@ -5,14 +5,22 @@ import { useDispatch } from 'react-redux';
 import { setAuth } from '../../store/slices/authSlice';
 import { useNavigate, useLocation } from 'react-router-dom';
 import request from '../../utils/request';
+import { Role } from '../../types';
+
+interface JwtPayload {
+  sub: string;
+  username: string;
+  role: Role;
+  organizationId?: string;
+}
 
 // Function to decode JWT to extract user info simply (for demo/prototype purposes)
-function parseJwt(token: string) {
+function parseJwt(token: string): JwtPayload | null {
   try {
     const base64Url = token.split('.')[1];
     if (!base64Url) return null;
-    return JSON.parse(atob(base64Url));
-  } catch (e) {
+    return JSON.parse(atob(base64Url)) as JwtPayload;
+  } catch (_e) {
     return null;
   }
 }
@@ -23,31 +31,36 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/';
+  const state = location.state as { from?: { pathname?: string } } | null;
+  const from = state?.from?.pathname ?? '/';
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: Record<string, unknown>) => {
     try {
       setLoading(true);
-      const data: any = await request.post('/auth/login', values);
+      const data = (await request.post('/auth/login', values)) as unknown as {
+        access_token: string;
+      };
 
       const token = data.access_token;
       const decoded = parseJwt(token);
 
-      dispatch(
-        setAuth({
-          token,
-          user: {
-            id: decoded.sub,
-            username: decoded.username,
-            role: decoded.role,
-            organizationId: decoded.organizationId || '', // Make sure API returns it in JWT payload or it will be empty
-          },
-        }),
-      );
+      if (decoded) {
+        dispatch(
+          setAuth({
+            token,
+            user: {
+              id: decoded.sub,
+              username: decoded.username,
+              role: decoded.role,
+              organizationId: decoded.organizationId ?? '', // Make sure API returns it in JWT payload or it will be empty
+            },
+          }),
+        );
+      }
 
-      message.success('登录成功');
+      void message.success('登录成功');
       navigate(from, { replace: true });
-    } catch (error) {
+    } catch (_error) {
       // Error handled by interceptor
     } finally {
       setLoading(false);
@@ -63,7 +76,12 @@ const Login: React.FC = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <Form name="login_form" onFinish={onFinish} layout="vertical" size="large">
+          <Form
+            name="login_form"
+            onFinish={(values) => void onFinish(values as Record<string, unknown>)}
+            layout="vertical"
+            size="large"
+          >
             <Form.Item name="username" rules={[{ required: true, message: '请输入用户名！' }]}>
               <Input prefix={<UserOutlined className="text-gray-400" />} placeholder="用户名" />
             </Form.Item>

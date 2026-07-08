@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Select, message, Popconfirm, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getUsers, createUser, updateUser, deleteUser, getOrganizations } from '../../services/api';
+import { User, Organization } from '../../types';
 
 const { Option } = Select;
 
 const Users: React.FC = () => {
-  const [data, setData] = useState<any[]>([]);
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [data, setData] = useState<User[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -17,8 +18,8 @@ const Users: React.FC = () => {
     try {
       setLoading(true);
       const res = await getUsers();
-      setData(res as any);
-    } catch (e) {
+      setData(res as User[]);
+    } catch (_e) {
       // Handled globally
     } finally {
       setLoading(false);
@@ -28,18 +29,18 @@ const Users: React.FC = () => {
   const fetchOrgs = async () => {
     try {
       const res = await getOrganizations();
-      setOrganizations(res as any);
-    } catch (e) {
+      setOrganizations(res as Organization[]);
+    } catch (_e) {
       // Handled globally
     }
   };
 
   useEffect(() => {
-    fetchUsers();
-    fetchOrgs();
+    void fetchUsers();
+    void fetchOrgs();
   }, []);
 
-  const showModal = (record?: any) => {
+  const showModal = (record?: User) => {
     if (record) {
       setEditingId(record.id);
       form.setFieldsValue({
@@ -60,21 +61,21 @@ const Users: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields();
+      const values = (await form.validateFields()) as Record<string, unknown>;
       if (!values.password) {
         delete values.password; // Do not send empty password if editing
       }
 
       if (editingId) {
         await updateUser(editingId, values);
-        message.success('更新成功');
+        void message.success('更新成功');
       } else {
         await createUser(values);
-        message.success('创建成功');
+        void message.success('创建成功');
       }
       setIsModalVisible(false);
-      fetchUsers();
-    } catch (e) {
+      void fetchUsers();
+    } catch (_e) {
       // Validate failed or API error
     }
   };
@@ -82,9 +83,9 @@ const Users: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteUser(id);
-      message.success('删除成功');
-      fetchUsers();
-    } catch (e) {
+      void message.success('删除成功');
+      void fetchUsers();
+    } catch (_e) {
       // Error handled by interceptor
     }
   };
@@ -126,7 +127,7 @@ const Users: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: User) => (
         <div className="flex gap-2">
           <Button
             type="link"
@@ -137,7 +138,7 @@ const Users: React.FC = () => {
           >
             编辑
           </Button>
-          <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title="确定要删除吗?" onConfirm={() => void handleDelete(record.id)}>
             <Button type="link" danger icon={<DeleteOutlined />}>
               删除
             </Button>
@@ -173,7 +174,7 @@ const Users: React.FC = () => {
       <Modal
         title={editingId ? '编辑用户' : '新增用户'}
         open={isModalVisible}
-        onOk={handleSubmit}
+        onOk={() => void handleSubmit()}
         onCancel={handleCancel}
       >
         <Form form={form} layout="vertical">

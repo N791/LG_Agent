@@ -13,6 +13,7 @@ import {
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { getTasks, createTask, updateTask, deleteTask } from '../../services/api';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Task } from '../../types';
 
 const { TextArea } = Input;
 
@@ -20,22 +21,22 @@ const Tasks: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form] = Form.useForm();
 
-  // Extract course title from location state if passed, otherwise just show ID
-  const courseTitle = location.state?.courseTitle || '课程';
+  const state = location.state as Record<string, unknown> | null;
+  const courseTitle = (state?.courseTitle as string | undefined) ?? '课程';
 
   const fetchTasks = async () => {
     if (!courseId) return;
     try {
       setLoading(true);
       const res = await getTasks({ courseId });
-      setData(res as any);
-    } catch (e) {
+      setData(res as Task[]);
+    } catch (_e) {
       // Handled globally
     } finally {
       setLoading(false);
@@ -43,10 +44,10 @@ const Tasks: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchTasks();
+    void fetchTasks();
   }, [courseId]);
 
-  const showModal = (record?: any) => {
+  const showModal = (record?: Task) => {
     if (record) {
       setEditingId(record.id);
       // Pretty print JSON for editing
@@ -77,44 +78,50 @@ const Tasks: React.FC = () => {
     form.resetFields();
   };
 
-  const validateJson = (_: any, value: string) => {
+  const validateJson = (_: unknown, value: string) => {
     try {
       if (value && value.trim() !== '') {
         JSON.parse(value);
       }
       return Promise.resolve();
-    } catch (e) {
-      return Promise.reject('非法的 JSON 格式');
+    } catch (_e) {
+      return Promise.reject(new Error('非法的 JSON 格式'));
     }
   };
 
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields();
+      const values = (await form.validateFields()) as Record<string, unknown>;
 
       // Parse JSON strings back to objects before sending to API
       const payload = {
         ...values,
         courseId,
-        envConfig: JSON.parse(values.envConfig || '{}'),
-        sandboxConfig: JSON.parse(values.sandboxConfig || '{}'),
-        testConfig: JSON.parse(values.testConfig || '{}'),
-        promptConfig: JSON.parse(values.promptConfig || '{}'),
+        envConfig: JSON.parse((values.envConfig as string) || '{}') as Record<string, unknown>,
+        sandboxConfig: JSON.parse((values.sandboxConfig as string) || '{}') as Record<
+          string,
+          unknown
+        >,
+        testConfig: JSON.parse((values.testConfig as string) || '{}') as Record<string, unknown>,
+        promptConfig: JSON.parse((values.promptConfig as string) || '{}') as Record<
+          string,
+          unknown
+        >,
       };
 
       if (editingId) {
         await updateTask(editingId, payload);
-        message.success('更新成功');
+        void message.success('更新成功');
       } else {
         await createTask(payload);
-        message.success('创建成功');
+        void message.success('创建成功');
       }
       setIsModalVisible(false);
-      fetchTasks();
+      void fetchTasks();
     } catch (e) {
       // Validation failed or API error
       if (e instanceof Error) {
-        message.error(e.message);
+        void message.error(e.message);
       }
     }
   };
@@ -122,9 +129,9 @@ const Tasks: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteTask(id);
-      message.success('删除成功');
-      fetchTasks();
-    } catch (e) {
+      void message.success('删除成功');
+      void fetchTasks();
+    } catch (_e) {
       // Error handled by interceptor
     }
   };
@@ -135,7 +142,7 @@ const Tasks: React.FC = () => {
       dataIndex: 'stage',
       key: 'stage',
       width: '10%',
-      sorter: (a: any, b: any) => a.stage - b.stage,
+      sorter: (a: Task, b: Task) => a.stage - b.stage,
     },
     {
       title: '任务名称',
@@ -146,7 +153,7 @@ const Tasks: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: Task) => (
         <div className="flex gap-2">
           <Button
             type="link"
@@ -156,7 +163,7 @@ const Tasks: React.FC = () => {
           >
             编辑配置
           </Button>
-          <Popconfirm title="确定要删除该任务吗?" onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title="确定要删除该任务吗?" onConfirm={() => void handleDelete(record.id)}>
             <Button type="link" danger>
               删除
             </Button>
@@ -216,7 +223,7 @@ const Tasks: React.FC = () => {
       <Modal
         title={editingId ? '编辑任务' : '新增任务'}
         open={isModalVisible}
-        onOk={handleSubmit}
+        onOk={() => void handleSubmit()}
         onCancel={handleCancel}
         width={800}
         maskClosable={false}

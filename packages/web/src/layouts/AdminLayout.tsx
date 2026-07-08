@@ -85,9 +85,9 @@ const AdminLayout: React.FC = () => {
             <Dropdown menu={userMenu} placement="bottomRight">
               <Button type="text" className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                  {user?.username?.charAt(0).toUpperCase() || 'U'}
+                  {user?.username.charAt(0).toUpperCase() ?? 'U'}
                 </div>
-                <span>{user?.nickname || user?.username}</span>
+                <span>{user?.nickname ?? user?.username}</span>
               </Button>
             </Dropdown>
           </div>

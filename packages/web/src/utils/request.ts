@@ -25,7 +25,7 @@ request.interceptors.response.use(
       code,
       message: msg,
       data,
-    } = response.data as { code: number; message: string; data: unknown };
+    } = response.data as { code: number; message?: string; data: unknown };
     if (code !== 200 && code !== 201) {
       message.error(msg ?? 'Request failed');
       return Promise.reject(new Error(msg ?? 'Error'));
@@ -40,7 +40,7 @@ request.interceptors.response.use(
         window.location.href = '/login';
       }
     } else {
-      message.error(error.response?.data?.message ?? 'Network Error');
+      void message.error(error.response?.data.message ?? 'Network Error');
     }
     return Promise.reject(error instanceof Error ? error : new Error(String(error)));
   },

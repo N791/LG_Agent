@@ -7,9 +7,10 @@ import {
   updateOrganization,
   deleteOrganization,
 } from '../../services/api';
+import { Organization } from '../../types';
 
 const Organizations: React.FC = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -19,8 +20,8 @@ const Organizations: React.FC = () => {
     try {
       setLoading(true);
       const res = await getOrganizations();
-      setData(res as any);
-    } catch (e) {
+      setData(res as Organization[]);
+    } catch (_e) {
       // Error handled by interceptor
     } finally {
       setLoading(false);
@@ -28,10 +29,10 @@ const Organizations: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchOrganizations();
+    void fetchOrganizations();
   }, []);
 
-  const showModal = (record?: any) => {
+  const showModal = (record?: Organization) => {
     if (record) {
       setEditingId(record.id);
       form.setFieldsValue(record);
@@ -49,17 +50,17 @@ const Organizations: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields();
+      const values = (await form.validateFields()) as Record<string, unknown>;
       if (editingId) {
         await updateOrganization(editingId, values);
-        message.success('更新成功');
+        void message.success('更新成功');
       } else {
         await createOrganization(values);
-        message.success('创建成功');
+        void message.success('创建成功');
       }
       setIsModalVisible(false);
-      fetchOrganizations();
-    } catch (e) {
+      void fetchOrganizations();
+    } catch (_e) {
       // Validate failed or API error
     }
   };
@@ -67,9 +68,9 @@ const Organizations: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteOrganization(id);
-      message.success('删除成功');
-      fetchOrganizations();
-    } catch (e) {
+      void message.success('删除成功');
+      void fetchOrganizations();
+    } catch (_e) {
       // Error handled by interceptor
     }
   };
@@ -103,7 +104,7 @@ const Organizations: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: Organization) => (
         <div className="flex gap-2">
           <Button
             type="link"
@@ -114,7 +115,7 @@ const Organizations: React.FC = () => {
           >
             编辑
           </Button>
-          <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title="确定要删除吗?" onConfirm={() => void handleDelete(record.id)}>
             <Button type="link" danger icon={<DeleteOutlined />}>
               删除
             </Button>
@@ -150,7 +151,7 @@ const Organizations: React.FC = () => {
       <Modal
         title={editingId ? '编辑组织' : '新增组织'}
         open={isModalVisible}
-        onOk={handleSubmit}
+        onOk={() => void handleSubmit()}
         onCancel={handleCancel}
       >
         <Form form={form} layout="vertical">
