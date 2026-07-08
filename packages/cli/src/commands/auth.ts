@@ -10,7 +10,7 @@ authCommands
   .command('login')
   .description('Login to LG_Agent')
   .action(async () => {
-    const response = await prompts([
+    const response = (await prompts([
       {
         type: 'text',
         name: 'username',
@@ -20,8 +20,8 @@ authCommands
         type: 'password',
         name: 'password',
         message: 'Password:',
-      }
-    ]);
+      },
+    ])) as { username?: string; password?: string };
 
     if (!response.username || !response.password) {
       console.log(chalk.red('Login cancelled.'));
@@ -29,18 +29,18 @@ authCommands
     }
 
     try {
-      const data = await api.post('/auth/login', {
+      const data = (await api.post('/auth/login', {
         username: response.username,
         password: response.password,
-      });
+      })) as { access_token: string };
 
       const config = getGlobalConfig();
       config.token = data.access_token;
       saveGlobalConfig(config);
 
       console.log(chalk.green('Successfully logged in!'));
-    } catch (e: any) {
-      console.log(chalk.red(`Login failed: ${e.message}`));
+    } catch (e: unknown) {
+      console.log(chalk.red(`Login failed: ${(e as Error).message}`));
     }
   });
 
@@ -57,13 +57,13 @@ authCommands
 authCommands
   .command('whoami')
   .description('Check current logged in user')
-  .action(async () => {
+  .action(() => {
     try {
       // For MVP we just fetch user profile or check token.
       // Wait, we don't have a /auth/me endpoint yet, let's use the courses endpoint to test token validity,
       // or just decode the JWT locally. Let's decode it.
       const config = getGlobalConfig();
-      if (!config.token || !config.token.includes('.')) {
+      if (!config.token?.includes('.')) {
         console.log(chalk.yellow('Not logged in.'));
         return;
       }
@@ -72,9 +72,12 @@ authCommands
         console.log(chalk.red('Invalid token format.'));
         return;
       }
-      const payload = JSON.parse(Buffer.from(payloadBase64, 'base64').toString('utf8'));
+      const payload = JSON.parse(Buffer.from(payloadBase64, 'base64').toString('utf8')) as {
+        username: string;
+        role: string;
+      };
       console.log(chalk.green(`Logged in as: ${payload.username} (${payload.role})`));
-    } catch (e) {
+    } catch (_e) {
       console.log(chalk.red('Invalid or missing token. Please login again.'));
     }
   });
