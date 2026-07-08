@@ -51,16 +51,32 @@ jobs:
         run: pnpm --filter api exec prisma generate
 
       - name: Format Check
+        id: format
         run: pnpm format:check
+        continue-on-error: true
 
       - name: Lint
+        id: lint
         run: pnpm lint
+        continue-on-error: true
 
       - name: Type Check
+        id: typecheck
         run: pnpm typecheck
+        continue-on-error: true
 
       - name: Test
+        id: test
         run: pnpm -r test
+        continue-on-error: true
 
       - name: Build
+        id: build
         run: pnpm -r build
+        continue-on-error: true
+
+      - name: Check for failures
+        if: steps.format.outcome == 'failure' || steps.lint.outcome == 'failure' || steps.typecheck.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure'
+        run: |
+          echo "One or more checks failed"
+          exit 1

@@ -41,6 +41,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
 
       - name: Build and push API Image
+        id: build-api
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -48,6 +49,7 @@ jobs:
           push: true
           tags: ${{ steps.meta-api.outputs.tags }}
           labels: ${{ steps.meta-api.outputs.labels }}
+        continue-on-error: true
 
       - name: Extract metadata (tags, labels) for Web
         id: meta-web
@@ -56,6 +58,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web
 
       - name: Build and push Web Image
+        id: build-web
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -63,3 +66,10 @@ jobs:
           push: true
           tags: ${{ steps.meta-web.outputs.tags }}
           labels: ${{ steps.meta-web.outputs.labels }}
+        continue-on-error: true
+
+      - name: Check for failures
+        if: steps.build-api.outcome == 'failure' || steps.build-web.outcome == 'failure'
+        run: |
+          echo "One or more image builds failed"
+          exit 1
