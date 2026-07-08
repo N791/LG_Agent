@@ -14,6 +14,7 @@ if (rootElement) {
     <StrictMode>
       <Provider store={store}>
         <ConfigProvider locale={zhCN}>
+          {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
           <RouterProvider router={router} />
         </ConfigProvider>
       </Provider>
