@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Model placeholders for Epic 2
+
+model Organization {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @db.VarChar
+  code      String   @db.VarChar
+  status    Int      @db.SmallInt
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("organizations")
+}
