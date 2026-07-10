@@ -1,8 +1,8 @@
 import { LLMResponse } from '../interfaces/llm-provider.interface';
 
-export interface ChatRequestDto {
-  action: string;
-  content: string;
+export class ChatRequestDto {
+  action!: string;
+  content!: string;
   stream?: boolean;
 }
 

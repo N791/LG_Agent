@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Res, BadRequestException } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { AiTutorService } from './tutor/ai-tutor.service';
 import { ChatRequestDto } from './tutor/interfaces';
 import { LLMResponse } from './interfaces/llm-provider.interface';
