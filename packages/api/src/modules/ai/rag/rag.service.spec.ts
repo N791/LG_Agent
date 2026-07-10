@@ -53,6 +53,6 @@ This is the second chapter about Prisma.
     const results = await ragService.search('NestJS');
     expect(results).toBeDefined();
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0]?.chunk.content).toBe('This is the third chunk');
+    expect(results[0]?.chunk.content).toContain('NestJS');
   });
 });

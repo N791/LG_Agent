@@ -8,22 +8,20 @@ jest.mock('@langchain/openai', () => {
   return {
     ChatOpenAI: jest.fn().mockImplementation(() => {
       return {
-        bind: jest.fn().mockReturnValue({
-          invoke: jest.fn().mockResolvedValue({
-            content: 'This is a mock OpenAI response',
-            response_metadata: {
-              tokenUsage: { promptTokens: 10, completionTokens: 20, totalTokens: 30 },
-              finishReason: 'stop',
-            },
-          }),
-          stream: jest.fn().mockResolvedValue(
-            (async function* () {
-              yield { content: 'chunk1' };
-              yield { content: 'chunk2' };
-              await Promise.resolve();
-            })(),
-          ),
+        invoke: jest.fn().mockResolvedValue({
+          content: 'This is a mock OpenAI response',
+          response_metadata: {
+            tokenUsage: { promptTokens: 10, completionTokens: 20, totalTokens: 30 },
+            finishReason: 'stop',
+          },
         }),
+        stream: jest.fn().mockResolvedValue(
+          (async function* () {
+            yield { content: 'chunk1' };
+            yield { content: 'chunk2' };
+            await Promise.resolve();
+          })(),
+        ),
       };
     }),
     OpenAIEmbeddings: jest.fn().mockImplementation(() => {
