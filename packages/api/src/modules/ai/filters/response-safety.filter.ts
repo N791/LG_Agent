@@ -1,27 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ContentFilterEngine } from './rule-engine/rule-engine.service';
 
 @Injectable()
 export class ResponseSafetyFilter {
   private readonly logger = new Logger(ResponseSafetyFilter.name);
 
-  private readonly forbiddenPatterns = [/rm\s+-rf/g, /DROP\s+TABLE/gi];
+  constructor(private readonly filterEngine: ContentFilterEngine) {}
 
-  filter(content: string): string {
-    let filteredContent = content;
-    let unsafeContentDetected = false;
+  async filterComplete(content: string): Promise<string> {
+    const result = await this.filterEngine.process(content, 'response');
 
-    for (const pattern of this.forbiddenPatterns) {
-      if (pattern.test(filteredContent)) {
-        unsafeContentDetected = true;
-        filteredContent = filteredContent.replace(pattern, '[REDACTED UNSAFE CONTENT]');
-      }
-    }
-
-    if (unsafeContentDetected) {
-      this.logger.warn('Unsafe content detected in LLM response and redacted.');
+    if (result.triggeredRules.length > 0) {
+      const triggeredNames = result.triggeredRules.map((r) => r.name).join(', ');
+      this.logger.warn(`Unsafe content detected and handled. Triggered rules: ${triggeredNames}`);
       // Audit log should be triggered here ideally
     }
 
-    return filteredContent;
+    return result.safeContent;
+  }
+
+  filterChunk(chunk: string): Promise<string> {
+    // For MVP, we pass chunks through directly or apply basic filtering.
+    // Full streaming safety requires a buffering mechanism in the future.
+    return Promise.resolve(chunk);
   }
 }

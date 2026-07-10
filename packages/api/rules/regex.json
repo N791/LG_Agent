@@ -1,0 +1,35 @@
+[
+  {
+    "id": "regex-1",
+    "name": "API Key",
+    "type": "REGEX",
+    "scope": "request",
+    "action": "MASK",
+    "pattern": "sk-[a-zA-Z0-9]{32,}",
+    "replacement": "[REDACTED API KEY]",
+    "priority": 100,
+    "enabled": true
+  },
+  {
+    "id": "regex-2",
+    "name": "JWT",
+    "type": "REGEX",
+    "scope": "request",
+    "action": "MASK",
+    "pattern": "eyJ[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+",
+    "replacement": "[REDACTED JWT]",
+    "priority": 90,
+    "enabled": true
+  },
+  {
+    "id": "regex-3",
+    "name": "Bearer Token",
+    "type": "REGEX",
+    "scope": "request",
+    "action": "MASK",
+    "pattern": "Bearer\\s+[a-zA-Z0-9_-]+",
+    "replacement": "[REDACTED TOKEN]",
+    "priority": 80,
+    "enabled": true
+  }
+]

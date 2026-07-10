@@ -1,0 +1,43 @@
+[
+  {
+    "id": "safety-1",
+    "name": "RM RF Command",
+    "type": "REGEX",
+    "scope": "response",
+    "action": "BLOCK",
+    "pattern": "rm\\s+-rf",
+    "priority": 100,
+    "enabled": true
+  },
+  {
+    "id": "safety-2",
+    "name": "Drop Table",
+    "type": "REGEX",
+    "scope": "response",
+    "action": "BLOCK",
+    "pattern": "DROP\\s+TABLE",
+    "priority": 100,
+    "enabled": true
+  },
+  {
+    "id": "safety-3",
+    "name": "Delete From",
+    "type": "REGEX",
+    "scope": "response",
+    "action": "BLOCK",
+    "pattern": "DELETE\\s+FROM",
+    "priority": 100,
+    "enabled": true
+  },
+  {
+    "id": "safety-4",
+    "name": "Bad Word",
+    "type": "KEYWORD",
+    "scope": "response",
+    "action": "MASK",
+    "pattern": "stupid",
+    "replacement": "***",
+    "priority": 50,
+    "enabled": true
+  }
+]

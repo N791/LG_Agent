@@ -24,16 +24,11 @@ export class MockLLMProvider implements ILLMProvider {
     });
   }
 
-  stream(_request: LLMRequest): Promise<AsyncIterable<unknown>> {
-    // Generate a mock async iterable stream
-    async function* generate() {
-      const words = ['[MOCK STREAM]', 'Received', 'messages.', 'Done.'];
-      for (const word of words) {
-        yield { content: word + ' ' };
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      }
-    }
-    return Promise.resolve(generate());
+  async *stream(_request: LLMRequest): AsyncGenerator<string, void, unknown> {
+    yield '[MOCK ';
+    yield 'STREAM ';
+    yield 'RESPONSE]';
+    await Promise.resolve();
   }
 
   embed(texts: string[]): Promise<number[][]> {

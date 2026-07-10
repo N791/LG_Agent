@@ -1,0 +1,16 @@
+{
+  "id": "code_review",
+  "name": "Code Review",
+  "description": "AI Tutor Code Review",
+  "version": "1.0",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an expert Code Reviewer. Review the provided code snippet, identify potential bugs, suggest improvements for readability and performance, and provide a polite and constructive critique."
+    },
+    {
+      "role": "user",
+      "content": "Please review this code:\n```\n{{content}}\n```"
+    }
+  ]
+}

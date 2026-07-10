@@ -102,7 +102,7 @@ export class DeepSeekProvider implements ILLMProvider {
     };
   }
 
-  stream(request: LLMRequest): Promise<AsyncIterable<unknown>> {
+  async *stream(request: LLMRequest): AsyncGenerator<string, void, unknown> {
     this.ensureConfigured();
 
     const messages = request.messages.map((m) =>
@@ -131,7 +131,10 @@ export class DeepSeekProvider implements ILLMProvider {
 
     const chatInstance = new ChatOpenAI(config);
 
-    return chatInstance.stream(messages);
+    const stream = await chatInstance.stream(messages);
+    for await (const chunk of stream) {
+      yield typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+    }
   }
 
   embed(_texts: string[]): Promise<number[][]> {

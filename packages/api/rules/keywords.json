@@ -1,0 +1,24 @@
+[
+  {
+    "id": "kw-1",
+    "name": "Secret Project Name",
+    "type": "KEYWORD",
+    "scope": "request",
+    "action": "MASK",
+    "pattern": "Project Apollo",
+    "replacement": "[REDACTED PROJECT]",
+    "priority": 50,
+    "enabled": true
+  },
+  {
+    "id": "kw-2",
+    "name": "Confidential Phrase",
+    "type": "KEYWORD",
+    "scope": "request",
+    "action": "MASK",
+    "pattern": "Top Secret",
+    "replacement": "[CONFIDENTIAL]",
+    "priority": 50,
+    "enabled": true
+  }
+]

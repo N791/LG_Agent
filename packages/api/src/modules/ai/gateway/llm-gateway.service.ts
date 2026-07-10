@@ -22,10 +22,12 @@ export class LLMGatewayService {
       : this.providerRegistry.getFallbackProvider();
 
     // 2. Filter Sensitive Data in Request
-    const safeMessages = request.messages.map((msg) => ({
-      role: msg.role,
-      content: this.sensitiveDataFilter.filter(msg.content),
-    }));
+    const safeMessages = await Promise.all(
+      request.messages.map(async (msg) => ({
+        role: msg.role,
+        content: await this.sensitiveDataFilter.filter(msg.content),
+      })),
+    );
 
     const safeRequest: LLMRequest = {
       ...request,
@@ -38,7 +40,7 @@ export class LLMGatewayService {
       const response = await provider.chat(safeRequest);
 
       // 4. Filter Response Safety
-      response.content = this.responseSafetyFilter.filter(response.content);
+      response.content = await this.responseSafetyFilter.filterComplete(response.content);
 
       const latency = Date.now() - startTime;
       this.logger.log(
@@ -59,10 +61,55 @@ export class LLMGatewayService {
       if (provider.name !== fallbackProvider.name) {
         this.logger.warn(`Falling back to ${fallbackProvider.name}`);
         const response = await fallbackProvider.chat(safeRequest);
-        response.content = this.responseSafetyFilter.filter(response.content);
+        response.content = await this.responseSafetyFilter.filterComplete(response.content);
         return response;
       }
 
+      throw error;
+    }
+  }
+
+  async *stream(request: LLMRequest, providerName?: string): AsyncGenerator<string, void, unknown> {
+    const provider = providerName
+      ? this.providerRegistry.getProvider(providerName)
+      : this.providerRegistry.getFallbackProvider();
+
+    // 1. Filter Sensitive Data in Request
+    const safeMessages = await Promise.all(
+      request.messages.map(async (msg) => ({
+        role: msg.role,
+        content: await this.sensitiveDataFilter.filter(msg.content),
+      })),
+    );
+
+    const safeRequest: LLMRequest = {
+      ...request,
+      messages: safeMessages,
+    };
+
+    try {
+      // 2. Stream from Provider
+      const stream = provider.stream(safeRequest);
+
+      for await (const chunk of stream) {
+        // 3. Filter Response Chunk
+        const safeChunk = await this.responseSafetyFilter.filterChunk(chunk);
+        yield safeChunk;
+      }
+    } catch (error: unknown) {
+      const err = error as Error;
+      this.logger.error(`LLM Stream failed with provider ${provider.name}`, err.stack);
+
+      const fallbackProvider = this.providerRegistry.getFallbackProvider();
+      if (provider.name !== fallbackProvider.name) {
+        this.logger.warn(`Falling back stream to ${fallbackProvider.name}`);
+        const fallbackStream = fallbackProvider.stream(safeRequest);
+        for await (const chunk of fallbackStream) {
+          const safeChunk = await this.responseSafetyFilter.filterChunk(chunk);
+          yield safeChunk;
+        }
+        return;
+      }
       throw error;
     }
   }
@@ -73,7 +120,7 @@ export class LLMGatewayService {
       : this.providerRegistry.getFallbackProvider();
 
     // Filter sensitive data before embedding
-    const safeTexts = texts.map((t) => this.sensitiveDataFilter.filter(t));
+    const safeTexts = await Promise.all(texts.map((t) => this.sensitiveDataFilter.filter(t)));
 
     try {
       const vectors = await provider.embed(safeTexts);

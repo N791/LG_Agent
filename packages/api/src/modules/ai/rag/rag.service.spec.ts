@@ -21,8 +21,14 @@ describe('RagService', () => {
         LLMGatewayService,
         ProviderRegistry,
         MockLLMProvider,
-        SensitiveDataFilter,
-        ResponseSafetyFilter,
+        {
+          provide: SensitiveDataFilter,
+          useValue: { filter: jest.fn((content: string) => Promise.resolve(content)) },
+        },
+        {
+          provide: ResponseSafetyFilter,
+          useValue: { filterComplete: jest.fn((content: string) => Promise.resolve(content)) },
+        },
         {
           provide: ConfigService,
           useValue: { get: jest.fn((key: string) => (key === 'LLM_PROVIDER' ? 'mock' : null)) },

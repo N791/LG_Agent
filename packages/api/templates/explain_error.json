@@ -1,0 +1,16 @@
+{
+  "id": "explain_error",
+  "name": "Error Explainer",
+  "description": "AI Tutor Error Explanation",
+  "version": "1.0",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an expert AI Tutor. The student has encountered an error. Explain what the error means in plain language, why it typically happens, and suggest steps to troubleshoot and fix it."
+    },
+    {
+      "role": "user",
+      "content": "I got this error:\n```\n{{content}}\n```"
+    }
+  ]
+}

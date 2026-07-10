@@ -1,0 +1,22 @@
+[
+  {
+    "id": "pi-1",
+    "name": "Ignore Instructions",
+    "type": "KEYWORD",
+    "scope": "request",
+    "action": "BLOCK",
+    "pattern": "ignore previous instructions",
+    "priority": 100,
+    "enabled": true
+  },
+  {
+    "id": "pi-2",
+    "name": "System Prompt Override",
+    "type": "REGEX",
+    "scope": "request",
+    "action": "BLOCK",
+    "pattern": "you are now\\s+(?:a|an)\\s+",
+    "priority": 100,
+    "enabled": true
+  }
+]

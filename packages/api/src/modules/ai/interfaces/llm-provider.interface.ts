@@ -34,7 +34,7 @@ export interface ILLMProvider {
   /**
    * Streaming chat completion (returns AsyncIterable)
    */
-  stream(request: LLMRequest): Promise<AsyncIterable<unknown>>;
+  stream(request: LLMRequest): AsyncGenerator<string, void, unknown>;
 
   /**
    * Get embeddings for text chunks

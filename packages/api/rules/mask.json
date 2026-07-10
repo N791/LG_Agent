@@ -1,0 +1,13 @@
+[
+  {
+    "id": "mask-1",
+    "name": "Custom Masking",
+    "type": "KEYWORD",
+    "scope": "request",
+    "action": "MASK",
+    "pattern": "SuperAdminPassword",
+    "replacement": "******",
+    "priority": 100,
+    "enabled": true
+  }
+]

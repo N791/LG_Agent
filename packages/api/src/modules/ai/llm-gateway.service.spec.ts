@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 describe('LLMGatewayService', () => {
   let gateway: LLMGatewayService;
   let registry: ProviderRegistry;
+  let responseSafetyFilter: ResponseSafetyFilter;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,8 +17,14 @@ describe('LLMGatewayService', () => {
         LLMGatewayService,
         ProviderRegistry,
         MockLLMProvider,
-        SensitiveDataFilter,
-        ResponseSafetyFilter,
+        {
+          provide: SensitiveDataFilter,
+          useValue: { filter: jest.fn((content: string) => Promise.resolve(content)) },
+        },
+        {
+          provide: ResponseSafetyFilter,
+          useValue: { filterComplete: jest.fn((content: string) => Promise.resolve(content)) },
+        },
         {
           provide: ConfigService,
           useValue: { get: jest.fn((key: string) => (key === 'LLM_PROVIDER' ? 'mock' : null)) },
@@ -27,6 +34,7 @@ describe('LLMGatewayService', () => {
 
     gateway = module.get<LLMGatewayService>(LLMGatewayService);
     registry = module.get<ProviderRegistry>(ProviderRegistry);
+    responseSafetyFilter = module.get<ResponseSafetyFilter>(ResponseSafetyFilter);
 
     // Register Mock Provider manually for tests
     const mockProvider = module.get<MockLLMProvider>(MockLLMProvider);
@@ -61,8 +69,6 @@ describe('LLMGatewayService', () => {
   });
 
   it('should filter unsafe patterns in response', async () => {
-    // The mock provider just returns "[MOCK RESPONSE] ...". If we want to test ResponseSafetyFilter,
-    // we can spy on the provider and return a mock dangerous response.
     const mockProvider = registry.getProvider('mock');
     jest.spyOn(mockProvider, 'chat').mockResolvedValue({
       content: 'Here is how you rm -rf /',
@@ -72,10 +78,15 @@ describe('LLMGatewayService', () => {
       finishReason: 'stop',
     });
 
+    const filterSpy = jest
+      .spyOn(responseSafetyFilter, 'filterComplete')
+      .mockResolvedValue('[REDACTED UNSAFE CONTENT]');
+
     const response = await gateway.chat({
       messages: [{ role: 'user', content: 'Test' }],
     });
 
     expect(response.content).toContain('[REDACTED UNSAFE CONTENT]');
+    expect(filterSpy).toHaveBeenCalled();
   });
 });

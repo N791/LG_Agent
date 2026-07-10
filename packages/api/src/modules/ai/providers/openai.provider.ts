@@ -106,7 +106,7 @@ export class OpenAIProvider implements ILLMProvider {
     };
   }
 
-  stream(request: LLMRequest): Promise<AsyncIterable<unknown>> {
+  async *stream(request: LLMRequest): AsyncGenerator<string, void, unknown> {
     this.ensureConfigured();
 
     const messages = request.messages.map((m) =>
@@ -135,10 +135,13 @@ export class OpenAIProvider implements ILLMProvider {
 
     const chatInstance = new ChatOpenAI(config);
 
-    return chatInstance.stream(messages);
+    const stream = await chatInstance.stream(messages);
+    for await (const chunk of stream) {
+      yield typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+    }
   }
 
-  embed(texts: string[]): Promise<number[][]> {
+  async embed(texts: string[]): Promise<number[][]> {
     this.ensureConfigured();
     return this.embedModel.embedDocuments(texts);
   }

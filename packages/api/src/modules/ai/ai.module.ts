@@ -13,14 +13,44 @@ import { AiController } from './ai.controller';
 import { MarkdownChunker } from './rag/markdown-chunker';
 import { MemoryVectorStore } from './rag/memory-vector.store';
 import { RagService } from './rag/rag.service';
+import { JsonFilterRuleRepository } from './filters/rule-engine/repositories/json-rule.repository';
+import { MaskActionExecutor } from './filters/rule-engine/executors/mask-action.executor';
+import { BlockActionExecutor } from './filters/rule-engine/executors/block-action.executor';
+import { RegexMatcher } from './filters/rule-engine/matchers/regex.matcher';
+import { KeywordMatcher } from './filters/rule-engine/matchers/keyword.matcher';
+import { ContentFilterEngine } from './filters/rule-engine/rule-engine.service';
+import { AiTutorService } from './tutor/ai-tutor.service';
+import { AskStrategy } from './tutor/strategies/ask.strategy';
+import { CodeReviewStrategy } from './tutor/strategies/code-review.strategy';
+import { ExplainErrorStrategy } from './tutor/strategies/explain-error.strategy';
 
 @Module({
   imports: [ConfigModule],
+  controllers: [AiController],
   providers: [
     {
       provide: 'IPromptRepository',
       useClass: FilePromptRepository,
     },
+    {
+      provide: 'IFilterRuleRepository',
+      useClass: JsonFilterRuleRepository,
+    },
+    MaskActionExecutor,
+    BlockActionExecutor,
+    {
+      provide: 'IActionExecutors',
+      useFactory: (mask: MaskActionExecutor, block: BlockActionExecutor) => [mask, block],
+      inject: [MaskActionExecutor, BlockActionExecutor],
+    },
+    RegexMatcher,
+    KeywordMatcher,
+    {
+      provide: 'IMatchers',
+      useFactory: (regex: RegexMatcher, keyword: KeywordMatcher) => [regex, keyword],
+      inject: [RegexMatcher, KeywordMatcher],
+    },
+    ContentFilterEngine,
     PromptBuilderService,
     LLMGatewayService,
     ProviderRegistry,
@@ -32,9 +62,21 @@ import { RagService } from './rag/rag.service';
     MarkdownChunker,
     MemoryVectorStore,
     RagService,
+    AskStrategy,
+    CodeReviewStrategy,
+    ExplainErrorStrategy,
+    {
+      provide: 'ITutorStrategies',
+      useFactory: (
+        ask: AskStrategy,
+        codeReview: CodeReviewStrategy,
+        explain: ExplainErrorStrategy,
+      ) => [ask, codeReview, explain],
+      inject: [AskStrategy, CodeReviewStrategy, ExplainErrorStrategy],
+    },
+    AiTutorService,
   ],
-  exports: [PromptBuilderService, LLMGatewayService, RagService],
-  controllers: [AiController],
+  exports: [PromptBuilderService, LLMGatewayService, RagService, AiTutorService],
 })
 export class AiModule implements OnModuleInit {
   private readonly logger = new Logger(AiModule.name);
