@@ -1,5 +1,9 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
+import * as fs from 'fs';
+import * as path from 'path';
 import { AppModule } from './app.module';
 import { PrismaService } from './common/prisma.service';
 import * as bcrypt from 'bcryptjs';
@@ -35,7 +39,34 @@ async function bootstrap() {
     console.log('Default admin user created.');
   }
 
-  const port = process.env['APP_PORT'] ?? 3000;
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
+
+  const config = new DocumentBuilder()
+    .setTitle('LG Agent API')
+    .setDescription('The LG Agent API documentation')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  if (process.env['GENERATE_OPENAPI'] === 'true') {
+    const contractsPath = path.resolve(__dirname, '../../../contracts/schemas');
+    if (!fs.existsSync(contractsPath)) {
+      fs.mkdirSync(contractsPath, { recursive: true });
+    }
+    fs.writeFileSync(path.join(contractsPath, 'openapi.json'), JSON.stringify(document, null, 2));
+    console.log('OpenAPI specification generated at contracts/schemas/openapi.json');
+    process.exit(0);
+  }
+
+  const port = process.env['PORT'] ?? 3000;
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${String(port)}`);
 }
