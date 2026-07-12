@@ -3,7 +3,7 @@ FROM node:22-alpine AS pruner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN corepack enable pnpm
-RUN pnpm install turbo --global
+RUN npm install -g turbo
 COPY . .
 RUN turbo prune --scope=@lg-agent/web --docker
 

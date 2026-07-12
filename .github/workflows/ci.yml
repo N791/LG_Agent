@@ -40,6 +40,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Prisma Generate & Validate
+        env:
+          DATABASE_URL: 'postgresql://dummy:dummy@localhost:5432/dummy'
         run: |
           pnpm --filter @lg-agent/api exec prisma generate
           pnpm --filter @lg-agent/api exec prisma validate
