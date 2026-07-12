@@ -16,6 +16,10 @@ import { AiModule } from './modules/ai/ai.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { StatisticsModule } from './modules/statistics/statistics.module';
+import { SchemasModule } from './modules/schemas/schemas.module';
+import { SubmissionsModule } from './modules/submissions/submissions.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -32,6 +36,10 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
     TrainingModule,
     AuthModule,
     AiModule,
+    StatisticsModule,
+    SchemasModule,
+    SubmissionsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [

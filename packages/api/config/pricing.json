@@ -1,0 +1,32 @@
+[
+  {
+    "model": "gpt-4o",
+    "promptCostPer1k": 0.005,
+    "completionCostPer1k": 0.015
+  },
+  {
+    "model": "gpt-4-turbo",
+    "promptCostPer1k": 0.01,
+    "completionCostPer1k": 0.03
+  },
+  {
+    "model": "gpt-3.5-turbo",
+    "promptCostPer1k": 0.0005,
+    "completionCostPer1k": 0.0015
+  },
+  {
+    "model": "deepseek-chat",
+    "promptCostPer1k": 0.00014,
+    "completionCostPer1k": 0.00028
+  },
+  {
+    "model": "deepseek-coder",
+    "promptCostPer1k": 0.00014,
+    "completionCostPer1k": 0.00028
+  },
+  {
+    "model": "mock-model",
+    "promptCostPer1k": 0,
+    "completionCostPer1k": 0
+  }
+]

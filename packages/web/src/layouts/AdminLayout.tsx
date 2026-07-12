@@ -1,5 +1,12 @@
 import { Layout, Menu, Button, Dropdown } from 'antd';
-import { UserOutlined, BookOutlined, DashboardOutlined, LogoutOutlined } from '@ant-design/icons';
+import {
+  UserOutlined,
+  BookOutlined,
+  CheckSquareOutlined,
+  DashboardOutlined,
+  LineChartOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearAuth } from '../store/slices/authSlice';
@@ -40,6 +47,16 @@ const AdminLayout: React.FC = () => {
       key: '/courses',
       icon: <BookOutlined />,
       label: '课程管理',
+    },
+    {
+      key: '/tasks',
+      icon: <CheckSquareOutlined />,
+      label: 'Tasks',
+    },
+    {
+      key: '/submissions',
+      icon: <LineChartOutlined />,
+      label: 'Learning Analytics',
     },
   ];
 

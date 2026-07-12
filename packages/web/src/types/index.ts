@@ -41,6 +41,7 @@ export interface Task {
   id: string;
   courseId: string;
   title: string;
+  description?: string;
   stage: number;
   envConfig: Record<string, unknown>;
   sandboxConfig: Record<string, unknown>;

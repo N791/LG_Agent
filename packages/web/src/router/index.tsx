@@ -7,6 +7,8 @@ import Users from '../pages/Users';
 import Organizations from '../pages/Organizations';
 import Courses from '../pages/Courses';
 import Tasks from '../pages/Tasks';
+import { TaskEditorPage } from '../pages/Tasks/TaskEditorPage';
+import Submissions from '../pages/Submissions';
 
 /*
   Temporary Workaround
@@ -48,7 +50,15 @@ export const router: any = createBrowserRouter([
             path: 'courses/:courseId/tasks',
             element: <Tasks />,
           },
+          {
+            path: 'courses/:courseId/tasks/:taskId/edit',
+            element: <TaskEditorPage />,
+          },
         ],
+      },
+      {
+        path: 'submissions',
+        element: <Submissions />,
       },
     ],
   },

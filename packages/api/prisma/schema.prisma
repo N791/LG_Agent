@@ -41,6 +41,7 @@ model User {
 
   coursesCreated Course[]     @relation("CourseCreator")
   submissions    Submission[]
+  llmRequestLogs LlmRequestLog[]
 
   @@map("users")
 }
@@ -66,11 +67,15 @@ model Task {
   id             String       @id @default(uuid()) @db.Uuid
   courseId       String       @map("course_id") @db.Uuid
   title          String       @db.VarChar
+  description    String?      @db.Text
   stage          Int          @db.Integer
+  version        Int          @default(1) @db.Integer
   envConfig      Json         @map("env_config") @db.JsonB
   sandboxConfig  Json         @map("sandbox_config") @db.JsonB
   testConfig     Json         @map("test_config") @db.JsonB
   promptConfig   Json         @map("prompt_config") @db.JsonB
+  config         Json?        @db.JsonB
+  metadata       Json?        @db.JsonB
 
   course         Course       @relation(fields: [courseId], references: [id])
   submissions    Submission[]
@@ -92,4 +97,39 @@ model Submission {
   user           User         @relation(fields: [userId], references: [id])
 
   @@map("submissions")
+}
+
+model LlmRequestLog {
+  id               String   @id @default(uuid()) @db.Uuid
+  requestId        String   @map("request_id") @db.VarChar
+  provider         String   @db.VarChar
+  model            String   @db.VarChar
+  promptHash       String?  @map("prompt_hash") @db.VarChar
+  userId           String?  @map("user_id") @db.Uuid
+  conversationId   String?  @map("conversation_id") @db.Uuid
+  requestType      String   @map("request_type") @db.VarChar
+  latency          Int      @db.Integer
+  promptTokens     Int      @map("prompt_tokens") @db.Integer
+  completionTokens Int      @map("completion_tokens") @db.Integer
+  totalTokens      Int      @map("total_tokens") @db.Integer
+  estimatedCost    Float    @map("estimated_cost") @db.DoublePrecision
+  status           String   @db.VarChar
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  user             User?    @relation(fields: [userId], references: [id])
+
+  @@map("llm_request_logs")
+}
+
+model LlmAuditLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  requestId      String   @map("request_id") @db.VarChar
+  eventType      String   @map("event_type") @db.VarChar
+  severity       String   @db.VarChar
+  action         String   @db.VarChar
+  message        String   @db.Text
+  metadata       Json?    @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("llm_audit_logs")
 }

@@ -158,10 +158,18 @@ const Tasks: React.FC = () => {
           <Button
             type="link"
             onClick={() => {
+              navigate(`/courses/${courseId}/tasks/${record.id}/edit`);
+            }}
+          >
+            高级编辑
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
               showModal(record);
             }}
           >
-            编辑配置
+            快速编辑
           </Button>
           <Popconfirm title="确定要删除该任务吗?" onConfirm={() => void handleDelete(record.id)}>
             <Button type="link" danger>

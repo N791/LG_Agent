@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lg-agent:schema:test",
+  "title": "Test Configuration",
+  "description": "Schema for Task Automated Testing",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "command": { "type": "string" },
+    "framework": { "type": "string", "enum": ["jest", "mocha", "pytest", "junit"] },
+    "timeout": { "type": "number" }
+  },
+  "required": ["command"],
+  "additionalProperties": true
+}

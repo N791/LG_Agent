@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { ILLMProvider, LLMRequest, LLMResponse } from '../interfaces/llm-provider.interface';
+import { ModelInfoDTO } from '@lg-agent/contracts';
 
 @Injectable()
 export class OpenAIProvider implements ILLMProvider {
@@ -146,9 +147,50 @@ export class OpenAIProvider implements ILLMProvider {
     return this.embedModel.embedDocuments(texts);
   }
 
-  listModels(): Promise<string[]> {
+  listModels(): Promise<ModelInfoDTO[]> {
     this.ensureConfigured();
-    return Promise.resolve(['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo']); // Simple stub for available models
+    return Promise.resolve([
+      {
+        id: 'openai:gpt-4o',
+        provider: 'openai',
+        model: 'gpt-4o',
+        name: 'GPT-4o',
+        enabled: true,
+        default: true,
+        capabilities: ['chat', 'stream', 'vision', 'toolCalling'],
+        status: 'active',
+      },
+      {
+        id: 'openai:gpt-4-turbo',
+        provider: 'openai',
+        model: 'gpt-4-turbo',
+        name: 'GPT-4 Turbo',
+        enabled: true,
+        default: false,
+        capabilities: ['chat', 'stream', 'vision', 'toolCalling'],
+        status: 'active',
+      },
+      {
+        id: 'openai:gpt-3.5-turbo',
+        provider: 'openai',
+        model: 'gpt-3.5-turbo',
+        name: 'GPT-3.5 Turbo',
+        enabled: true,
+        default: false,
+        capabilities: ['chat', 'stream', 'toolCalling'],
+        status: 'active',
+      },
+      {
+        id: 'openai:text-embedding-3-small',
+        provider: 'openai',
+        model: 'text-embedding-3-small',
+        name: 'OpenAI Embedding v3 Small',
+        enabled: true,
+        default: false,
+        capabilities: ['embedding'],
+        status: 'active',
+      }
+    ]);
   }
 
   healthCheck(): Promise<boolean> {

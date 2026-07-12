@@ -23,9 +23,14 @@ import { AiTutorService } from './tutor/ai-tutor.service';
 import { AskStrategy } from './tutor/strategies/ask.strategy';
 import { CodeReviewStrategy } from './tutor/strategies/code-review.strategy';
 import { ExplainErrorStrategy } from './tutor/strategies/explain-error.strategy';
+import { JsonPricingRepository } from './cost/json-pricing.repository';
+import { CostCalculator } from './cost/cost-calculator.service';
+import { ModelRegistryService } from './model-registry.service';
+
+import { PrismaModule } from '../../common/prisma.module';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, PrismaModule],
   controllers: [AiController],
   providers: [
     {
@@ -74,9 +79,15 @@ import { ExplainErrorStrategy } from './tutor/strategies/explain-error.strategy'
       ) => [ask, codeReview, explain],
       inject: [AskStrategy, CodeReviewStrategy, ExplainErrorStrategy],
     },
+    {
+      provide: 'IPricingRepository',
+      useClass: JsonPricingRepository,
+    },
+    CostCalculator,
+    ModelRegistryService,
     AiTutorService,
   ],
-  exports: [PromptBuilderService, LLMGatewayService, RagService, AiTutorService],
+  exports: [PromptBuilderService, LLMGatewayService, RagService, AiTutorService, CostCalculator, ModelRegistryService],
 })
 export class AiModule implements OnModuleInit {
   private readonly logger = new Logger(AiModule.name);

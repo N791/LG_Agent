@@ -19,6 +19,7 @@
   "dependencies": {
     "@langchain/core": "^1.2.1",
     "@langchain/openai": "^1.5.3",
+    "@lg-agent/contracts": "workspace:^",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^10.0.0",
@@ -26,7 +27,10 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^5.0.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "bcryptjs": "^3.0.3",
+    "csv-stringify": "^6.8.1",
     "joi": "^18.2.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

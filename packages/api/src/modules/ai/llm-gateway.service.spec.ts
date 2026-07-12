@@ -5,6 +5,8 @@ import { MockLLMProvider } from './providers/mock.provider';
 import { SensitiveDataFilter } from './filters/sensitive-data.filter';
 import { ResponseSafetyFilter } from './filters/response-safety.filter';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../../common/prisma.service';
+import { CostCalculator } from './cost/cost-calculator.service';
 
 describe('LLMGatewayService', () => {
   let gateway: LLMGatewayService;
@@ -23,11 +25,28 @@ describe('LLMGatewayService', () => {
         },
         {
           provide: ResponseSafetyFilter,
-          useValue: { filterComplete: jest.fn((content: string) => Promise.resolve(content)) },
+          useValue: { 
+            filterComplete: jest.fn((content: string) => Promise.resolve(content)),
+            filterChunk: jest.fn((chunk: string) => Promise.resolve(chunk)),
+          },
         },
         {
           provide: ConfigService,
           useValue: { get: jest.fn((key: string) => (key === 'LLM_PROVIDER' ? 'mock' : null)) },
+        },
+        {
+          provide: PrismaService,
+          useValue: {
+            llmRequestLog: { create: jest.fn() },
+            llmAuditLog: { create: jest.fn() },
+          },
+        },
+        {
+          provide: CostCalculator,
+          useValue: {
+            estimate: jest.fn().mockResolvedValue(0),
+            calculate: jest.fn().mockResolvedValue(0),
+          },
         },
       ],
     }).compile();

@@ -1,3 +1,5 @@
+import { ModelInfoDTO } from '@lg-agent/contracts';
+
 export interface LLMRequest {
   messages: { role: string; content: string }[];
   model?: string;
@@ -44,7 +46,7 @@ export interface ILLMProvider {
   /**
    * List available models for this provider
    */
-  listModels(): Promise<string[]>;
+  listModels(): Promise<ModelInfoDTO[]>;
 
   /**
    * Health check to verify connectivity and authentication

@@ -1,12 +1,22 @@
-import { Controller, Post, Body, Res, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, Res, BadRequestException, Get } from '@nestjs/common';
 import type { Response } from 'express';
 import { AiTutorService } from './tutor/ai-tutor.service';
 import { ChatRequestDto } from './tutor/interfaces';
 import { LLMResponse } from './interfaces/llm-provider.interface';
+import { ModelRegistryService } from './model-registry.service';
+import { ModelInfoDTO } from '@lg-agent/contracts';
 
 @Controller('ai')
 export class AiController {
-  constructor(private readonly aiTutorService: AiTutorService) {}
+  constructor(
+    private readonly aiTutorService: AiTutorService,
+    private readonly modelRegistry: ModelRegistryService
+  ) {}
+
+  @Get('models')
+  async getModels(): Promise<ModelInfoDTO[]> {
+    return this.modelRegistry.listModels();
+  }
 
   @Post('chat')
   async chat(@Body() request: ChatRequestDto, @Res() res: Response) {

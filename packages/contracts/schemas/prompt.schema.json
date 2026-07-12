@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lg-agent:schema:prompt",
+  "title": "Prompt Configuration",
+  "description": "Schema for AI Prompt settings",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "systemPrompt": { "type": "string" },
+    "userPromptTemplate": { "type": "string" },
+    "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
+    "maxTokens": { "type": "number" },
+    "model": { "type": "string" }
+  },
+  "additionalProperties": true
+}

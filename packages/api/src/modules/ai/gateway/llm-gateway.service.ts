@@ -4,6 +4,9 @@ import { ProviderRegistry } from '../providers/provider-registry.service';
 import { SensitiveDataFilter } from '../filters/sensitive-data.filter';
 import { ResponseSafetyFilter } from '../filters/response-safety.filter';
 
+import { PrismaService } from '../../../common/prisma.service';
+import { CostCalculator } from '../cost/cost-calculator.service';
+
 @Injectable()
 export class LLMGatewayService {
   private readonly logger = new Logger(LLMGatewayService.name);
@@ -12,7 +15,8 @@ export class LLMGatewayService {
     private readonly providerRegistry: ProviderRegistry,
     private readonly sensitiveDataFilter: SensitiveDataFilter,
     private readonly responseSafetyFilter: ResponseSafetyFilter,
-    // Database PrismaService would be injected here for LlmRequestLog and LlmAuditLog
+    private readonly prisma: PrismaService,
+    private readonly costCalculator: CostCalculator,
   ) {}
 
   async chat(request: LLMRequest, providerName?: string): Promise<LLMResponse> {
@@ -47,7 +51,26 @@ export class LLMGatewayService {
         `LLM Request successful. Provider: ${provider.name}, Latency: ${String(latency)}ms`,
       );
 
-      // TODO: Log to LlmRequestLog via Prisma here
+      const estimatedCost = await this.costCalculator.estimate(
+        provider.name,
+        response.usage.promptTokens,
+        response.usage.completionTokens,
+      );
+
+      await this.prisma.llmRequestLog.create({
+        data: {
+          requestId: Math.random().toString(36).substring(7),
+          provider: provider.name,
+          model: response.model || 'unknown',
+          requestType: 'chat',
+          latency,
+          promptTokens: response.usage.promptTokens,
+          completionTokens: response.usage.completionTokens,
+          totalTokens: response.usage.totalTokens,
+          estimatedCost,
+          status: response.finishReason || 'success',
+        },
+      });
 
       return response;
     } catch (error: unknown) {

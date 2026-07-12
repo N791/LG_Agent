@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ILLMProvider, LLMRequest, LLMResponse } from '../interfaces/llm-provider.interface';
+import { ModelInfoDTO } from '@lg-agent/contracts';
 
 @Injectable()
 export class MockLLMProvider implements ILLMProvider {
@@ -44,8 +45,29 @@ export class MockLLMProvider implements ILLMProvider {
     );
   }
 
-  listModels(): Promise<string[]> {
-    return Promise.resolve(['mock-model-v1', 'mock-embedding-v1']);
+  listModels(): Promise<ModelInfoDTO[]> {
+    return Promise.resolve([
+      {
+        id: 'mock:mock-model-v1',
+        provider: 'mock',
+        model: 'mock-model-v1',
+        name: 'Mock Model v1',
+        enabled: true,
+        default: true,
+        capabilities: ['chat', 'stream', 'toolCalling'],
+        status: 'active',
+      },
+      {
+        id: 'mock:mock-embedding-v1',
+        provider: 'mock',
+        model: 'mock-embedding-v1',
+        name: 'Mock Embedding v1',
+        enabled: true,
+        default: false,
+        capabilities: ['embedding'],
+        status: 'active',
+      }
+    ]);
   }
 
   healthCheck(): Promise<boolean> {

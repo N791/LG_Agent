@@ -11,14 +11,24 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
+    "@lg-agent/contracts": "workspace:^",
+    "@monaco-editor/react": "^4.7.0",
     "@reduxjs/toolkit": "^2.12.0",
+    "@rjsf/antd": "^6.6.2",
+    "@rjsf/core": "^6.6.2",
+    "@rjsf/validator-ajv8": "^6.6.2",
+    "@uiw/react-md-editor": "^4.1.1",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "antd": "^5.21.6",
     "axios": "^1.18.1",
     "lucide-react": "^1.23.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-json-view": "^1.21.3",
     "react-redux": "^9.3.0",
-    "react-router-dom": "^6.30.4"
+    "react-router-dom": "^6.30.4",
+    "recharts": "^3.9.2"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",

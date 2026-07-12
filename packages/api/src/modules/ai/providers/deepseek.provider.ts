@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { ILLMProvider, LLMRequest, LLMResponse } from '../interfaces/llm-provider.interface';
+import { ModelInfoDTO } from '@lg-agent/contracts';
 
 @Injectable()
 export class DeepSeekProvider implements ILLMProvider {
@@ -144,9 +145,30 @@ export class DeepSeekProvider implements ILLMProvider {
     );
   }
 
-  listModels(): Promise<string[]> {
+  listModels(): Promise<ModelInfoDTO[]> {
     this.ensureConfigured();
-    return Promise.resolve(['deepseek-chat', 'deepseek-coder']);
+    return Promise.resolve([
+      {
+        id: 'deepseek:deepseek-chat',
+        provider: 'deepseek',
+        model: 'deepseek-chat',
+        name: 'DeepSeek Chat',
+        enabled: true,
+        default: true,
+        capabilities: ['chat', 'stream'],
+        status: 'active',
+      },
+      {
+        id: 'deepseek:deepseek-coder',
+        provider: 'deepseek',
+        model: 'deepseek-coder',
+        name: 'DeepSeek Coder',
+        enabled: true,
+        default: false,
+        capabilities: ['chat', 'stream'],
+        status: 'active',
+      }
+    ]);
   }
 
   healthCheck(): Promise<boolean> {
