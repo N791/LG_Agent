@@ -22,6 +22,7 @@ RUN pnpm install --frozen-lockfile
 # Then copy source code and build
 COPY --from=pruner /app/out/full/ .
 COPY turbo.json turbo.json
+COPY tsconfig.base.json tsconfig.base.json
 # Generate Prisma Client (Assuming schema is in packages/api/prisma/schema.prisma)
 RUN pnpm --filter @lg-agent/api exec prisma generate
 RUN pnpm turbo run build --filter=@lg-agent/api...

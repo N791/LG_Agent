@@ -20,6 +20,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY --from=pruner /app/out/full/ .
 COPY turbo.json turbo.json
+COPY tsconfig.base.json tsconfig.base.json
 RUN pnpm turbo run build --filter=@lg-agent/web...
 
 # Stage 3: Runner (Nginx)
