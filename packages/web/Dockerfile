@@ -1,5 +1,5 @@
 # Stage 1: Prune workspace
-FROM node:20-alpine AS pruner
+FROM node:22-alpine AS pruner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN corepack enable pnpm
@@ -8,7 +8,7 @@ COPY . .
 RUN turbo prune --scope=@lg-agent/web --docker
 
 # Stage 2: Installer
-FROM node:20-alpine AS installer
+FROM node:22-alpine AS installer
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN corepack enable pnpm

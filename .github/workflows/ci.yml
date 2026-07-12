@@ -25,7 +25,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'pnpm'
 
       - name: Cache Turbo
@@ -41,10 +41,8 @@ jobs:
 
       - name: Prisma Generate & Validate
         run: |
-          # Assuming the schema is in packages/api/prisma
-          # Adjust this path if needed
-          npx prisma generate --schema=packages/api/prisma/schema.prisma
-          npx prisma validate --schema=packages/api/prisma/schema.prisma
+          pnpm --filter @lg-agent/api exec prisma generate
+          pnpm --filter @lg-agent/api exec prisma validate
 
       - name: ESLint
         run: pnpm run lint

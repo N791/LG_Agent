@@ -1,5 +1,5 @@
 # Stage 1: Prune workspace
-FROM node:20-alpine AS pruner
+FROM node:22-alpine AS pruner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN corepack enable pnpm
@@ -8,7 +8,7 @@ COPY . .
 RUN turbo prune --scope=@lg-agent/api --docker
 
 # Stage 2: Installer
-FROM node:20-alpine AS installer
+FROM node:22-alpine AS installer
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN corepack enable pnpm
@@ -27,7 +27,7 @@ RUN pnpm --filter @lg-agent/api exec prisma generate
 RUN pnpm turbo run build --filter=@lg-agent/api...
 
 # Stage 3: Runner
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 # Non-root user for security
