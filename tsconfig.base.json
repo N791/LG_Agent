@@ -5,6 +5,10 @@
     "lib": ["ES2022"],
     "module": "Node16",
     "moduleResolution": "Node16",
+    "baseUrl": ".",
+    "paths": {
+      "@lg-agent/contracts": ["./packages/contracts/src/index.ts"]
+    },
 
     /* Strict Type Checking */
     "strict": true,
