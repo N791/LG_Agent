@@ -51,3 +51,75 @@ CODEOWNERS
 .agents/
 self_docs/
 skills-lock.json
+
+# Playwright & Testing
+playwright-report/
+test-results/
+blob-report/
+.nyc_output/
+
+# Turborepo
+.turbo/
+
+# Scratch & Sandbox
+test_sandbox.js
+
+# --- Enterprise Grade Ignores ---
+
+# Local SSL / Secrets / Keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+certs/
+.env*.local
+
+# Caches & History
+.eslintcache
+.stylelintcache
+.prettiercache
+.node_repl_history
+.yarn/cache/
+.pnpm-store/
+.direnv/
+.history/
+
+# Helm & Kubernetes Local Outputs
+# Ignore downloaded subcharts if helm dependency build is run
+**/charts/*.tgz
+**/charts/*.tar.gz
+# If charts directory is only for dependencies, some projects ignore it:
+# deploy/helm/*/charts/
+
+# Framework Specific (Next.js, Vite, etc)
+.next/
+out/
+.vite/
+.nuxt/
+.serverless/
+
+# Mac / Windows System specific
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Editor & IDE (Extended)
+.fleet/
+*.bak
+*.tmp
+*.temp
