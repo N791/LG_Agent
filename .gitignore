@@ -49,5 +49,5 @@ pnpm-debug.log*
 # git
 CODEOWNERS
 .agents/
-docs/
+self_docs/
 skills-lock.json
