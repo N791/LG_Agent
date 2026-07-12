@@ -38,14 +38,17 @@ RUN adduser --system --uid 1001 nestjs
 # Install only production dependencies
 COPY --from=installer /app/package.json ./package.json
 COPY --from=installer /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=installer /app/out/json/ ./
+COPY --from=pruner /app/out/json/ ./
 # We need prisma for production runtime (engines)
-RUN corepack enable pnpm && pnpm install --frozen-lockfile --prod
+RUN corepack enable pnpm && npm pkg delete scripts.prepare && pnpm install --frozen-lockfile --prod
 
-# Copy compiled code and prisma client
+# Copy Prisma schema and generate client
+COPY --from=installer /app/packages/api/prisma ./packages/api/prisma
+RUN pnpm dlx prisma@5.22.0 generate --schema=packages/api/prisma/schema.prisma
+
+# Copy compiled code
 COPY --from=installer /app/packages/api/dist ./packages/api/dist
 COPY --from=installer /app/packages/api/package.json ./packages/api/package.json
-COPY --from=installer /app/node_modules/.prisma ./node_modules/.prisma
 
 USER nestjs
 
