@@ -1,6 +1,6 @@
 {
   "name": "@lg-agent/web",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "AI 沉浸式入职引擎 — 管理后台（React + Vite + Ant Design）",
   "scripts": {

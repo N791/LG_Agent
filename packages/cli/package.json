@@ -1,6 +1,6 @@
 {
   "name": "@lg-agent/cli",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "AI 沉浸式入职引擎 — CLI 开发者训练客户端（Commander.js）",
   "bin": {

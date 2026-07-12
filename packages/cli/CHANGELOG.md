@@ -1,0 +1,7 @@
+# @lg-agent/cli
+
+## 1.0.0
+
+### Major Changes
+
+- Initial v1.0.0-MVP release covering 28 Epics.
