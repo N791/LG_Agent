@@ -1,0 +1,586 @@
+{
+  "files": {
+    "packages/web/coverage/web/src/pages/Courses/index.html": {
+      "size": 4471,
+      "mtime_nanos": 1783856728839847100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/sort-arrow-sprite.png": {
+      "size": 138,
+      "mtime_nanos": 1783856728800000000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/App.tsx.html": {
+      "size": 4932,
+      "mtime_nanos": 1783856728821664600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/layouts/AdminLayout.tsx.html": {
+      "size": 23668,
+      "mtime_nanos": 1783856728838341400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Dashboard": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/clover.xml": {
+      "size": 105946,
+      "mtime_nanos": 1783856728918564000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Dashboard/adapters/chart.adapter.ts.html": {
+      "size": 6517,
+      "mtime_nanos": 1783856728849932000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/components/common/CodeEditor.tsx.html": {
+      "size": 6625,
+      "mtime_nanos": 1783856728832472500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/web/coverage/web/src/pages/Dashboard/index.tsx.html": {
+      "size": 35367,
+      "mtime_nanos": 1783856728846932100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Organizations": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/router/index.html": {
+      "size": 5071,
+      "mtime_nanos": 1783856728870638400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/favicon.png": {
+      "size": 445,
+      "mtime_nanos": 1783856728798491200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Organizations/index.tsx.html": {
+      "size": 33263,
+      "mtime_nanos": 1783856728855565500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/services/statistics.ts.html": {
+      "size": 11925,
+      "mtime_nanos": 1783856728884231900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/services/submissions.ts.html": {
+      "size": 6733,
+      "mtime_nanos": 1783856728885233500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/postcss.config.js.html": {
+      "size": 4178,
+      "mtime_nanos": 1783856728817156900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Login": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/components/TaskEditor/PromptEditor.tsx.html": {
+      "size": 22691,
+      "mtime_nanos": 1783856728828654500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/.turbo/turbo-test$colon$cov.log": {
+      "size": 6143,
+      "mtime_nanos": 1783856729018410700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Dashboard/index.html": {
+      "size": 4475,
+      "mtime_nanos": 1783856728844930900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/block-navigation.js": {
+      "size": 2655,
+      "mtime_nanos": 1783856728796492200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/index.html": {
+      "size": 16440,
+      "mtime_nanos": 1783856728809131800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/components/TaskEditor/index.html": {
+      "size": 4502,
+      "mtime_nanos": 1783856728825506200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/services/reports.ts.html": {
+      "size": 5510,
+      "mtime_nanos": 1783856728878646100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Organizations/index.html": {
+      "size": 4483,
+      "mtime_nanos": 1783856728853564100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Login/index.html": {
+      "size": 4461,
+      "mtime_nanos": 1783856728850987200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/components/common/index.html": {
+      "size": 5808,
+      "mtime_nanos": 1783856728830356800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Login/index.tsx.html": {
+      "size": 21532,
+      "mtime_nanos": 1783856728852563800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/services/schemas.ts.html": {
+      "size": 5495,
+      "mtime_nanos": 1783856728882231500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/prettify.js": {
+      "size": 17590,
+      "mtime_nanos": 1783856728805620600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/services/index.html": {
+      "size": 8885,
+      "mtime_nanos": 1783856728873645300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Tasks/TaskEditorPage.tsx.html": {
+      "size": 35912,
+      "mtime_nanos": 1783856728863126900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/web/coverage/web/src/pages/Submissions": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/pages/Users/index.tsx.html": {
+      "size": 43855,
+      "mtime_nanos": 1783856728869126000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Dashboard/adapters": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/layouts": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/pages/Tasks/index.html": {
+      "size": 5130,
+      "mtime_nanos": 1783856728860073600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/utils/index.html": {
+      "size": 4428,
+      "mtime_nanos": 1783856728894799500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Submissions/index.tsx.html": {
+      "size": 33728,
+      "mtime_nanos": 1783856728858567500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/types": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/components/common/MarkdownEditor.tsx.html": {
+      "size": 5196,
+      "mtime_nanos": 1783856728835779200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Users": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/pages": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/services/schemaValidator.ts.html": {
+      "size": 9473,
+      "mtime_nanos": 1783856728881162700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/store/slices/authSlice.ts.html": {
+      "size": 9804,
+      "mtime_nanos": 1783856728891749300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/tailwind.config.js.html": {
+      "size": 5572,
+      "mtime_nanos": 1783856728818142600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/sorter.js": {
+      "size": 6731,
+      "mtime_nanos": 1783856728801009600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Courses/index.tsx.html": {
+      "size": 47218,
+      "mtime_nanos": 1783856728842930200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Courses": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/components": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/store/slices/index.html": {
+      "size": 4472,
+      "mtime_nanos": 1783856728890235000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/web/coverage/web/src/pages/Tasks": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/router": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/services/ai.ts.html": {
+      "size": 4762,
+      "mtime_nanos": 1783856728875643500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/store": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/main.tsx.html": {
+      "size": 8170,
+      "mtime_nanos": 1783856728823670400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/base.css": {
+      "size": 5394,
+      "mtime_nanos": 1783856728793483000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/services/tasks.ts.html": {
+      "size": 5623,
+      "mtime_nanos": 1783856728886233000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/services/api.ts.html": {
+      "size": 8953,
+      "mtime_nanos": 1783856728876642200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/components/TaskEditor": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/router/AuthGuard.tsx.html": {
+      "size": 5820,
+      "mtime_nanos": 1783856728871644600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/index.html": {
+      "size": 5701,
+      "mtime_nanos": 1783856728811144200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/components/common": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/pages/Tasks/index.tsx.html": {
+      "size": 53636,
+      "mtime_nanos": 1783856728865126300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/store/index.html": {
+      "size": 4416,
+      "mtime_nanos": 1783856728887232000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Submissions/index.html": {
+      "size": 4479,
+      "mtime_nanos": 1783856728856564500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/playwright.config.ts.html": {
+      "size": 7623,
+      "mtime_nanos": 1783856728815174200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/types/index.ts.html": {
+      "size": 11296,
+      "mtime_nanos": 1783856728893800400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/services": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/types/index.html": {
+      "size": 4416,
+      "mtime_nanos": 1783856728892798100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/components/common/JsonSchemaEditor.tsx.html": {
+      "size": 9602,
+      "mtime_nanos": 1783856728834062500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/store/index.ts.html": {
+      "size": 4910,
+      "mtime_nanos": 1783856728889231300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/index.html": {
+      "size": 5065,
+      "mtime_nanos": 1783856728819144000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/router/index.tsx.html": {
+      "size": 13737,
+      "mtime_nanos": 1783856728872645200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Users/index.html": {
+      "size": 4467,
+      "mtime_nanos": 1783856728867128800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/pages/Dashboard/adapters/index.html": {
+      "size": 4548,
+      "mtime_nanos": 1783856728848929600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/coverage-final.json": {
+      "size": 169840,
+      "mtime_nanos": 1783856728927186200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/store/slices": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/web/src/utils": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/web/coverage/prettify.css": {
+      "size": 676,
+      "mtime_nanos": 1783856728804006700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/utils/request.ts.html": {
+      "size": 12773,
+      "mtime_nanos": 1783856728896800500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/coverage/web/src/layouts/index.html": {
+      "size": 4453,
+      "mtime_nanos": 1783856728836335400,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/web/.turbo/turbo-test$colon$cov.log",
+    "packages/web/coverage",
+    "packages/web/coverage/base.css",
+    "packages/web/coverage/block-navigation.js",
+    "packages/web/coverage/clover.xml",
+    "packages/web/coverage/coverage-final.json",
+    "packages/web/coverage/favicon.png",
+    "packages/web/coverage/index.html",
+    "packages/web/coverage/prettify.css",
+    "packages/web/coverage/prettify.js",
+    "packages/web/coverage/sort-arrow-sprite.png",
+    "packages/web/coverage/sorter.js",
+    "packages/web/coverage/web",
+    "packages/web/coverage/web/index.html",
+    "packages/web/coverage/web/playwright.config.ts.html",
+    "packages/web/coverage/web/postcss.config.js.html",
+    "packages/web/coverage/web/src",
+    "packages/web/coverage/web/src/App.tsx.html",
+    "packages/web/coverage/web/src/components",
+    "packages/web/coverage/web/src/components/TaskEditor",
+    "packages/web/coverage/web/src/components/TaskEditor/PromptEditor.tsx.html",
+    "packages/web/coverage/web/src/components/TaskEditor/index.html",
+    "packages/web/coverage/web/src/components/common",
+    "packages/web/coverage/web/src/components/common/CodeEditor.tsx.html",
+    "packages/web/coverage/web/src/components/common/JsonSchemaEditor.tsx.html",
+    "packages/web/coverage/web/src/components/common/MarkdownEditor.tsx.html",
+    "packages/web/coverage/web/src/components/common/index.html",
+    "packages/web/coverage/web/src/index.html",
+    "packages/web/coverage/web/src/layouts",
+    "packages/web/coverage/web/src/layouts/AdminLayout.tsx.html",
+    "packages/web/coverage/web/src/layouts/index.html",
+    "packages/web/coverage/web/src/main.tsx.html",
+    "packages/web/coverage/web/src/pages",
+    "packages/web/coverage/web/src/pages/Courses",
+    "packages/web/coverage/web/src/pages/Courses/index.html",
+    "packages/web/coverage/web/src/pages/Courses/index.tsx.html",
+    "packages/web/coverage/web/src/pages/Dashboard",
+    "packages/web/coverage/web/src/pages/Dashboard/adapters",
+    "packages/web/coverage/web/src/pages/Dashboard/adapters/chart.adapter.ts.html",
+    "packages/web/coverage/web/src/pages/Dashboard/adapters/index.html",
+    "packages/web/coverage/web/src/pages/Dashboard/index.html",
+    "packages/web/coverage/web/src/pages/Dashboard/index.tsx.html",
+    "packages/web/coverage/web/src/pages/Login",
+    "packages/web/coverage/web/src/pages/Login/index.html",
+    "packages/web/coverage/web/src/pages/Login/index.tsx.html",
+    "packages/web/coverage/web/src/pages/Organizations",
+    "packages/web/coverage/web/src/pages/Organizations/index.html",
+    "packages/web/coverage/web/src/pages/Organizations/index.tsx.html",
+    "packages/web/coverage/web/src/pages/Submissions",
+    "packages/web/coverage/web/src/pages/Submissions/index.html",
+    "packages/web/coverage/web/src/pages/Submissions/index.tsx.html",
+    "packages/web/coverage/web/src/pages/Tasks",
+    "packages/web/coverage/web/src/pages/Tasks/TaskEditorPage.tsx.html",
+    "packages/web/coverage/web/src/pages/Tasks/index.html",
+    "packages/web/coverage/web/src/pages/Tasks/index.tsx.html",
+    "packages/web/coverage/web/src/pages/Users",
+    "packages/web/coverage/web/src/pages/Users/index.html",
+    "packages/web/coverage/web/src/pages/Users/index.tsx.html",
+    "packages/web/coverage/web/src/router",
+    "packages/web/coverage/web/src/router/AuthGuard.tsx.html",
+    "packages/web/coverage/web/src/router/index.html",
+    "packages/web/coverage/web/src/router/index.tsx.html",
+    "packages/web/coverage/web/src/services",
+    "packages/web/coverage/web/src/services/ai.ts.html",
+    "packages/web/coverage/web/src/services/api.ts.html",
+    "packages/web/coverage/web/src/services/index.html",
+    "packages/web/coverage/web/src/services/reports.ts.html",
+    "packages/web/coverage/web/src/services/schemaValidator.ts.html",
+    "packages/web/coverage/web/src/services/schemas.ts.html",
+    "packages/web/coverage/web/src/services/statistics.ts.html",
+    "packages/web/coverage/web/src/services/submissions.ts.html",
+    "packages/web/coverage/web/src/services/tasks.ts.html",
+    "packages/web/coverage/web/src/store",
+    "packages/web/coverage/web/src/store/index.html",
+    "packages/web/coverage/web/src/store/index.ts.html",
+    "packages/web/coverage/web/src/store/slices",
+    "packages/web/coverage/web/src/store/slices/authSlice.ts.html",
+    "packages/web/coverage/web/src/store/slices/index.html",
+    "packages/web/coverage/web/src/types",
+    "packages/web/coverage/web/src/types/index.html",
+    "packages/web/coverage/web/src/types/index.ts.html",
+    "packages/web/coverage/web/src/utils",
+    "packages/web/coverage/web/src/utils/index.html",
+    "packages/web/coverage/web/src/utils/request.ts.html",
+    "packages/web/coverage/web/tailwind.config.js.html"
+  ]
+}

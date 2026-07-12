@@ -1,0 +1,1228 @@
+{
+  "files": {
+    "packages/api/coverage/lcov-report/src/modules/auth/strategies/local.strategy.ts.html": {
+      "size": 6827,
+      "mtime_nanos": 1783856564183266300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/block-navigation.js": {
+      "size": 2655,
+      "mtime_nanos": 1783856563987655200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/strategies/index.html": {
+      "size": 5147,
+      "mtime_nanos": 1783856564178298300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/courses/courses.controller.ts.html": {
+      "size": 10633,
+      "mtime_nanos": 1783856564188238000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/statistics/statistics.service.ts.html": {
+      "size": 21630,
+      "mtime_nanos": 1783856564296352400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/training": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/repositories/index.html": {
+      "size": 4529,
+      "mtime_nanos": 1783856564278309900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/gateway": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/common/prisma.module.ts.html": {
+      "size": 4449,
+      "mtime_nanos": 1783856564031439400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/courses/courses.service.ts.html": {
+      "size": 11026,
+      "mtime_nanos": 1783856564192787800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/organizations/organizations.service.ts.html": {
+      "size": 9337,
+      "mtime_nanos": 1783856564203036800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/health/health.module.ts.html": {
+      "size": 4856,
+      "mtime_nanos": 1783856564212341000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/organizations": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/monitoring/index.html": {
+      "size": 5192,
+      "mtime_nanos": 1783856564218268400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/common": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/ai.module.ts.html": {
+      "size": 23936,
+      "mtime_nanos": 1783856564051897500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/reports/strategies": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/tasks/tasks.controller.ts.html": {
+      "size": 10538,
+      "mtime_nanos": 1783856564311085400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/logging": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/monitoring/monitoring.module.ts.html": {
+      "size": 7171,
+      "mtime_nanos": 1783856564220373600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/cost": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/rag": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/submissions/submissions.module.ts.html": {
+      "size": 5096,
+      "mtime_nanos": 1783856564303009900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/model-registry.service.ts.html": {
+      "size": 11855,
+      "mtime_nanos": 1783856564055045300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/users/users.controller.ts.html": {
+      "size": 10079,
+      "mtime_nanos": 1783856564333588700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/prettify.css": {
+      "size": 676,
+      "mtime_nanos": 1783856563998610400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/executors/block-action.executor.ts.html": {
+      "size": 4706,
+      "mtime_nanos": 1783856564082435600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/sandbox/env-detector.service.ts.html": {
+      "size": 13156,
+      "mtime_nanos": 1783856564243982400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/config/env.validation.ts.html": {
+      "size": 6831,
+      "mtime_nanos": 1783856564040494300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/repositories/file-schema.repository.ts.html": {
+      "size": 5768,
+      "mtime_nanos": 1783856564281705400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/submissions/index.html": {
+      "size": 5841,
+      "mtime_nanos": 1783856564298371200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/users": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/index.html": {
+      "size": 5762,
+      "mtime_nanos": 1783856564156330300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/monitoring/monitoring.service.ts.html": {
+      "size": 6624,
+      "mtime_nanos": 1783856564221977000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/reports/reports.module.ts.html": {
+      "size": 5178,
+      "mtime_nanos": 1783856564232236200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/matchers/index.html": {
+      "size": 5309,
+      "mtime_nanos": 1783856564086444300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/statistics": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/index.html": {
+      "size": 7315,
+      "mtime_nanos": 1783856564258858000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/statistics/statistics.controller.ts.html": {
+      "size": 9030,
+      "mtime_nanos": 1783856564286122400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/main.ts.html": {
+      "size": 14652,
+      "mtime_nanos": 1783856564027310700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/coverage/lcov-report/src/modules/ai/ai.controller.ts.html": {
+      "size": 13079,
+      "mtime_nanos": 1783856564047466200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/logging/logging.module.ts.html": {
+      "size": 5783,
+      "mtime_nanos": 1783856564216616100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies/index.html": {
+      "size": 6063,
+      "mtime_nanos": 1783856564145164700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/statistics/index.html": {
+      "size": 5835,
+      "mtime_nanos": 1783856564283883900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/training/index.html": {
+      "size": 6472,
+      "mtime_nanos": 1783856564318491900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/auth.controller.ts.html": {
+      "size": 9899,
+      "mtime_nanos": 1783856564158910100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/tasks/index.html": {
+      "size": 5778,
+      "mtime_nanos": 1783856564308423600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/training/training.controller.ts.html": {
+      "size": 6463,
+      "mtime_nanos": 1783856564324054300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/schemas.controller.ts.html": {
+      "size": 6287,
+      "mtime_nanos": 1783856564272785400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/prompt-builder.service.ts.html": {
+      "size": 8855,
+      "mtime_nanos": 1783856564058775400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/reports/reports.controller.ts.html": {
+      "size": 12669,
+      "mtime_nanos": 1783856564228681700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/training/score.calculator.ts.html": {
+      "size": 13413,
+      "mtime_nanos": 1783856564320735300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/reports/index.html": {
+      "size": 5794,
+      "mtime_nanos": 1783856564224152200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/common/index.html": {
+      "size": 5115,
+      "mtime_nanos": 1783856564029042000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/prettify.js": {
+      "size": 17590,
+      "mtime_nanos": 1783856564001108300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/schema-registry.service.ts.html": {
+      "size": 5806,
+      "mtime_nanos": 1783856564263635100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/deepseek.provider.ts.html": {
+      "size": 29784,
+      "mtime_nanos": 1783856564110980600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/repositories": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/training/training.service.ts.html": {
+      "size": 14410,
+      "mtime_nanos": 1783856564329017400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/auth.module.ts.html": {
+      "size": 6663,
+      "mtime_nanos": 1783856564161036400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/auth.service.ts.html": {
+      "size": 11868,
+      "mtime_nanos": 1783856564164911900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/guards/jwt-auth.guard.ts.html": {
+      "size": 6787,
+      "mtime_nanos": 1783856564174555600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/mock.provider.ts.html": {
+      "size": 13034,
+      "mtime_nanos": 1783856564118786400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/sort-arrow-sprite.png": {
+      "size": 138,
+      "mtime_nanos": 1783856563991775700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/app.service.ts.html": {
+      "size": 4317,
+      "mtime_nanos": 1783856564021598200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/matchers/regex.matcher.ts.html": {
+      "size": 8572,
+      "mtime_nanos": 1783856564092689300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/gateway/llm-gateway.service.ts.html": {
+      "size": 27247,
+      "mtime_nanos": 1783856564104669700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/decorators": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/rag/memory-vector.store.ts.html": {
+      "size": 12333,
+      "mtime_nanos": 1783856564134173100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/courses/index.html": {
+      "size": 5800,
+      "mtime_nanos": 1783856564185660700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/submissions/submissions.service.ts.html": {
+      "size": 8883,
+      "mtime_nanos": 1783856564306770400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/ai-tutor.service.ts.html": {
+      "size": 6394,
+      "mtime_nanos": 1783856564141706500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/tasks": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov.info": {
+      "size": 39137,
+      "mtime_nanos": 1783856564335932400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/training/training.module.ts.html": {
+      "size": 5379,
+      "mtime_nanos": 1783856564326275000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/matchers/keyword.matcher.ts.html": {
+      "size": 8576,
+      "mtime_nanos": 1783856564088453700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/platform.module.ts.html": {
+      "size": 4877,
+      "mtime_nanos": 1783856564206220700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/sandbox": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/index.html": {
+      "size": 5275,
+      "mtime_nanos": 1783856564067761500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/index.html": {
+      "size": 7394,
+      "mtime_nanos": 1783856564107940300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/gateway/index.html": {
+      "size": 4590,
+      "mtime_nanos": 1783856564100736000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/guards/roles.guard.ts.html": {
+      "size": 6906,
+      "mtime_nanos": 1783856564176713400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/interfaces.ts.html": {
+      "size": 4683,
+      "mtime_nanos": 1783856564143913200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/cost/cost-calculator.service.ts.html": {
+      "size": 7853,
+      "mtime_nanos": 1783856564063413500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/rag/rag.service.ts.html": {
+      "size": 9549,
+      "mtime_nanos": 1783856564137353400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/file-prompt.repository.ts.html": {
+      "size": 11926,
+      "mtime_nanos": 1783856564114446800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/matchers": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/sensitive-data.filter.ts.html": {
+      "size": 8905,
+      "mtime_nanos": 1783856564073366300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/health": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/reports": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/app.module.ts.html": {
+      "size": 12505,
+      "mtime_nanos": 1783856564019078500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/index.html": {
+      "size": 28831,
+      "mtime_nanos": 1783856564007011100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/repositories/index.html": {
+      "size": 4607,
+      "mtime_nanos": 1783856564094732600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/health/index.html": {
+      "size": 5174,
+      "mtime_nanos": 1783856564207806400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/users/users.module.ts.html": {
+      "size": 4797,
+      "mtime_nanos": 1783856564335398400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/provider-registry.service.ts.html": {
+      "size": 10935,
+      "mtime_nanos": 1783856564126116100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/submissions/submissions.controller.ts.html": {
+      "size": 6813,
+      "mtime_nanos": 1783856564301170800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/openai.provider.ts.html": {
+      "size": 30648,
+      "mtime_nanos": 1783856564123878200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/health/health.controller.ts.html": {
+      "size": 6614,
+      "mtime_nanos": 1783856564209937200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/reports/strategies/index.html": {
+      "size": 4516,
+      "mtime_nanos": 1783856564234033400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/rag/markdown-chunker.ts.html": {
+      "size": 9291,
+      "mtime_nanos": 1783856564130418100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/providers": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/logging/index.html": {
+      "size": 4497,
+      "mtime_nanos": 1783856564214169900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/statistics/statistics.module.ts.html": {
+      "size": 4960,
+      "mtime_nanos": 1783856564289172300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/rag/index.html": {
+      "size": 5970,
+      "mtime_nanos": 1783856564128304300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/sorter.js": {
+      "size": 6731,
+      "mtime_nanos": 1783856563994595100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/repositories": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/config/index.html": {
+      "size": 4429,
+      "mtime_nanos": 1783856564038985600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/sandbox/local.executor.ts.html": {
+      "size": 18857,
+      "mtime_nanos": 1783856564246983100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/index.html": {
+      "size": 5194,
+      "mtime_nanos": 1783856564139659100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/coverage/lcov-report/src/modules/courses/courses.module.ts.html": {
+      "size": 4722,
+      "mtime_nanos": 1783856564190264600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/sandbox/sandbox.module.ts.html": {
+      "size": 5268,
+      "mtime_nanos": 1783856564248985300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/common/interceptors": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/decorators/index.html": {
+      "size": 5171,
+      "mtime_nanos": 1783856564166454500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/sandbox/docker.executor.ts.html": {
+      "size": 22211,
+      "mtime_nanos": 1783856564241465400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/cost/json-pricing.repository.ts.html": {
+      "size": 9795,
+      "mtime_nanos": 1783856564065539100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/users/index.html": {
+      "size": 5778,
+      "mtime_nanos": 1783856564331201200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies/ask.strategy.ts.html": {
+      "size": 8642,
+      "mtime_nanos": 1783856564148488600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/cost/index.html": {
+      "size": 5222,
+      "mtime_nanos": 1783856564060564900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/executors/index.html": {
+      "size": 5358,
+      "mtime_nanos": 1783856564079265300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/repositories/json-rule.repository.ts.html": {
+      "size": 11816,
+      "mtime_nanos": 1783856564097249700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/decorators/public.decorator.ts.html": {
+      "size": 4090,
+      "mtime_nanos": 1783856564168457400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/response-safety.filter.ts.html": {
+      "size": 9839,
+      "mtime_nanos": 1783856564069735300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/monitoring": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/users/users.service.ts.html": {
+      "size": 9468,
+      "mtime_nanos": 1783856564338069400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/strategies/jwt.strategy.ts.html": {
+      "size": 6574,
+      "mtime_nanos": 1783856564180504900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/organizations/organizations.module.ts.html": {
+      "size": 4794,
+      "mtime_nanos": 1783856564199821600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/organizations/index.html": {
+      "size": 5866,
+      "mtime_nanos": 1783856564194294800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/index.html": {
+      "size": 6309,
+      "mtime_nanos": 1783856564009697300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/app.controller.ts.html": {
+      "size": 5043,
+      "mtime_nanos": 1783856564015643400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/executors": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/reports/export.service.ts.html": {
+      "size": 7221,
+      "mtime_nanos": 1783856564226161700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/decorators/roles.decorator.ts.html": {
+      "size": 4221,
+      "mtime_nanos": 1783856564170717000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/guards": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/strategies": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/favicon.png": {
+      "size": 445,
+      "mtime_nanos": 1783856563990240500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/index.html": {
+      "size": 6517,
+      "mtime_nanos": 1783856564042845700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/sandbox/workspace.service.ts.html": {
+      "size": 14725,
+      "mtime_nanos": 1783856564253964300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/sandbox/sandbox.service.ts.html": {
+      "size": 9119,
+      "mtime_nanos": 1783856564252019300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/schema-validation.pipe.ts.html": {
+      "size": 8084,
+      "mtime_nanos": 1783856564266488700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/common/prisma.service.ts.html": {
+      "size": 4300,
+      "mtime_nanos": 1783856564033673500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/submissions": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/platform/index.html": {
+      "size": 4476,
+      "mtime_nanos": 1783856564204621300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/tasks/tasks.service.ts.html": {
+      "size": 10096,
+      "mtime_nanos": 1783856564316158500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/common/interceptors/index.html": {
+      "size": 4492,
+      "mtime_nanos": 1783856564034960400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/common/interceptors/transform.interceptor.ts.html": {
+      "size": 6599,
+      "mtime_nanos": 1783856564037468600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/auth/guards/index.html": {
+      "size": 5141,
+      "mtime_nanos": 1783856564172980800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/organizations/organizations.controller.ts.html": {
+      "size": 8920,
+      "mtime_nanos": 1783856564197308600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/schema-validation.service.ts.html": {
+      "size": 9440,
+      "mtime_nanos": 1783856564269138800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/tasks/tasks.module.ts.html": {
+      "size": 4698,
+      "mtime_nanos": 1783856564313796200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/schemas/schemas.module.ts.html": {
+      "size": 5763,
+      "mtime_nanos": 1783856564275126500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/index.html": {
+      "size": 4613,
+      "mtime_nanos": 1783856564075310900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/rule-engine.service.ts.html": {
+      "size": 10260,
+      "mtime_nanos": 1783856564077116700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/clover.xml": {
+      "size": 104800,
+      "mtime_nanos": 1783856564376864900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/sandbox/index.html": {
+      "size": 7792,
+      "mtime_nanos": 1783856564237941200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/base.css": {
+      "size": 5394,
+      "mtime_nanos": 1783856563985643300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies/explain-error.strategy.ts.html": {
+      "size": 7344,
+      "mtime_nanos": 1783856564154170300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/.turbo/turbo-test$colon$cov.log": {
+      "size": 16417,
+      "mtime_nanos": 1783856564458552000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/courses": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/reports/strategies/csv-export.strategy.ts.html": {
+      "size": 5835,
+      "mtime_nanos": 1783856564236308500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies/code-review.strategy.ts.html": {
+      "size": 7081,
+      "mtime_nanos": 1783856564151093000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/config": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/coverage-final.json": {
+      "size": 273310,
+      "mtime_nanos": 1783856563924471800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/executors/mask-action.executor.ts.html": {
+      "size": 4724,
+      "mtime_nanos": 1783856564084540700,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/api/.turbo/turbo-test$colon$cov.log",
+    "packages/api/coverage",
+    "packages/api/coverage/clover.xml",
+    "packages/api/coverage/coverage-final.json",
+    "packages/api/coverage/lcov-report",
+    "packages/api/coverage/lcov-report/base.css",
+    "packages/api/coverage/lcov-report/block-navigation.js",
+    "packages/api/coverage/lcov-report/favicon.png",
+    "packages/api/coverage/lcov-report/index.html",
+    "packages/api/coverage/lcov-report/prettify.css",
+    "packages/api/coverage/lcov-report/prettify.js",
+    "packages/api/coverage/lcov-report/sort-arrow-sprite.png",
+    "packages/api/coverage/lcov-report/sorter.js",
+    "packages/api/coverage/lcov-report/src",
+    "packages/api/coverage/lcov-report/src/app.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/app.module.ts.html",
+    "packages/api/coverage/lcov-report/src/app.service.ts.html",
+    "packages/api/coverage/lcov-report/src/common",
+    "packages/api/coverage/lcov-report/src/common/index.html",
+    "packages/api/coverage/lcov-report/src/common/interceptors",
+    "packages/api/coverage/lcov-report/src/common/interceptors/index.html",
+    "packages/api/coverage/lcov-report/src/common/interceptors/transform.interceptor.ts.html",
+    "packages/api/coverage/lcov-report/src/common/prisma.module.ts.html",
+    "packages/api/coverage/lcov-report/src/common/prisma.service.ts.html",
+    "packages/api/coverage/lcov-report/src/config",
+    "packages/api/coverage/lcov-report/src/config/env.validation.ts.html",
+    "packages/api/coverage/lcov-report/src/config/index.html",
+    "packages/api/coverage/lcov-report/src/index.html",
+    "packages/api/coverage/lcov-report/src/main.ts.html",
+    "packages/api/coverage/lcov-report/src/modules",
+    "packages/api/coverage/lcov-report/src/modules/ai",
+    "packages/api/coverage/lcov-report/src/modules/ai/ai.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/ai.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/cost",
+    "packages/api/coverage/lcov-report/src/modules/ai/cost/cost-calculator.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/cost/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/cost/json-pricing.repository.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/response-safety.filter.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/executors",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/executors/block-action.executor.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/executors/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/executors/mask-action.executor.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/matchers",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/matchers/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/matchers/keyword.matcher.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/matchers/regex.matcher.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/repositories",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/repositories/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/repositories/json-rule.repository.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/rule-engine/rule-engine.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/filters/sensitive-data.filter.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/gateway",
+    "packages/api/coverage/lcov-report/src/modules/ai/gateway/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/gateway/llm-gateway.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/model-registry.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/prompt-builder.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/providers",
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/deepseek.provider.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/file-prompt.repository.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/mock.provider.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/openai.provider.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/providers/provider-registry.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/rag",
+    "packages/api/coverage/lcov-report/src/modules/ai/rag/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/rag/markdown-chunker.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/rag/memory-vector.store.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/rag/rag.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/ai-tutor.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/index.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/interfaces.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies/ask.strategy.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies/code-review.strategy.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies/explain-error.strategy.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/ai/tutor/strategies/index.html",
+    "packages/api/coverage/lcov-report/src/modules/auth",
+    "packages/api/coverage/lcov-report/src/modules/auth/auth.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/auth.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/auth.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/decorators",
+    "packages/api/coverage/lcov-report/src/modules/auth/decorators/index.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/decorators/public.decorator.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/decorators/roles.decorator.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/guards",
+    "packages/api/coverage/lcov-report/src/modules/auth/guards/index.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/guards/jwt-auth.guard.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/guards/roles.guard.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/index.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/strategies",
+    "packages/api/coverage/lcov-report/src/modules/auth/strategies/index.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/strategies/jwt.strategy.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/auth/strategies/local.strategy.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/courses",
+    "packages/api/coverage/lcov-report/src/modules/courses/courses.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/courses/courses.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/courses/courses.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/courses/index.html",
+    "packages/api/coverage/lcov-report/src/modules/organizations",
+    "packages/api/coverage/lcov-report/src/modules/organizations/index.html",
+    "packages/api/coverage/lcov-report/src/modules/organizations/organizations.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/organizations/organizations.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/organizations/organizations.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/platform",
+    "packages/api/coverage/lcov-report/src/modules/platform/health",
+    "packages/api/coverage/lcov-report/src/modules/platform/health/health.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/health/health.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/health/index.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/index.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/logging",
+    "packages/api/coverage/lcov-report/src/modules/platform/logging/index.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/logging/logging.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/monitoring",
+    "packages/api/coverage/lcov-report/src/modules/platform/monitoring/index.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/monitoring/monitoring.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/monitoring/monitoring.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/platform/platform.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/reports",
+    "packages/api/coverage/lcov-report/src/modules/reports/export.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/reports/index.html",
+    "packages/api/coverage/lcov-report/src/modules/reports/reports.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/reports/reports.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/reports/strategies",
+    "packages/api/coverage/lcov-report/src/modules/reports/strategies/csv-export.strategy.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/reports/strategies/index.html",
+    "packages/api/coverage/lcov-report/src/modules/sandbox",
+    "packages/api/coverage/lcov-report/src/modules/sandbox/docker.executor.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/sandbox/env-detector.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/sandbox/index.html",
+    "packages/api/coverage/lcov-report/src/modules/sandbox/local.executor.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/sandbox/sandbox.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/sandbox/sandbox.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/sandbox/workspace.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/schemas",
+    "packages/api/coverage/lcov-report/src/modules/schemas/index.html",
+    "packages/api/coverage/lcov-report/src/modules/schemas/repositories",
+    "packages/api/coverage/lcov-report/src/modules/schemas/repositories/file-schema.repository.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/schemas/repositories/index.html",
+    "packages/api/coverage/lcov-report/src/modules/schemas/schema-registry.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/schemas/schema-validation.pipe.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/schemas/schema-validation.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/schemas/schemas.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/schemas/schemas.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/statistics",
+    "packages/api/coverage/lcov-report/src/modules/statistics/index.html",
+    "packages/api/coverage/lcov-report/src/modules/statistics/statistics.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/statistics/statistics.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/statistics/statistics.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/submissions",
+    "packages/api/coverage/lcov-report/src/modules/submissions/index.html",
+    "packages/api/coverage/lcov-report/src/modules/submissions/submissions.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/submissions/submissions.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/submissions/submissions.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/tasks",
+    "packages/api/coverage/lcov-report/src/modules/tasks/index.html",
+    "packages/api/coverage/lcov-report/src/modules/tasks/tasks.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/tasks/tasks.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/tasks/tasks.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/training",
+    "packages/api/coverage/lcov-report/src/modules/training/index.html",
+    "packages/api/coverage/lcov-report/src/modules/training/score.calculator.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/training/training.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/training/training.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/training/training.service.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/users",
+    "packages/api/coverage/lcov-report/src/modules/users/index.html",
+    "packages/api/coverage/lcov-report/src/modules/users/users.controller.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/users/users.module.ts.html",
+    "packages/api/coverage/lcov-report/src/modules/users/users.service.ts.html",
+    "packages/api/coverage/lcov.info"
+  ]
+}

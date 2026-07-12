@@ -1,0 +1,38 @@
+{
+  "files": {
+    "packages/web/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/web/.turbo/turbo-build.log": {
+      "size": 1658,
+      "mtime_nanos": 1783856589798223700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/dist/assets/index-DvH6-59b.js": {
+      "size": 3309959,
+      "mtime_nanos": 1783856589280912600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/dist/assets": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/web/dist/assets/index-BjDegGRG.css": {
+      "size": 40365,
+      "mtime_nanos": 1783856589279286200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/dist/index.html": {
+      "size": 463,
+      "mtime_nanos": 1783856589277692300,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/web/.turbo/turbo-build.log",
+    "packages/web/dist",
+    "packages/web/dist/assets",
+    "packages/web/dist/assets/index-BjDegGRG.css",
+    "packages/web/dist/assets/index-DvH6-59b.js",
+    "packages/web/dist/index.html"
+  ]
+}

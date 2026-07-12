@@ -10,6 +10,15 @@
       "outputs": ["coverage/**"],
       "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "tests/**/*.ts"]
     },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "outputs": ["playwright-report/**", "test-results/**"],
+      "inputs": ["src/**/*.tsx", "src/**/*.ts", "tests/e2e/**/*.ts"]
+    },
+    "test:cov": {
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"]
+    },
     "lint": {
       "outputs": []
     },

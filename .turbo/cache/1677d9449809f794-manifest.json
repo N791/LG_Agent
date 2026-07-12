@@ -1,0 +1,2876 @@
+{
+  "files": {
+    "packages/api/dist/modules/ai/ai.controller.js": {
+      "size": 3886,
+      "mtime_nanos": 1783856310955586100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/logging/logging.module.d.ts": {
+      "size": 83,
+      "mtime_nanos": 1783856311399408400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/openai.provider.d.ts": {
+      "size": 797,
+      "mtime_nanos": 1783856310897424700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/strategies/csv-export.strategy.js.map": {
+      "size": 740,
+      "mtime_nanos": 1783856311333811400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/repositories/file-schema.repository.d.ts": {
+      "size": 356,
+      "mtime_nanos": 1783856311237282100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/rag.service.js.map": {
+      "size": 1607,
+      "mtime_nanos": 1783856310988891000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/reports/reports.module.js": {
+      "size": 1439,
+      "mtime_nanos": 1783856311361583600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.service.d.ts.map": {
+      "size": 158,
+      "mtime_nanos": 1783856309617612700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/cost-calculator.service.d.ts.map": {
+      "size": 528,
+      "mtime_nanos": 1783856310776357600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/interfaces.js": {
+      "size": 115,
+      "mtime_nanos": 1783856310722336100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces/llm-provider.interface.js.map": {
+      "size": 167,
+      "mtime_nanos": 1783856310701939000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/config/env.validation.d.ts.map": {
+      "size": 202,
+      "mtime_nanos": 1783856310292200100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/gateway/llm-gateway.service.js.map": {
+      "size": 5226,
+      "mtime_nanos": 1783856310816207900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces/prompt-repository.interface.d.ts": {
+      "size": 266,
+      "mtime_nanos": 1783856310661397200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/interfaces.js.map": {
+      "size": 137,
+      "mtime_nanos": 1783856310766820200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/rule-engine.service.js": {
+      "size": 2994,
+      "mtime_nanos": 1783856310737092900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/guards": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/ai/cost": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/platform/health/health.module.d.ts": {
+      "size": 81,
+      "mtime_nanos": 1783856311388818100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/strategies/csv-export.strategy.js": {
+      "size": 1356,
+      "mtime_nanos": 1783856311334813600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/docker.executor.js": {
+      "size": 6611,
+      "mtime_nanos": 1783856310524371900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/env-detector.service.js": {
+      "size": 4110,
+      "mtime_nanos": 1783856310472625300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/sensitive-data.filter.d.ts": {
+      "size": 443,
+      "mtime_nanos": 1783856310753501900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/interfaces.js.map": {
+      "size": 220,
+      "mtime_nanos": 1783856310921247600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/gateway/llm-gateway.service.js": {
+      "size": 7687,
+      "mtime_nanos": 1783856310817207000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/decorators/roles.decorator.d.ts": {
+      "size": 226,
+      "mtime_nanos": 1783856309932942100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/reports.controller.js.map": {
+      "size": 1988,
+      "mtime_nanos": 1783856311354516200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.service.js.map": {
+      "size": 280,
+      "mtime_nanos": 1783856309612100100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/prompt-builder.service.js.map": {
+      "size": 1207,
+      "mtime_nanos": 1783856310671408500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/block-action.executor.js.map": {
+      "size": 465,
+      "mtime_nanos": 1783856311018857700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/rule-engine.service.js.map": {
+      "size": 1673,
+      "mtime_nanos": 1783856310736090700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/health/health.controller.js": {
+      "size": 2071,
+      "mtime_nanos": 1783856311376246700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/env-detector.service.d.ts.map": {
+      "size": 584,
+      "mtime_nanos": 1783856310475623100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/app.controller.d.ts.map": {
+      "size": 256,
+      "mtime_nanos": 1783856309636326000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/sandbox.module.d.ts.map": {
+      "size": 164,
+      "mtime_nanos": 1783856310560001700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/repositories": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/statistics/statistics.controller.d.ts": {
+      "size": 1035,
+      "mtime_nanos": 1783856311221320700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.service.js": {
+      "size": 5152,
+      "mtime_nanos": 1783856311205594600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.service.js": {
+      "size": 2232,
+      "mtime_nanos": 1783856310329489800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.module.js.map": {
+      "size": 460,
+      "mtime_nanos": 1783856310644399900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/ai/ai.controller.js.map": {
+      "size": 2129,
+      "mtime_nanos": 1783856310955080300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/ask.strategy.d.ts": {
+      "size": 766,
+      "mtime_nanos": 1783856311055205400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/guards/roles.guard.d.ts.map": {
+      "size": 357,
+      "mtime_nanos": 1783856311117642000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/json-pricing.repository.js": {
+      "size": 3719,
+      "mtime_nanos": 1783856311079712200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/regex.matcher.d.ts.map": {
+      "size": 436,
+      "mtime_nanos": 1783856311031940600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces/llm-provider.interface.js": {
+      "size": 127,
+      "mtime_nanos": 1783856310702946200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/interfaces.d.ts.map": {
+      "size": 388,
+      "mtime_nanos": 1783856310767825500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/explain-error.strategy.js.map": {
+      "size": 831,
+      "mtime_nanos": 1783856311067361600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.module.js.map": {
+      "size": 621,
+      "mtime_nanos": 1783856310061906200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/interfaces/executor.interface.d.ts.map": {
+      "size": 589,
+      "mtime_nanos": 1783856310483176000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/deepseek.provider.js.map": {
+      "size": 4610,
+      "mtime_nanos": 1783856310915731700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.controller.js": {
+      "size": 3719,
+      "mtime_nanos": 1783856309915908900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/decorators/public.decorator.d.ts": {
+      "size": 180,
+      "mtime_nanos": 1783856309885458400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.module.d.ts.map": {
+      "size": 164,
+      "mtime_nanos": 1783856310224712800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/provider-registry.service.js": {
+      "size": 3006,
+      "mtime_nanos": 1783856310715217600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.module.js.map": {
+      "size": 465,
+      "mtime_nanos": 1783856311319713700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/rule-engine.service.d.ts.map": {
+      "size": 666,
+      "mtime_nanos": 1783856310738094000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/score.calculator.js.map": {
+      "size": 1551,
+      "mtime_nanos": 1783856310568516200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-registry.service.js": {
+      "size": 1421,
+      "mtime_nanos": 1783856310346599600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/cost-calculator.service.d.ts": {
+      "size": 481,
+      "mtime_nanos": 1783856310777352900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.controller.js": {
+      "size": 3699,
+      "mtime_nanos": 1783856310121936700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/gateway/llm-gateway.service.d.ts.map": {
+      "size": 1082,
+      "mtime_nanos": 1783856310819280600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.service.js.map": {
+      "size": 2303,
+      "mtime_nanos": 1783856310601790800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/config/env.validation.js.map": {
+      "size": 1304,
+      "mtime_nanos": 1783856310289623400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.controller.js": {
+      "size": 4098,
+      "mtime_nanos": 1783856310438383300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.module.js": {
+      "size": 1434,
+      "mtime_nanos": 1783856311319713700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies/local.strategy.js": {
+      "size": 1782,
+      "mtime_nanos": 1783856310023765100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.service.js": {
+      "size": 2075,
+      "mtime_nanos": 1783856309765417500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/interfaces.js": {
+      "size": 251,
+      "mtime_nanos": 1783856310922259200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/block-action.executor.js": {
+      "size": 1171,
+      "mtime_nanos": 1783856311019860700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.service.js": {
+      "size": 2379,
+      "mtime_nanos": 1783856311279114500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/reports.module.d.ts.map": {
+      "size": 164,
+      "mtime_nanos": 1783856311362644500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/ai/tutor/ai-tutor.service.js": {
+      "size": 1854,
+      "mtime_nanos": 1783856310931326200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.module.d.ts.map": {
+      "size": 155,
+      "mtime_nanos": 1783856310063994800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/interceptors/transform.interceptor.d.ts": {
+      "size": 430,
+      "mtime_nanos": 1783856311137731500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/keyword.matcher.js.map": {
+      "size": 1292,
+      "mtime_nanos": 1783856311039036100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.service.js": {
+      "size": 2181,
+      "mtime_nanos": 1783856310104403100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/regex.matcher.js": {
+      "size": 2024,
+      "mtime_nanos": 1783856311029436300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/export.service.js.map": {
+      "size": 737,
+      "mtime_nanos": 1783856311339807600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/workspace.service.d.ts": {
+      "size": 684,
+      "mtime_nanos": 1783856310501405700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/reports.controller.d.ts.map": {
+      "size": 606,
+      "mtime_nanos": 1783856311356514800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/workspace.service.js.map": {
+      "size": 2156,
+      "mtime_nanos": 1783856310499405500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.module.js.map": {
+      "size": 429,
+      "mtime_nanos": 1783856311225368500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-validation.service.js": {
+      "size": 3018,
+      "mtime_nanos": 1783856310413204100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/prompt-builder.service.d.ts.map": {
+      "size": 605,
+      "mtime_nanos": 1783856310676469700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/regex.matcher.d.ts": {
+      "size": 328,
+      "mtime_nanos": 1783856311031940600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/cost-calculator.service.js.map": {
+      "size": 1036,
+      "mtime_nanos": 1783856310774352700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/guards/roles.guard.d.ts": {
+      "size": 321,
+      "mtime_nanos": 1783856311118187500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/schemas/schema-registry.service.js.map": {
+      "size": 722,
+      "mtime_nanos": 1783856310345598100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/interfaces.d.ts.map": {
+      "size": 455,
+      "mtime_nanos": 1783856310923325500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/interfaces/executor.interface.js.map": {
+      "size": 164,
+      "mtime_nanos": 1783856310481158200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies/local.strategy.d.ts.map": {
+      "size": 428,
+      "mtime_nanos": 1783856310029766700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/common/prisma.service.d.ts": {
+      "size": 257,
+      "mtime_nanos": 1783856309681159300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.controller.d.ts": {
+      "size": 636,
+      "mtime_nanos": 1783856310639066600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/block-action.executor.d.ts": {
+      "size": 290,
+      "mtime_nanos": 1783856311021368100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/keyword.matcher.d.ts.map": {
+      "size": 440,
+      "mtime_nanos": 1783856311041544100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/reports/strategies/export-strategy.interface.d.ts": {
+      "size": 183,
+      "mtime_nanos": 1783856311328289900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.controller.d.ts.map": {
+      "size": 532,
+      "mtime_nanos": 1783856309989405800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.controller.js.map": {
+      "size": 1596,
+      "mtime_nanos": 1783856310209053400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/mock.provider.js": {
+      "size": 3152,
+      "mtime_nanos": 1783856310835377800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/sandbox.service.d.ts.map": {
+      "size": 626,
+      "mtime_nanos": 1783856310533890500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/local.executor.js.map": {
+      "size": 2935,
+      "mtime_nanos": 1783856310549469000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/memory-vector.store.d.ts.map": {
+      "size": 553,
+      "mtime_nanos": 1783856310981884600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.service.d.ts.map": {
+      "size": 387,
+      "mtime_nanos": 1783856311208644900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.module.js": {
+      "size": 1356,
+      "mtime_nanos": 1783856311225368500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.service.js.map": {
+      "size": 1219,
+      "mtime_nanos": 1783856309764416500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/prompt-builder.service.js": {
+      "size": 2494,
+      "mtime_nanos": 1783856310672464100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/ai.module.d.ts": {
+      "size": 893,
+      "mtime_nanos": 1783856311108590900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/health/health.controller.d.ts": {
+      "size": 1090,
+      "mtime_nanos": 1783856311383817200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/deepseek.provider.js": {
+      "size": 6373,
+      "mtime_nanos": 1783856310916738300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/strategies": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/platform/health/health.module.js": {
+      "size": 1259,
+      "mtime_nanos": 1783856311386813900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/model-registry.service.js": {
+      "size": 3009,
+      "mtime_nanos": 1783856310942412100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/interceptors/transform.interceptor.js": {
+      "size": 1335,
+      "mtime_nanos": 1783856311135012000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/interfaces.d.ts": {
+      "size": 376,
+      "mtime_nanos": 1783856310924327200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring/monitoring.service.js.map": {
+      "size": 833,
+      "mtime_nanos": 1783856311405508300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-registry.service.d.ts": {
+      "size": 310,
+      "mtime_nanos": 1783856310349660200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.controller.d.ts": {
+      "size": 1891,
+      "mtime_nanos": 1783856309990406100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.service.d.ts": {
+      "size": 1250,
+      "mtime_nanos": 1783856311294319700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/strategies/csv-export.strategy.d.ts.map": {
+      "size": 370,
+      "mtime_nanos": 1783856311335814300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.controller.js.map": {
+      "size": 433,
+      "mtime_nanos": 1783856309633327800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/response-safety.filter.d.ts.map": {
+      "size": 534,
+      "mtime_nanos": 1783856310763568800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/sensitive-data.filter.d.ts.map": {
+      "size": 476,
+      "mtime_nanos": 1783856310752974200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/ai/tutor/strategies/explain-error.strategy.js": {
+      "size": 1979,
+      "mtime_nanos": 1783856311068361000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/prisma.service.js.map": {
+      "size": 344,
+      "mtime_nanos": 1783856309675653000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.service.js": {
+      "size": 993,
+      "mtime_nanos": 1783856309613098000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/export.service.d.ts": {
+      "size": 339,
+      "mtime_nanos": 1783856311343375900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/sandbox.service.d.ts": {
+      "size": 630,
+      "mtime_nanos": 1783856310534889200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.module.js": {
+      "size": 1825,
+      "mtime_nanos": 1783856310062994800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/ai.module.js.map": {
+      "size": 2918,
+      "mtime_nanos": 1783856311104587800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/reports/reports.controller.js": {
+      "size": 3817,
+      "mtime_nanos": 1783856311355512100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/interfaces.d.ts.map": {
+      "size": 1110,
+      "mtime_nanos": 1783856310725543100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/deepseek.provider.d.ts": {
+      "size": 780,
+      "mtime_nanos": 1783856310918738200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/openai.provider.d.ts.map": {
+      "size": 825,
+      "mtime_nanos": 1783856310897424700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/config/env.validation.d.ts": {
+      "size": 140,
+      "mtime_nanos": 1783856310293197500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.controller.d.ts.map": {
+      "size": 552,
+      "mtime_nanos": 1783856310125951700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.module.d.ts.map": {
+      "size": 184,
+      "mtime_nanos": 1783856310133008800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.service.d.ts": {
+      "size": 101,
+      "mtime_nanos": 1783856309617612700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring/monitoring.module.js": {
+      "size": 2016,
+      "mtime_nanos": 1783856311417857300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/response-safety.filter.d.ts": {
+      "size": 506,
+      "mtime_nanos": 1783856310764088800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies/jwt.strategy.js.map": {
+      "size": 675,
+      "mtime_nanos": 1783856310047809400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies/local.strategy.js.map": {
+      "size": 686,
+      "mtime_nanos": 1783856310022765500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/gateway/llm-gateway.service.d.ts": {
+      "size": 1215,
+      "mtime_nanos": 1783856310820278000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/reports.controller.d.ts": {
+      "size": 649,
+      "mtime_nanos": 1783856311357511800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/model-registry.service.js.map": {
+      "size": 1814,
+      "mtime_nanos": 1783856310941404000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/.turbo/turbo-build.log": {
+      "size": 108,
+      "mtime_nanos": 1783856312138746500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.controller.d.ts": {
+      "size": 225,
+      "mtime_nanos": 1783856309637329400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories/json-rule.repository.d.ts.map": {
+      "size": 438,
+      "mtime_nanos": 1783856311008093600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/ai.module.js": {
+      "size": 7762,
+      "mtime_nanos": 1783856311105587600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/decorators/roles.decorator.js.map": {
+      "size": 315,
+      "mtime_nanos": 1783856309925425900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.service.js": {
+      "size": 2595,
+      "mtime_nanos": 1783856310186708500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/strategies/export-strategy.interface.js.map": {
+      "size": 178,
+      "mtime_nanos": 1783856311325294300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/sandbox.module.js.map": {
+      "size": 448,
+      "mtime_nanos": 1783856310558000700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/prompt-builder.service.d.ts": {
+      "size": 738,
+      "mtime_nanos": 1783856310677464800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.service.d.ts": {
+      "size": 566,
+      "mtime_nanos": 1783856310107605100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/interfaces.d.ts": {
+      "size": 912,
+      "mtime_nanos": 1783856310726547500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/file-prompt.repository.d.ts.map": {
+      "size": 364,
+      "mtime_nanos": 1783856310699429700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.controller.js": {
+      "size": 3930,
+      "mtime_nanos": 1783856310210053900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-registry.service.d.ts.map": {
+      "size": 425,
+      "mtime_nanos": 1783856310348601700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.service.d.ts": {
+      "size": 572,
+      "mtime_nanos": 1783856309771038200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/docker.executor.js.map": {
+      "size": 3416,
+      "mtime_nanos": 1783856310523316200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.service.js.map": {
+      "size": 1643,
+      "mtime_nanos": 1783856310185706900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/markdown-chunker.js": {
+      "size": 2143,
+      "mtime_nanos": 1783856310966188100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/config/env.validation.js": {
+      "size": 2559,
+      "mtime_nanos": 1783856310291129500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/rule-engine.service.d.ts": {
+      "size": 592,
+      "mtime_nanos": 1783856310739090600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/courses/courses.module.js.map": {
+      "size": 396,
+      "mtime_nanos": 1783856310222297700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.module.d.ts": {
+      "size": 79,
+      "mtime_nanos": 1783856310449492700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.module.d.ts": {
+      "size": 77,
+      "mtime_nanos": 1783856310064996500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/decorators/public.decorator.d.ts.map": {
+      "size": 221,
+      "mtime_nanos": 1783856309884463900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/ai-tutor.service.d.ts": {
+      "size": 394,
+      "mtime_nanos": 1783856310932838400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.controller.d.ts": {
+      "size": 1244,
+      "mtime_nanos": 1783856311316709700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.controller.d.ts.map": {
+      "size": 368,
+      "mtime_nanos": 1783856311220320600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.controller.d.ts.map": {
+      "size": 659,
+      "mtime_nanos": 1783856310216732200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.service.d.ts.map": {
+      "size": 683,
+      "mtime_nanos": 1783856309769517700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/reports.module.d.ts": {
+      "size": 83,
+      "mtime_nanos": 1783856311363646500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/cost-calculator.service.js": {
+      "size": 2304,
+      "mtime_nanos": 1783856310775352700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/code-review.strategy.js": {
+      "size": 1957,
+      "mtime_nanos": 1783856311060273700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/guards/roles.guard.js.map": {
+      "size": 766,
+      "mtime_nanos": 1783856311115517800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.service.d.ts.map": {
+      "size": 639,
+      "mtime_nanos": 1783856310189707400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/sandbox.module.d.ts": {
+      "size": 83,
+      "mtime_nanos": 1783856310560001700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/mask-action.executor.d.ts": {
+      "size": 288,
+      "mtime_nanos": 1783856311015792400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/explain-error.strategy.d.ts": {
+      "size": 686,
+      "mtime_nanos": 1783856311070421800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-validation.pipe.d.ts": {
+      "size": 409,
+      "mtime_nanos": 1783856310427794500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/repositories/file-schema.repository.js": {
+      "size": 1744,
+      "mtime_nanos": 1783856311235659500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schemas.controller.js": {
+      "size": 2378,
+      "mtime_nanos": 1783856311243779600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/mask-action.executor.js.map": {
+      "size": 459,
+      "mtime_nanos": 1783856311013285900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.module.js": {
+      "size": 1360,
+      "mtime_nanos": 1783856310131476900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schemas.controller.js.map": {
+      "size": 707,
+      "mtime_nanos": 1783856311243249600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/schemas/schemas.module.js.map": {
+      "size": 482,
+      "mtime_nanos": 1783856311250289100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/main.js.map": {
+      "size": 2450,
+      "mtime_nanos": 1783856311464568200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.module.js": {
+      "size": 3721,
+      "mtime_nanos": 1783856311437241700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/logging/logging.module.d.ts.map": {
+      "size": 176,
+      "mtime_nanos": 1783856311399408400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-validation.service.d.ts": {
+      "size": 457,
+      "mtime_nanos": 1783856310415718000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.service.d.ts": {
+      "size": 521,
+      "mtime_nanos": 1783856310333007200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.service.d.ts.map": {
+      "size": 632,
+      "mtime_nanos": 1783856310333007200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.service.js.map": {
+      "size": 1389,
+      "mtime_nanos": 1783856310329489800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/score.calculator.js": {
+      "size": 2711,
+      "mtime_nanos": 1783856310569514800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/memory-vector.store.js": {
+      "size": 2528,
+      "mtime_nanos": 1783856310980374200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces/prompt-repository.interface.js": {
+      "size": 132,
+      "mtime_nanos": 1783856310655531300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/prisma.module.d.ts": {
+      "size": 81,
+      "mtime_nanos": 1783856309695398400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/prisma.service.js": {
+      "size": 1092,
+      "mtime_nanos": 1783856309676652600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/markdown-chunker.js.map": {
+      "size": 1223,
+      "mtime_nanos": 1783856310965187400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/reports/strategies/csv-export.strategy.d.ts": {
+      "size": 273,
+      "mtime_nanos": 1783856311336809600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories/json-rule.repository.js.map": {
+      "size": 1770,
+      "mtime_nanos": 1783856311005008100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-validation.service.js.map": {
+      "size": 1579,
+      "mtime_nanos": 1783856310413204100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces/llm-provider.interface.d.ts": {
+      "size": 1280,
+      "mtime_nanos": 1783856310704980900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/decorators/roles.decorator.d.ts.map": {
+      "size": 287,
+      "mtime_nanos": 1783856309932942100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/gateway": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/auth/decorators/roles.decorator.js": {
+      "size": 341,
+      "mtime_nanos": 1783856309926426000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/platform/health/health.controller.d.ts.map": {
+      "size": 422,
+      "mtime_nanos": 1783856311382760000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/prisma.service.d.ts.map": {
+      "size": 270,
+      "mtime_nanos": 1783856309679652700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/mock.provider.js.map": {
+      "size": 2083,
+      "mtime_nanos": 1783856310835377800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring/monitoring.module.js.map": {
+      "size": 869,
+      "mtime_nanos": 1783856311416857500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/env-detector.service.js.map": {
+      "size": 1784,
+      "mtime_nanos": 1783856310471328800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-validation.pipe.js": {
+      "size": 2221,
+      "mtime_nanos": 1783856310425786400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schemas.controller.d.ts": {
+      "size": 367,
+      "mtime_nanos": 1783856311245888000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.controller.js": {
+      "size": 2314,
+      "mtime_nanos": 1783856310635066800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/main.js": {
+      "size": 4127,
+      "mtime_nanos": 1783856311464568200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/code-review.strategy.d.ts": {
+      "size": 680,
+      "mtime_nanos": 1783856311062365200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.module.js": {
+      "size": 1246,
+      "mtime_nanos": 1783856310223298800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.controller.js.map": {
+      "size": 1319,
+      "mtime_nanos": 1783856310120409800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/response-safety.filter.js.map": {
+      "size": 1471,
+      "mtime_nanos": 1783856310760437000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/file-prompt.repository.js": {
+      "size": 4366,
+      "mtime_nanos": 1783856310697436500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.controller.js": {
+      "size": 2620,
+      "mtime_nanos": 1783856311302496400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.module.js.map": {
+      "size": 388,
+      "mtime_nanos": 1783856310448487300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies/jwt.strategy.d.ts.map": {
+      "size": 365,
+      "mtime_nanos": 1783856310053397200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/guards/jwt-auth.guard.js": {
+      "size": 1789,
+      "mtime_nanos": 1783856310618965600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.module.d.ts.map": {
+      "size": 178,
+      "mtime_nanos": 1783856311321283900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.controller.d.ts": {
+      "size": 1760,
+      "mtime_nanos": 1783856310216732200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-validation.pipe.d.ts.map": {
+      "size": 322,
+      "mtime_nanos": 1783856310426800400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/strategies/export-strategy.interface.js": {
+      "size": 130,
+      "mtime_nanos": 1783856311325294300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.controller.d.ts": {
+      "size": 2525,
+      "mtime_nanos": 1783856310444485400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.service.js": {
+      "size": 4265,
+      "mtime_nanos": 1783856309800058500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.service.d.ts.map": {
+      "size": 543,
+      "mtime_nanos": 1783856310609386800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/ask.strategy.js.map": {
+      "size": 1179,
+      "mtime_nanos": 1783856311051179300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/ai.controller.d.ts.map": {
+      "size": 577,
+      "mtime_nanos": 1783856310957592300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/interceptors": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/ai/providers/openai.provider.js.map": {
+      "size": 5139,
+      "mtime_nanos": 1783856310894423300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.service.d.ts": {
+      "size": 622,
+      "mtime_nanos": 1783856309804572700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.module.d.ts.map": {
+      "size": 158,
+      "mtime_nanos": 1783856309998752200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories/json-rule.repository.d.ts": {
+      "size": 344,
+      "mtime_nanos": 1783856311008093600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/mock.provider.d.ts": {
+      "size": 537,
+      "mtime_nanos": 1783856310838384200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/mock.provider.d.ts.map": {
+      "size": 592,
+      "mtime_nanos": 1783856310837382300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/code-review.strategy.d.ts.map": {
+      "size": 626,
+      "mtime_nanos": 1783856311062365200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/guards/jwt-auth.guard.d.ts.map": {
+      "size": 346,
+      "mtime_nanos": 1783856310627543600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.service.js.map": {
+      "size": 1295,
+      "mtime_nanos": 1783856310103813900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/organizations/organizations.module.js.map": {
+      "size": 426,
+      "mtime_nanos": 1783856310131476900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring/monitoring.module.d.ts.map": {
+      "size": 188,
+      "mtime_nanos": 1783856311418861800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/local.executor.js": {
+      "size": 5912,
+      "mtime_nanos": 1783856310550984000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/sandbox.module.js": {
+      "size": 1504,
+      "mtime_nanos": 1783856310558000700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/config": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/ai/rag/rag.service.d.ts": {
+      "size": 632,
+      "mtime_nanos": 1783856310992408600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/memory-vector.store.d.ts": {
+      "size": 454,
+      "mtime_nanos": 1783856310982894100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/export.service.d.ts.map": {
+      "size": 411,
+      "mtime_nanos": 1783856311343375900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/sandbox.service.js": {
+      "size": 2275,
+      "mtime_nanos": 1783856310531884400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/workspace.service.js": {
+      "size": 4628,
+      "mtime_nanos": 1783856310500406500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.module.js.map": {
+      "size": 1025,
+      "mtime_nanos": 1783856311437241700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/explain-error.strategy.d.ts.map": {
+      "size": 630,
+      "mtime_nanos": 1783856311069362400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/schemas/schema-validation.pipe.js.map": {
+      "size": 903,
+      "mtime_nanos": 1783856310424281000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces/prompt-repository.interface.d.ts.map": {
+      "size": 399,
+      "mtime_nanos": 1783856310659553100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/keyword.matcher.d.ts": {
+      "size": 332,
+      "mtime_nanos": 1783856311041544100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/ai-tutor.service.d.ts.map": {
+      "size": 433,
+      "mtime_nanos": 1783856310932838400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schemas.module.d.ts.map": {
+      "size": 164,
+      "mtime_nanos": 1783856311252413200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/provider-registry.service.d.ts": {
+      "size": 527,
+      "mtime_nanos": 1783856310718224700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/interfaces/executor.interface.d.ts": {
+      "size": 444,
+      "mtime_nanos": 1783856310484183900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/sensitive-data.filter.js": {
+      "size": 2689,
+      "mtime_nanos": 1783856310751381800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/file-prompt.repository.js.map": {
+      "size": 1798,
+      "mtime_nanos": 1783856310696431100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/provider-registry.service.js.map": {
+      "size": 1694,
+      "mtime_nanos": 1783856310715217600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/docker.executor.d.ts": {
+      "size": 573,
+      "mtime_nanos": 1783856310526370500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/provider-registry.service.d.ts.map": {
+      "size": 531,
+      "mtime_nanos": 1783856310717232300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring/monitoring.service.d.ts": {
+      "size": 457,
+      "mtime_nanos": 1783856311409023700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.controller.d.ts": {
+      "size": 568,
+      "mtime_nanos": 1783856309921410300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.controller.js.map": {
+      "size": 1157,
+      "mtime_nanos": 1783856311217731700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.module.d.ts.map": {
+      "size": 175,
+      "mtime_nanos": 1783856311226365500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.module.js": {
+      "size": 1208,
+      "mtime_nanos": 1783856310448487300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/mask-action.executor.d.ts.map": {
+      "size": 397,
+      "mtime_nanos": 1783856311015792400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.controller.d.ts.map": {
+      "size": 434,
+      "mtime_nanos": 1783856310638064100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.controller.js": {
+      "size": 5082,
+      "mtime_nanos": 1783856309949995700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/json-pricing.repository.js.map": {
+      "size": 1484,
+      "mtime_nanos": 1783856311079712200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/rag.service.js": {
+      "size": 2844,
+      "mtime_nanos": 1783856310989891200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories/json-rule.repository.js": {
+      "size": 4210,
+      "mtime_nanos": 1783856311006010300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/json-pricing.repository.d.ts.map": {
+      "size": 510,
+      "mtime_nanos": 1783856311081219900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/health": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/sandbox/docker.executor.d.ts.map": {
+      "size": 601,
+      "mtime_nanos": 1783856310525368400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schemas.module.js": {
+      "size": 1679,
+      "mtime_nanos": 1783856311250823000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/openai.provider.js": {
+      "size": 7215,
+      "mtime_nanos": 1783856310895425200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies/jwt.strategy.d.ts": {
+      "size": 641,
+      "mtime_nanos": 1783856310054396000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/json-pricing.repository.d.ts": {
+      "size": 472,
+      "mtime_nanos": 1783856311082227600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/sandbox/interfaces/executor.interface.js": {
+      "size": 123,
+      "mtime_nanos": 1783856310481158200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.service.d.ts": {
+      "size": 1006,
+      "mtime_nanos": 1783856311209643000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/main.d.ts.map": {
+      "size": 102,
+      "mtime_nanos": 1783856311468623100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/ask.strategy.js": {
+      "size": 2381,
+      "mtime_nanos": 1783856311052186100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.service.d.ts.map": {
+      "size": 634,
+      "mtime_nanos": 1783856310106534700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/ai/filters/sensitive-data.filter.js.map": {
+      "size": 1365,
+      "mtime_nanos": 1783856310750330500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/interceptors/transform.interceptor.d.ts.map": {
+      "size": 561,
+      "mtime_nanos": 1783856311137195700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/ai.controller.d.ts": {
+      "size": 617,
+      "mtime_nanos": 1783856310957592300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/decorators": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/submissions/submissions.controller.d.ts.map": {
+      "size": 446,
+      "mtime_nanos": 1783856311315700600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/cost/interfaces.js": {
+      "size": 115,
+      "mtime_nanos": 1783856310766820200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/users/users.controller.js.map": {
+      "size": 1593,
+      "mtime_nanos": 1783856309948993300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.module.d.ts": {
+      "size": 79,
+      "mtime_nanos": 1783856309999752100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.module.d.ts": {
+      "size": 89,
+      "mtime_nanos": 1783856311227439100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.controller.js": {
+      "size": 3390,
+      "mtime_nanos": 1783856311219309200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.module.d.ts.map": {
+      "size": 136,
+      "mtime_nanos": 1783856311439241200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/interfaces.js.map": {
+      "size": 155,
+      "mtime_nanos": 1783856310722336100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.service.d.ts.map": {
+      "size": 466,
+      "mtime_nanos": 1783856311293320900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.controller.js.map": {
+      "size": 812,
+      "mtime_nanos": 1783856310635066800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/ai/cost/interfaces.d.ts": {
+      "size": 302,
+      "mtime_nanos": 1783856310768825700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring/monitoring.module.d.ts": {
+      "size": 89,
+      "mtime_nanos": 1783856311418861800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.module.js": {
+      "size": 1511,
+      "mtime_nanos": 1783856310645400100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.module.d.ts": {
+      "size": 95,
+      "mtime_nanos": 1783856310134019100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.controller.js.map": {
+      "size": 1562,
+      "mtime_nanos": 1783856309914906000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring/monitoring.service.d.ts.map": {
+      "size": 495,
+      "mtime_nanos": 1783856311408012700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/logging/logging.module.js.map": {
+      "size": 745,
+      "mtime_nanos": 1783856311396415700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.module.d.ts": {
+      "size": 83,
+      "mtime_nanos": 1783856310225237500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.module.d.ts": {
+      "size": 85,
+      "mtime_nanos": 1783856310648400500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/ai.module.d.ts.map": {
+      "size": 747,
+      "mtime_nanos": 1783856311107589600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/submissions/submissions.service.js.map": {
+      "size": 1426,
+      "mtime_nanos": 1783856311278054800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/rag.service.d.ts.map": {
+      "size": 655,
+      "mtime_nanos": 1783856310991399300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/platform.module.d.ts.map": {
+      "size": 167,
+      "mtime_nanos": 1783856311425070900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/platform/logging/logging.module.js": {
+      "size": 1579,
+      "mtime_nanos": 1783856311397408000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.controller.js.map": {
+      "size": 926,
+      "mtime_nanos": 1783856311300991200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.controller.d.ts.map": {
+      "size": 569,
+      "mtime_nanos": 1783856310443484700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.controller.js": {
+      "size": 1611,
+      "mtime_nanos": 1783856309634328500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/app.module.d.ts": {
+      "size": 75,
+      "mtime_nanos": 1783856311439241200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.controller.d.ts.map": {
+      "size": 424,
+      "mtime_nanos": 1783856309919903500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/interceptors/transform.interceptor.js.map": {
+      "size": 590,
+      "mtime_nanos": 1783856311134477400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/ask.strategy.d.ts.map": {
+      "size": 701,
+      "mtime_nanos": 1783856311054205900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/file-prompt.repository.d.ts": {
+      "size": 345,
+      "mtime_nanos": 1783856310699429700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/platform/health/health.module.js.map": {
+      "size": 396,
+      "mtime_nanos": 1783856311386813900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/sandbox/workspace.service.d.ts.map": {
+      "size": 544,
+      "mtime_nanos": 1783856310501405700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/monitoring/monitoring.service.js": {
+      "size": 2156,
+      "mtime_nanos": 1783856311406507100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.service.d.ts": {
+      "size": 799,
+      "mtime_nanos": 1783856310609386800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/response-safety.filter.js": {
+      "size": 2948,
+      "mtime_nanos": 1783856310761239300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/block-action.executor.d.ts.map": {
+      "size": 399,
+      "mtime_nanos": 1783856311021368100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/repositories/file-schema.repository.js.map": {
+      "size": 603,
+      "mtime_nanos": 1783856311235138300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/platform.module.d.ts": {
+      "size": 85,
+      "mtime_nanos": 1783856311425070900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schemas.controller.d.ts.map": {
+      "size": 316,
+      "mtime_nanos": 1783856311244833000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.service.js": {
+      "size": 3976,
+      "mtime_nanos": 1783856310602793600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.module.js": {
+      "size": 1208,
+      "mtime_nanos": 1783856309997642000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/prisma.module.js.map": {
+      "size": 355,
+      "mtime_nanos": 1783856309691764100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/memory-vector.store.js.map": {
+      "size": 2060,
+      "mtime_nanos": 1783856310979379300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/organizations/organizations.controller.d.ts": {
+      "size": 1179,
+      "mtime_nanos": 1783856310126952200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.service.d.ts.map": {
+      "size": 554,
+      "mtime_nanos": 1783856309804572700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/interfaces": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/tasks/tasks.controller.js.map": {
+      "size": 1630,
+      "mtime_nanos": 1783856310437384200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/logging": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/api/dist/modules/auth/guards/jwt-auth.guard.js.map": {
+      "size": 703,
+      "mtime_nanos": 1783856310618965600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/prisma.module.d.ts.map": {
+      "size": 150,
+      "mtime_nanos": 1783856309694401200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies/local.strategy.d.ts": {
+      "size": 609,
+      "mtime_nanos": 1783856310031276900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/regex.matcher.js.map": {
+      "size": 1273,
+      "mtime_nanos": 1783856311028433800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/health/health.controller.js.map": {
+      "size": 741,
+      "mtime_nanos": 1783856311376246700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/ai-tutor.service.js.map": {
+      "size": 780,
+      "mtime_nanos": 1783856310930327800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/courses/courses.service.d.ts": {
+      "size": 547,
+      "mtime_nanos": 1783856310191216600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/common/prisma.module.js": {
+      "size": 1134,
+      "mtime_nanos": 1783856309692767500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schemas.module.d.ts": {
+      "size": 83,
+      "mtime_nanos": 1783856311252953600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/providers/deepseek.provider.d.ts.map": {
+      "size": 804,
+      "mtime_nanos": 1783856310917738700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/guards/jwt-auth.guard.d.ts": {
+      "size": 488,
+      "mtime_nanos": 1783856310628545500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/keyword.matcher.js": {
+      "size": 2019,
+      "mtime_nanos": 1783856311040036800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces/prompt-repository.interface.js.map": {
+      "size": 177,
+      "mtime_nanos": 1783856310653539400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/env-detector.service.d.ts": {
+      "size": 458,
+      "mtime_nanos": 1783856310476621700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/mask-action.executor.js": {
+      "size": 1127,
+      "mtime_nanos": 1783856311014288000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/model-registry.service.d.ts": {
+      "size": 573,
+      "mtime_nanos": 1783856310944474200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/health/health.module.d.ts.map": {
+      "size": 173,
+      "mtime_nanos": 1783856311387815100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/sandbox.service.js.map": {
+      "size": 989,
+      "mtime_nanos": 1783856310531884400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/schema-validation.service.d.ts.map": {
+      "size": 468,
+      "mtime_nanos": 1783856310415718000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/tutor/strategies/code-review.strategy.js.map": {
+      "size": 827,
+      "mtime_nanos": 1783856311060273700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/model-registry.service.d.ts.map": {
+      "size": 580,
+      "mtime_nanos": 1783856310943415400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/decorators/public.decorator.js": {
+      "size": 352,
+      "mtime_nanos": 1783856309811465900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/strategies/jwt.strategy.js": {
+      "size": 1770,
+      "mtime_nanos": 1783856310048811600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/export.service.js": {
+      "size": 1753,
+      "mtime_nanos": 1783856311341313400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/score.calculator.d.ts": {
+      "size": 794,
+      "mtime_nanos": 1783856310571020100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/score.calculator.d.ts.map": {
+      "size": 913,
+      "mtime_nanos": 1783856310569514800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/interfaces/llm-provider.interface.d.ts.map": {
+      "size": 1160,
+      "mtime_nanos": 1783856310703982000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users/users.module.js.map": {
+      "size": 388,
+      "mtime_nanos": 1783856309996642800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/main.d.ts": {
+      "size": 45,
+      "mtime_nanos": 1783856311468623100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/reports.module.js.map": {
+      "size": 435,
+      "mtime_nanos": 1783856311361077900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/guards/roles.guard.js": {
+      "size": 1782,
+      "mtime_nanos": 1783856311116065600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/local.executor.d.ts": {
+      "size": 397,
+      "mtime_nanos": 1783856310552994200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/tasks/tasks.module.d.ts.map": {
+      "size": 158,
+      "mtime_nanos": 1783856310449492700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai/rag/markdown-chunker.d.ts.map": {
+      "size": 430,
+      "mtime_nanos": 1783856310968193000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/reports/strategies/export-strategy.interface.d.ts.map": {
+      "size": 336,
+      "mtime_nanos": 1783856311327300800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/auth/auth.service.js.map": {
+      "size": 1742,
+      "mtime_nanos": 1783856309800058500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/platform.module.js": {
+      "size": 1396,
+      "mtime_nanos": 1783856311424068000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/platform/platform.module.js.map": {
+      "size": 425,
+      "mtime_nanos": 1783856311423073400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/statistics/statistics.service.js.map": {
+      "size": 3978,
+      "mtime_nanos": 1783856311204595100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/sandbox/local.executor.d.ts.map": {
+      "size": 473,
+      "mtime_nanos": 1783856310551993500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/submissions/submissions.module.d.ts": {
+      "size": 91,
+      "mtime_nanos": 1783856311322293800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/training/training.module.d.ts.map": {
+      "size": 167,
+      "mtime_nanos": 1783856310647404000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/users": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/auth/decorators/public.decorator.js.map": {
+      "size": 302,
+      "mtime_nanos": 1783856309809955400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/ai": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/api/dist/modules/ai/rag/markdown-chunker.d.ts": {
+      "size": 554,
+      "mtime_nanos": 1783856310968762600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/api/dist/modules/schemas/repositories/file-schema.repository.d.ts.map": {
+      "size": 361,
+      "mtime_nanos": 1783856311236720100,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/api/.turbo/turbo-build.log",
+    "packages/api/dist",
+    "packages/api/dist/app.controller.d.ts",
+    "packages/api/dist/app.controller.d.ts.map",
+    "packages/api/dist/app.controller.js",
+    "packages/api/dist/app.controller.js.map",
+    "packages/api/dist/app.module.d.ts",
+    "packages/api/dist/app.module.d.ts.map",
+    "packages/api/dist/app.module.js",
+    "packages/api/dist/app.module.js.map",
+    "packages/api/dist/app.service.d.ts",
+    "packages/api/dist/app.service.d.ts.map",
+    "packages/api/dist/app.service.js",
+    "packages/api/dist/app.service.js.map",
+    "packages/api/dist/common",
+    "packages/api/dist/common/interceptors",
+    "packages/api/dist/common/interceptors/transform.interceptor.d.ts",
+    "packages/api/dist/common/interceptors/transform.interceptor.d.ts.map",
+    "packages/api/dist/common/interceptors/transform.interceptor.js",
+    "packages/api/dist/common/interceptors/transform.interceptor.js.map",
+    "packages/api/dist/common/prisma.module.d.ts",
+    "packages/api/dist/common/prisma.module.d.ts.map",
+    "packages/api/dist/common/prisma.module.js",
+    "packages/api/dist/common/prisma.module.js.map",
+    "packages/api/dist/common/prisma.service.d.ts",
+    "packages/api/dist/common/prisma.service.d.ts.map",
+    "packages/api/dist/common/prisma.service.js",
+    "packages/api/dist/common/prisma.service.js.map",
+    "packages/api/dist/config",
+    "packages/api/dist/config/env.validation.d.ts",
+    "packages/api/dist/config/env.validation.d.ts.map",
+    "packages/api/dist/config/env.validation.js",
+    "packages/api/dist/config/env.validation.js.map",
+    "packages/api/dist/main.d.ts",
+    "packages/api/dist/main.d.ts.map",
+    "packages/api/dist/main.js",
+    "packages/api/dist/main.js.map",
+    "packages/api/dist/modules",
+    "packages/api/dist/modules/ai",
+    "packages/api/dist/modules/ai/ai.controller.d.ts",
+    "packages/api/dist/modules/ai/ai.controller.d.ts.map",
+    "packages/api/dist/modules/ai/ai.controller.js",
+    "packages/api/dist/modules/ai/ai.controller.js.map",
+    "packages/api/dist/modules/ai/ai.module.d.ts",
+    "packages/api/dist/modules/ai/ai.module.d.ts.map",
+    "packages/api/dist/modules/ai/ai.module.js",
+    "packages/api/dist/modules/ai/ai.module.js.map",
+    "packages/api/dist/modules/ai/cost",
+    "packages/api/dist/modules/ai/cost/cost-calculator.service.d.ts",
+    "packages/api/dist/modules/ai/cost/cost-calculator.service.d.ts.map",
+    "packages/api/dist/modules/ai/cost/cost-calculator.service.js",
+    "packages/api/dist/modules/ai/cost/cost-calculator.service.js.map",
+    "packages/api/dist/modules/ai/cost/interfaces.d.ts",
+    "packages/api/dist/modules/ai/cost/interfaces.d.ts.map",
+    "packages/api/dist/modules/ai/cost/interfaces.js",
+    "packages/api/dist/modules/ai/cost/interfaces.js.map",
+    "packages/api/dist/modules/ai/cost/json-pricing.repository.d.ts",
+    "packages/api/dist/modules/ai/cost/json-pricing.repository.d.ts.map",
+    "packages/api/dist/modules/ai/cost/json-pricing.repository.js",
+    "packages/api/dist/modules/ai/cost/json-pricing.repository.js.map",
+    "packages/api/dist/modules/ai/filters",
+    "packages/api/dist/modules/ai/filters/response-safety.filter.d.ts",
+    "packages/api/dist/modules/ai/filters/response-safety.filter.d.ts.map",
+    "packages/api/dist/modules/ai/filters/response-safety.filter.js",
+    "packages/api/dist/modules/ai/filters/response-safety.filter.js.map",
+    "packages/api/dist/modules/ai/filters/rule-engine",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/block-action.executor.d.ts",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/block-action.executor.d.ts.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/block-action.executor.js",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/block-action.executor.js.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/mask-action.executor.d.ts",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/mask-action.executor.d.ts.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/mask-action.executor.js",
+    "packages/api/dist/modules/ai/filters/rule-engine/executors/mask-action.executor.js.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/interfaces.d.ts",
+    "packages/api/dist/modules/ai/filters/rule-engine/interfaces.d.ts.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/interfaces.js",
+    "packages/api/dist/modules/ai/filters/rule-engine/interfaces.js.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/keyword.matcher.d.ts",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/keyword.matcher.d.ts.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/keyword.matcher.js",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/keyword.matcher.js.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/regex.matcher.d.ts",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/regex.matcher.d.ts.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/regex.matcher.js",
+    "packages/api/dist/modules/ai/filters/rule-engine/matchers/regex.matcher.js.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories",
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories/json-rule.repository.d.ts",
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories/json-rule.repository.d.ts.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories/json-rule.repository.js",
+    "packages/api/dist/modules/ai/filters/rule-engine/repositories/json-rule.repository.js.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/rule-engine.service.d.ts",
+    "packages/api/dist/modules/ai/filters/rule-engine/rule-engine.service.d.ts.map",
+    "packages/api/dist/modules/ai/filters/rule-engine/rule-engine.service.js",
+    "packages/api/dist/modules/ai/filters/rule-engine/rule-engine.service.js.map",
+    "packages/api/dist/modules/ai/filters/sensitive-data.filter.d.ts",
+    "packages/api/dist/modules/ai/filters/sensitive-data.filter.d.ts.map",
+    "packages/api/dist/modules/ai/filters/sensitive-data.filter.js",
+    "packages/api/dist/modules/ai/filters/sensitive-data.filter.js.map",
+    "packages/api/dist/modules/ai/gateway",
+    "packages/api/dist/modules/ai/gateway/llm-gateway.service.d.ts",
+    "packages/api/dist/modules/ai/gateway/llm-gateway.service.d.ts.map",
+    "packages/api/dist/modules/ai/gateway/llm-gateway.service.js",
+    "packages/api/dist/modules/ai/gateway/llm-gateway.service.js.map",
+    "packages/api/dist/modules/ai/interfaces",
+    "packages/api/dist/modules/ai/interfaces/llm-provider.interface.d.ts",
+    "packages/api/dist/modules/ai/interfaces/llm-provider.interface.d.ts.map",
+    "packages/api/dist/modules/ai/interfaces/llm-provider.interface.js",
+    "packages/api/dist/modules/ai/interfaces/llm-provider.interface.js.map",
+    "packages/api/dist/modules/ai/interfaces/prompt-repository.interface.d.ts",
+    "packages/api/dist/modules/ai/interfaces/prompt-repository.interface.d.ts.map",
+    "packages/api/dist/modules/ai/interfaces/prompt-repository.interface.js",
+    "packages/api/dist/modules/ai/interfaces/prompt-repository.interface.js.map",
+    "packages/api/dist/modules/ai/model-registry.service.d.ts",
+    "packages/api/dist/modules/ai/model-registry.service.d.ts.map",
+    "packages/api/dist/modules/ai/model-registry.service.js",
+    "packages/api/dist/modules/ai/model-registry.service.js.map",
+    "packages/api/dist/modules/ai/prompt-builder.service.d.ts",
+    "packages/api/dist/modules/ai/prompt-builder.service.d.ts.map",
+    "packages/api/dist/modules/ai/prompt-builder.service.js",
+    "packages/api/dist/modules/ai/prompt-builder.service.js.map",
+    "packages/api/dist/modules/ai/providers",
+    "packages/api/dist/modules/ai/providers/deepseek.provider.d.ts",
+    "packages/api/dist/modules/ai/providers/deepseek.provider.d.ts.map",
+    "packages/api/dist/modules/ai/providers/deepseek.provider.js",
+    "packages/api/dist/modules/ai/providers/deepseek.provider.js.map",
+    "packages/api/dist/modules/ai/providers/file-prompt.repository.d.ts",
+    "packages/api/dist/modules/ai/providers/file-prompt.repository.d.ts.map",
+    "packages/api/dist/modules/ai/providers/file-prompt.repository.js",
+    "packages/api/dist/modules/ai/providers/file-prompt.repository.js.map",
+    "packages/api/dist/modules/ai/providers/mock.provider.d.ts",
+    "packages/api/dist/modules/ai/providers/mock.provider.d.ts.map",
+    "packages/api/dist/modules/ai/providers/mock.provider.js",
+    "packages/api/dist/modules/ai/providers/mock.provider.js.map",
+    "packages/api/dist/modules/ai/providers/openai.provider.d.ts",
+    "packages/api/dist/modules/ai/providers/openai.provider.d.ts.map",
+    "packages/api/dist/modules/ai/providers/openai.provider.js",
+    "packages/api/dist/modules/ai/providers/openai.provider.js.map",
+    "packages/api/dist/modules/ai/providers/provider-registry.service.d.ts",
+    "packages/api/dist/modules/ai/providers/provider-registry.service.d.ts.map",
+    "packages/api/dist/modules/ai/providers/provider-registry.service.js",
+    "packages/api/dist/modules/ai/providers/provider-registry.service.js.map",
+    "packages/api/dist/modules/ai/rag",
+    "packages/api/dist/modules/ai/rag/markdown-chunker.d.ts",
+    "packages/api/dist/modules/ai/rag/markdown-chunker.d.ts.map",
+    "packages/api/dist/modules/ai/rag/markdown-chunker.js",
+    "packages/api/dist/modules/ai/rag/markdown-chunker.js.map",
+    "packages/api/dist/modules/ai/rag/memory-vector.store.d.ts",
+    "packages/api/dist/modules/ai/rag/memory-vector.store.d.ts.map",
+    "packages/api/dist/modules/ai/rag/memory-vector.store.js",
+    "packages/api/dist/modules/ai/rag/memory-vector.store.js.map",
+    "packages/api/dist/modules/ai/rag/rag.service.d.ts",
+    "packages/api/dist/modules/ai/rag/rag.service.d.ts.map",
+    "packages/api/dist/modules/ai/rag/rag.service.js",
+    "packages/api/dist/modules/ai/rag/rag.service.js.map",
+    "packages/api/dist/modules/ai/tutor",
+    "packages/api/dist/modules/ai/tutor/ai-tutor.service.d.ts",
+    "packages/api/dist/modules/ai/tutor/ai-tutor.service.d.ts.map",
+    "packages/api/dist/modules/ai/tutor/ai-tutor.service.js",
+    "packages/api/dist/modules/ai/tutor/ai-tutor.service.js.map",
+    "packages/api/dist/modules/ai/tutor/interfaces.d.ts",
+    "packages/api/dist/modules/ai/tutor/interfaces.d.ts.map",
+    "packages/api/dist/modules/ai/tutor/interfaces.js",
+    "packages/api/dist/modules/ai/tutor/interfaces.js.map",
+    "packages/api/dist/modules/ai/tutor/strategies",
+    "packages/api/dist/modules/ai/tutor/strategies/ask.strategy.d.ts",
+    "packages/api/dist/modules/ai/tutor/strategies/ask.strategy.d.ts.map",
+    "packages/api/dist/modules/ai/tutor/strategies/ask.strategy.js",
+    "packages/api/dist/modules/ai/tutor/strategies/ask.strategy.js.map",
+    "packages/api/dist/modules/ai/tutor/strategies/code-review.strategy.d.ts",
+    "packages/api/dist/modules/ai/tutor/strategies/code-review.strategy.d.ts.map",
+    "packages/api/dist/modules/ai/tutor/strategies/code-review.strategy.js",
+    "packages/api/dist/modules/ai/tutor/strategies/code-review.strategy.js.map",
+    "packages/api/dist/modules/ai/tutor/strategies/explain-error.strategy.d.ts",
+    "packages/api/dist/modules/ai/tutor/strategies/explain-error.strategy.d.ts.map",
+    "packages/api/dist/modules/ai/tutor/strategies/explain-error.strategy.js",
+    "packages/api/dist/modules/ai/tutor/strategies/explain-error.strategy.js.map",
+    "packages/api/dist/modules/auth",
+    "packages/api/dist/modules/auth/auth.controller.d.ts",
+    "packages/api/dist/modules/auth/auth.controller.d.ts.map",
+    "packages/api/dist/modules/auth/auth.controller.js",
+    "packages/api/dist/modules/auth/auth.controller.js.map",
+    "packages/api/dist/modules/auth/auth.module.d.ts",
+    "packages/api/dist/modules/auth/auth.module.d.ts.map",
+    "packages/api/dist/modules/auth/auth.module.js",
+    "packages/api/dist/modules/auth/auth.module.js.map",
+    "packages/api/dist/modules/auth/auth.service.d.ts",
+    "packages/api/dist/modules/auth/auth.service.d.ts.map",
+    "packages/api/dist/modules/auth/auth.service.js",
+    "packages/api/dist/modules/auth/auth.service.js.map",
+    "packages/api/dist/modules/auth/decorators",
+    "packages/api/dist/modules/auth/decorators/public.decorator.d.ts",
+    "packages/api/dist/modules/auth/decorators/public.decorator.d.ts.map",
+    "packages/api/dist/modules/auth/decorators/public.decorator.js",
+    "packages/api/dist/modules/auth/decorators/public.decorator.js.map",
+    "packages/api/dist/modules/auth/decorators/roles.decorator.d.ts",
+    "packages/api/dist/modules/auth/decorators/roles.decorator.d.ts.map",
+    "packages/api/dist/modules/auth/decorators/roles.decorator.js",
+    "packages/api/dist/modules/auth/decorators/roles.decorator.js.map",
+    "packages/api/dist/modules/auth/guards",
+    "packages/api/dist/modules/auth/guards/jwt-auth.guard.d.ts",
+    "packages/api/dist/modules/auth/guards/jwt-auth.guard.d.ts.map",
+    "packages/api/dist/modules/auth/guards/jwt-auth.guard.js",
+    "packages/api/dist/modules/auth/guards/jwt-auth.guard.js.map",
+    "packages/api/dist/modules/auth/guards/roles.guard.d.ts",
+    "packages/api/dist/modules/auth/guards/roles.guard.d.ts.map",
+    "packages/api/dist/modules/auth/guards/roles.guard.js",
+    "packages/api/dist/modules/auth/guards/roles.guard.js.map",
+    "packages/api/dist/modules/auth/strategies",
+    "packages/api/dist/modules/auth/strategies/jwt.strategy.d.ts",
+    "packages/api/dist/modules/auth/strategies/jwt.strategy.d.ts.map",
+    "packages/api/dist/modules/auth/strategies/jwt.strategy.js",
+    "packages/api/dist/modules/auth/strategies/jwt.strategy.js.map",
+    "packages/api/dist/modules/auth/strategies/local.strategy.d.ts",
+    "packages/api/dist/modules/auth/strategies/local.strategy.d.ts.map",
+    "packages/api/dist/modules/auth/strategies/local.strategy.js",
+    "packages/api/dist/modules/auth/strategies/local.strategy.js.map",
+    "packages/api/dist/modules/courses",
+    "packages/api/dist/modules/courses/courses.controller.d.ts",
+    "packages/api/dist/modules/courses/courses.controller.d.ts.map",
+    "packages/api/dist/modules/courses/courses.controller.js",
+    "packages/api/dist/modules/courses/courses.controller.js.map",
+    "packages/api/dist/modules/courses/courses.module.d.ts",
+    "packages/api/dist/modules/courses/courses.module.d.ts.map",
+    "packages/api/dist/modules/courses/courses.module.js",
+    "packages/api/dist/modules/courses/courses.module.js.map",
+    "packages/api/dist/modules/courses/courses.service.d.ts",
+    "packages/api/dist/modules/courses/courses.service.d.ts.map",
+    "packages/api/dist/modules/courses/courses.service.js",
+    "packages/api/dist/modules/courses/courses.service.js.map",
+    "packages/api/dist/modules/organizations",
+    "packages/api/dist/modules/organizations/organizations.controller.d.ts",
+    "packages/api/dist/modules/organizations/organizations.controller.d.ts.map",
+    "packages/api/dist/modules/organizations/organizations.controller.js",
+    "packages/api/dist/modules/organizations/organizations.controller.js.map",
+    "packages/api/dist/modules/organizations/organizations.module.d.ts",
+    "packages/api/dist/modules/organizations/organizations.module.d.ts.map",
+    "packages/api/dist/modules/organizations/organizations.module.js",
+    "packages/api/dist/modules/organizations/organizations.module.js.map",
+    "packages/api/dist/modules/organizations/organizations.service.d.ts",
+    "packages/api/dist/modules/organizations/organizations.service.d.ts.map",
+    "packages/api/dist/modules/organizations/organizations.service.js",
+    "packages/api/dist/modules/organizations/organizations.service.js.map",
+    "packages/api/dist/modules/platform",
+    "packages/api/dist/modules/platform/health",
+    "packages/api/dist/modules/platform/health/health.controller.d.ts",
+    "packages/api/dist/modules/platform/health/health.controller.d.ts.map",
+    "packages/api/dist/modules/platform/health/health.controller.js",
+    "packages/api/dist/modules/platform/health/health.controller.js.map",
+    "packages/api/dist/modules/platform/health/health.module.d.ts",
+    "packages/api/dist/modules/platform/health/health.module.d.ts.map",
+    "packages/api/dist/modules/platform/health/health.module.js",
+    "packages/api/dist/modules/platform/health/health.module.js.map",
+    "packages/api/dist/modules/platform/logging",
+    "packages/api/dist/modules/platform/logging/logging.module.d.ts",
+    "packages/api/dist/modules/platform/logging/logging.module.d.ts.map",
+    "packages/api/dist/modules/platform/logging/logging.module.js",
+    "packages/api/dist/modules/platform/logging/logging.module.js.map",
+    "packages/api/dist/modules/platform/monitoring",
+    "packages/api/dist/modules/platform/monitoring/monitoring.module.d.ts",
+    "packages/api/dist/modules/platform/monitoring/monitoring.module.d.ts.map",
+    "packages/api/dist/modules/platform/monitoring/monitoring.module.js",
+    "packages/api/dist/modules/platform/monitoring/monitoring.module.js.map",
+    "packages/api/dist/modules/platform/monitoring/monitoring.service.d.ts",
+    "packages/api/dist/modules/platform/monitoring/monitoring.service.d.ts.map",
+    "packages/api/dist/modules/platform/monitoring/monitoring.service.js",
+    "packages/api/dist/modules/platform/monitoring/monitoring.service.js.map",
+    "packages/api/dist/modules/platform/platform.module.d.ts",
+    "packages/api/dist/modules/platform/platform.module.d.ts.map",
+    "packages/api/dist/modules/platform/platform.module.js",
+    "packages/api/dist/modules/platform/platform.module.js.map",
+    "packages/api/dist/modules/reports",
+    "packages/api/dist/modules/reports/export.service.d.ts",
+    "packages/api/dist/modules/reports/export.service.d.ts.map",
+    "packages/api/dist/modules/reports/export.service.js",
+    "packages/api/dist/modules/reports/export.service.js.map",
+    "packages/api/dist/modules/reports/reports.controller.d.ts",
+    "packages/api/dist/modules/reports/reports.controller.d.ts.map",
+    "packages/api/dist/modules/reports/reports.controller.js",
+    "packages/api/dist/modules/reports/reports.controller.js.map",
+    "packages/api/dist/modules/reports/reports.module.d.ts",
+    "packages/api/dist/modules/reports/reports.module.d.ts.map",
+    "packages/api/dist/modules/reports/reports.module.js",
+    "packages/api/dist/modules/reports/reports.module.js.map",
+    "packages/api/dist/modules/reports/strategies",
+    "packages/api/dist/modules/reports/strategies/csv-export.strategy.d.ts",
+    "packages/api/dist/modules/reports/strategies/csv-export.strategy.d.ts.map",
+    "packages/api/dist/modules/reports/strategies/csv-export.strategy.js",
+    "packages/api/dist/modules/reports/strategies/csv-export.strategy.js.map",
+    "packages/api/dist/modules/reports/strategies/export-strategy.interface.d.ts",
+    "packages/api/dist/modules/reports/strategies/export-strategy.interface.d.ts.map",
+    "packages/api/dist/modules/reports/strategies/export-strategy.interface.js",
+    "packages/api/dist/modules/reports/strategies/export-strategy.interface.js.map",
+    "packages/api/dist/modules/sandbox",
+    "packages/api/dist/modules/sandbox/docker.executor.d.ts",
+    "packages/api/dist/modules/sandbox/docker.executor.d.ts.map",
+    "packages/api/dist/modules/sandbox/docker.executor.js",
+    "packages/api/dist/modules/sandbox/docker.executor.js.map",
+    "packages/api/dist/modules/sandbox/env-detector.service.d.ts",
+    "packages/api/dist/modules/sandbox/env-detector.service.d.ts.map",
+    "packages/api/dist/modules/sandbox/env-detector.service.js",
+    "packages/api/dist/modules/sandbox/env-detector.service.js.map",
+    "packages/api/dist/modules/sandbox/interfaces",
+    "packages/api/dist/modules/sandbox/interfaces/executor.interface.d.ts",
+    "packages/api/dist/modules/sandbox/interfaces/executor.interface.d.ts.map",
+    "packages/api/dist/modules/sandbox/interfaces/executor.interface.js",
+    "packages/api/dist/modules/sandbox/interfaces/executor.interface.js.map",
+    "packages/api/dist/modules/sandbox/local.executor.d.ts",
+    "packages/api/dist/modules/sandbox/local.executor.d.ts.map",
+    "packages/api/dist/modules/sandbox/local.executor.js",
+    "packages/api/dist/modules/sandbox/local.executor.js.map",
+    "packages/api/dist/modules/sandbox/sandbox.module.d.ts",
+    "packages/api/dist/modules/sandbox/sandbox.module.d.ts.map",
+    "packages/api/dist/modules/sandbox/sandbox.module.js",
+    "packages/api/dist/modules/sandbox/sandbox.module.js.map",
+    "packages/api/dist/modules/sandbox/sandbox.service.d.ts",
+    "packages/api/dist/modules/sandbox/sandbox.service.d.ts.map",
+    "packages/api/dist/modules/sandbox/sandbox.service.js",
+    "packages/api/dist/modules/sandbox/sandbox.service.js.map",
+    "packages/api/dist/modules/sandbox/workspace.service.d.ts",
+    "packages/api/dist/modules/sandbox/workspace.service.d.ts.map",
+    "packages/api/dist/modules/sandbox/workspace.service.js",
+    "packages/api/dist/modules/sandbox/workspace.service.js.map",
+    "packages/api/dist/modules/schemas",
+    "packages/api/dist/modules/schemas/repositories",
+    "packages/api/dist/modules/schemas/repositories/file-schema.repository.d.ts",
+    "packages/api/dist/modules/schemas/repositories/file-schema.repository.d.ts.map",
+    "packages/api/dist/modules/schemas/repositories/file-schema.repository.js",
+    "packages/api/dist/modules/schemas/repositories/file-schema.repository.js.map",
+    "packages/api/dist/modules/schemas/schema-registry.service.d.ts",
+    "packages/api/dist/modules/schemas/schema-registry.service.d.ts.map",
+    "packages/api/dist/modules/schemas/schema-registry.service.js",
+    "packages/api/dist/modules/schemas/schema-registry.service.js.map",
+    "packages/api/dist/modules/schemas/schema-validation.pipe.d.ts",
+    "packages/api/dist/modules/schemas/schema-validation.pipe.d.ts.map",
+    "packages/api/dist/modules/schemas/schema-validation.pipe.js",
+    "packages/api/dist/modules/schemas/schema-validation.pipe.js.map",
+    "packages/api/dist/modules/schemas/schema-validation.service.d.ts",
+    "packages/api/dist/modules/schemas/schema-validation.service.d.ts.map",
+    "packages/api/dist/modules/schemas/schema-validation.service.js",
+    "packages/api/dist/modules/schemas/schema-validation.service.js.map",
+    "packages/api/dist/modules/schemas/schemas.controller.d.ts",
+    "packages/api/dist/modules/schemas/schemas.controller.d.ts.map",
+    "packages/api/dist/modules/schemas/schemas.controller.js",
+    "packages/api/dist/modules/schemas/schemas.controller.js.map",
+    "packages/api/dist/modules/schemas/schemas.module.d.ts",
+    "packages/api/dist/modules/schemas/schemas.module.d.ts.map",
+    "packages/api/dist/modules/schemas/schemas.module.js",
+    "packages/api/dist/modules/schemas/schemas.module.js.map",
+    "packages/api/dist/modules/statistics",
+    "packages/api/dist/modules/statistics/statistics.controller.d.ts",
+    "packages/api/dist/modules/statistics/statistics.controller.d.ts.map",
+    "packages/api/dist/modules/statistics/statistics.controller.js",
+    "packages/api/dist/modules/statistics/statistics.controller.js.map",
+    "packages/api/dist/modules/statistics/statistics.module.d.ts",
+    "packages/api/dist/modules/statistics/statistics.module.d.ts.map",
+    "packages/api/dist/modules/statistics/statistics.module.js",
+    "packages/api/dist/modules/statistics/statistics.module.js.map",
+    "packages/api/dist/modules/statistics/statistics.service.d.ts",
+    "packages/api/dist/modules/statistics/statistics.service.d.ts.map",
+    "packages/api/dist/modules/statistics/statistics.service.js",
+    "packages/api/dist/modules/statistics/statistics.service.js.map",
+    "packages/api/dist/modules/submissions",
+    "packages/api/dist/modules/submissions/submissions.controller.d.ts",
+    "packages/api/dist/modules/submissions/submissions.controller.d.ts.map",
+    "packages/api/dist/modules/submissions/submissions.controller.js",
+    "packages/api/dist/modules/submissions/submissions.controller.js.map",
+    "packages/api/dist/modules/submissions/submissions.module.d.ts",
+    "packages/api/dist/modules/submissions/submissions.module.d.ts.map",
+    "packages/api/dist/modules/submissions/submissions.module.js",
+    "packages/api/dist/modules/submissions/submissions.module.js.map",
+    "packages/api/dist/modules/submissions/submissions.service.d.ts",
+    "packages/api/dist/modules/submissions/submissions.service.d.ts.map",
+    "packages/api/dist/modules/submissions/submissions.service.js",
+    "packages/api/dist/modules/submissions/submissions.service.js.map",
+    "packages/api/dist/modules/tasks",
+    "packages/api/dist/modules/tasks/tasks.controller.d.ts",
+    "packages/api/dist/modules/tasks/tasks.controller.d.ts.map",
+    "packages/api/dist/modules/tasks/tasks.controller.js",
+    "packages/api/dist/modules/tasks/tasks.controller.js.map",
+    "packages/api/dist/modules/tasks/tasks.module.d.ts",
+    "packages/api/dist/modules/tasks/tasks.module.d.ts.map",
+    "packages/api/dist/modules/tasks/tasks.module.js",
+    "packages/api/dist/modules/tasks/tasks.module.js.map",
+    "packages/api/dist/modules/tasks/tasks.service.d.ts",
+    "packages/api/dist/modules/tasks/tasks.service.d.ts.map",
+    "packages/api/dist/modules/tasks/tasks.service.js",
+    "packages/api/dist/modules/tasks/tasks.service.js.map",
+    "packages/api/dist/modules/training",
+    "packages/api/dist/modules/training/score.calculator.d.ts",
+    "packages/api/dist/modules/training/score.calculator.d.ts.map",
+    "packages/api/dist/modules/training/score.calculator.js",
+    "packages/api/dist/modules/training/score.calculator.js.map",
+    "packages/api/dist/modules/training/training.controller.d.ts",
+    "packages/api/dist/modules/training/training.controller.d.ts.map",
+    "packages/api/dist/modules/training/training.controller.js",
+    "packages/api/dist/modules/training/training.controller.js.map",
+    "packages/api/dist/modules/training/training.module.d.ts",
+    "packages/api/dist/modules/training/training.module.d.ts.map",
+    "packages/api/dist/modules/training/training.module.js",
+    "packages/api/dist/modules/training/training.module.js.map",
+    "packages/api/dist/modules/training/training.service.d.ts",
+    "packages/api/dist/modules/training/training.service.d.ts.map",
+    "packages/api/dist/modules/training/training.service.js",
+    "packages/api/dist/modules/training/training.service.js.map",
+    "packages/api/dist/modules/users",
+    "packages/api/dist/modules/users/users.controller.d.ts",
+    "packages/api/dist/modules/users/users.controller.d.ts.map",
+    "packages/api/dist/modules/users/users.controller.js",
+    "packages/api/dist/modules/users/users.controller.js.map",
+    "packages/api/dist/modules/users/users.module.d.ts",
+    "packages/api/dist/modules/users/users.module.d.ts.map",
+    "packages/api/dist/modules/users/users.module.js",
+    "packages/api/dist/modules/users/users.module.js.map",
+    "packages/api/dist/modules/users/users.service.d.ts",
+    "packages/api/dist/modules/users/users.service.d.ts.map",
+    "packages/api/dist/modules/users/users.service.js",
+    "packages/api/dist/modules/users/users.service.js.map"
+  ]
+}

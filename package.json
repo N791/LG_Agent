@@ -12,11 +12,16 @@
   "license": "UNLICENSED",
   "scripts": {
     "prelint": "turbo run build --filter=@lg-agent/contracts",
+    "build": "turbo run build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint packages/*/src --fix",
     "format": "prettier --write \"packages/*/src/**/*.{ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"packages/*/src/**/*.{ts,tsx,json,css,md}\"",
     "typecheck": "tsc --noEmit -p packages/api/tsconfig.json && tsc --noEmit -p packages/web/tsconfig.json && tsc --noEmit -p packages/cli/tsconfig.json",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:e2e": "turbo run test:e2e",
+    "test:cov": "turbo run test:cov",
     "prepare": "husky",
     "release": "changeset publish"
   },

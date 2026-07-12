@@ -1,0 +1,38 @@
+{
+  "files": {
+    "packages/web/.turbo/turbo-build.log": {
+      "size": 1657,
+      "mtime_nanos": 1783853895044780700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/dist/index.html": {
+      "size": 463,
+      "mtime_nanos": 1783853894716202700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/web/dist/assets": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/web/dist/assets/index-BjDegGRG.css": {
+      "size": 40365,
+      "mtime_nanos": 1783853894716202700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/web/dist/assets/index-D6y0cfiS.js": {
+      "size": 3310015,
+      "mtime_nanos": 1783853894719064000,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/web/.turbo/turbo-build.log",
+    "packages/web/dist",
+    "packages/web/dist/assets",
+    "packages/web/dist/assets/index-BjDegGRG.css",
+    "packages/web/dist/assets/index-D6y0cfiS.js",
+    "packages/web/dist/index.html"
+  ]
+}
