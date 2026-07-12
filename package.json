@@ -11,6 +11,7 @@
   ],
   "license": "UNLICENSED",
   "scripts": {
+    "prelint": "turbo run build --filter=@lg-agent/contracts",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint packages/*/src --fix",
     "format": "prettier --write \"packages/*/src/**/*.{ts,tsx,json,css,md}\"",
