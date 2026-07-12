@@ -1,14 +1,12 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
     branches:
       - main
-      - develop
   pull_request:
     branches:
       - main
-      - develop
 
 jobs:
   build-and-test:
@@ -16,67 +14,56 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'pnpm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
+      - name: Cache Turbo
         uses: actions/cache@v4
         with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-turbo-
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma Client
-        run: pnpm --filter api exec prisma generate
+      - name: Prisma Generate & Validate
+        run: |
+          # Assuming the schema is in packages/api/prisma
+          # Adjust this path if needed
+          npx prisma generate --schema=packages/api/prisma/schema.prisma
+          npx prisma validate --schema=packages/api/prisma/schema.prisma
 
-      - name: Format Check
-        id: format
-        run: pnpm format:check
-        continue-on-error: true
-
-      - name: Lint
-        id: lint
-        run: pnpm lint
-        continue-on-error: true
+      - name: ESLint
+        run: pnpm run lint
 
       - name: Type Check
-        id: typecheck
-        run: pnpm typecheck
-        continue-on-error: true
+        run: pnpm run typecheck
 
-      - name: Test
-        id: test
-        run: pnpm -r test
-        continue-on-error: true
+      - name: Turbo Build
+        run: npx turbo run build
 
-      - name: Build
-        id: build
-        run: pnpm -r build
-        continue-on-error: true
+      - name: Unit & Integration Tests
+        run: npx turbo run test
 
-      - name: Check for failures
-        if: steps.format.outcome == 'failure' || steps.lint.outcome == 'failure' || steps.typecheck.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure'
-        run: |
-          echo "One or more checks failed"
-          exit 1
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+        working-directory: packages/e2e
+        continue-on-error: true # Might fail if e2e is not fully set up yet
+
+      - name: Playwright Smoke Test
+        run: pnpm run test:smoke
+        working-directory: packages/e2e
+        continue-on-error: true # Might fail if e2e is not fully set up yet

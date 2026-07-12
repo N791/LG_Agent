@@ -1,37 +1,52 @@
-# Base image
-FROM node:20-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g pnpm@9.15.9
-
-# Builder stage
-FROM base AS builder
+# Stage 1: Prune workspace
+FROM node:20-alpine AS pruner
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
+RUN corepack enable pnpm
+RUN pnpm install turbo --global
+COPY . .
+RUN turbo prune --scope=@lg-agent/web --docker
 
-# Copy workspace config and lockfile
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
-COPY tsconfig.base.json ./
+# Stage 2: Installer
+FROM node:20-alpine AS installer
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+RUN corepack enable pnpm
 
-# Copy web package source
-COPY packages/web ./packages/web
+COPY .gitignore .gitignore
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
 
-# Install dependencies
-RUN pnpm install --filter @lg-agent/web...
+COPY --from=pruner /app/out/full/ .
+COPY turbo.json turbo.json
+RUN pnpm turbo run build --filter=@lg-agent/web...
 
-# Build the Web project
-RUN pnpm --filter @lg-agent/web run build
-
-# Runner stage (Nginx)
+# Stage 3: Runner (Nginx)
 FROM nginx:alpine AS runner
+WORKDIR /usr/share/nginx/html
 
-# Remove default nginx static assets
-RUN rm -rf /usr/share/nginx/html/*
+# Non-root config for nginx
+RUN sed -i 's/user  nginx;/user  1001;/g' /etc/nginx/nginx.conf
+RUN chown -R 1001:1001 /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
+RUN touch /var/run/nginx.pid && chown -R 1001:1001 /var/run/nginx.pid
 
-# Copy built assets from builder stage
-COPY --from=builder /app/packages/web/dist /usr/share/nginx/html
+# Provide a default SPA nginx config
+COPY <<'EOF' /etc/nginx/conf.d/default.conf
+server {
+    listen       80;
+    server_name  localhost;
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+}
+EOF
 
-# Copy custom Nginx configuration for SPA routing
-COPY packages/web/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=installer --chown=1001:1001 /app/packages/web/dist .
+
+USER 1001
 
 EXPOSE 80
 

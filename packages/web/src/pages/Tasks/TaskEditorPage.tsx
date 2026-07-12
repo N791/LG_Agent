@@ -84,7 +84,7 @@ export const TaskEditorPage: React.FC = () => {
           <Title level={5}>Task Description</Title>
           <MarkdownEditor
             value={description}
-            onChange={(val) => setDescription(val || '')}
+            onChange={(val) => { setDescription(val || ''); }}
           />
         </div>
       ),
@@ -98,7 +98,7 @@ export const TaskEditorPage: React.FC = () => {
           <JsonSchemaEditor
             schemaName="lg-agent:schema:env"
             formData={envConfig}
-            onChange={(e: any) => setEnvConfig(e.formData)}
+            onChange={(e: any) => { setEnvConfig(e.formData); }}
             onSubmit={() => message.success('Env config valid')}
           />
           <div style={{ marginTop: 24 }} />
@@ -106,7 +106,7 @@ export const TaskEditorPage: React.FC = () => {
           <JsonSchemaEditor
             schemaName="lg-agent:schema:sandbox"
             formData={sandboxConfig}
-            onChange={(e: any) => setSandboxConfig(e.formData)}
+            onChange={(e: any) => { setSandboxConfig(e.formData); }}
             onSubmit={() => message.success('Sandbox config valid')}
           />
         </div>
@@ -121,7 +121,7 @@ export const TaskEditorPage: React.FC = () => {
           <JsonSchemaEditor
             schemaName="lg-agent:schema:test"
             formData={testConfig}
-            onChange={(e: any) => setTestConfig(e.formData)}
+            onChange={(e: any) => { setTestConfig(e.formData); }}
             onSubmit={() => message.success('Test config valid')}
           />
         </div>
@@ -146,7 +146,7 @@ export const TaskEditorPage: React.FC = () => {
       <Header style={{ background: '#fff', padding: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Title level={3} style={{ margin: 0 }}>Edit Task: {task.title}</Title>
         <Space>
-          <Button onClick={() => navigate(`/courses/${courseId}/tasks`)}>Cancel</Button>
+          <Button onClick={() => { navigate(`/courses/${courseId}/tasks`); }}>Cancel</Button>
           <Button type="primary" loading={saving} onClick={handleSave}>
             Save Changes
           </Button>

@@ -20,6 +20,7 @@ import { StatisticsModule } from './modules/statistics/statistics.module';
 import { SchemasModule } from './modules/schemas/schemas.module';
 import { SubmissionsModule } from './modules/submissions/submissions.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { PlatformModule } from './modules/platform/platform.module';
 
 @Module({
   imports: [

@@ -4,7 +4,7 @@ import { schemasService } from './schemas';
 
 class SchemaValidatorService {
   private ajv: Ajv;
-  private validators: Map<string, any> = new Map();
+  private validators = new Map<string, any>();
   private isInitialized = false;
 
   constructor() {

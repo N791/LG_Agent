@@ -47,7 +47,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
             placeholder="Select AI Model"
             loading={loading}
             value={value?.model}
-            onChange={(val) => handleChange('model', val)}
+            onChange={(val) => { handleChange('model', val); }}
           >
             {models.filter(m => m.enabled && m.capabilities.includes('chat')).map((model) => (
               <Option key={model.id} value={model.id}>
@@ -64,7 +64,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
               height="200px"
               language="markdown"
               value={value?.systemPrompt || ''}
-              onChange={(val) => handleChange('systemPrompt', val)}
+              onChange={(val) => { handleChange('systemPrompt', val); }}
               options={{ minimap: { enabled: false } }}
             />
           </div>
@@ -77,7 +77,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
               height="200px"
               language="markdown"
               value={value?.userPromptTemplate || ''}
-              onChange={(val) => handleChange('userPromptTemplate', val)}
+              onChange={(val) => { handleChange('userPromptTemplate', val); }}
               options={{ minimap: { enabled: false } }}
             />
           </div>

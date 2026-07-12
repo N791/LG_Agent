@@ -87,7 +87,7 @@ const Submissions: React.FC = () => {
           <Button 
             type="link" 
             icon={<EyeOutlined />} 
-            onClick={() => showReport(record)}
+            onClick={() => { showReport(record); }}
           >
             AI Review
           </Button>
@@ -121,9 +121,9 @@ const Submissions: React.FC = () => {
       <Modal
         title="AI Review Report"
         open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={() => { setIsModalVisible(false); }}
         footer={[
-          <Button key="close" onClick={() => setIsModalVisible(false)}>
+          <Button key="close" onClick={() => { setIsModalVisible(false); }}>
             Close
           </Button>
         ]}

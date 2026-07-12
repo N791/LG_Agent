@@ -4,3 +4,5 @@ coverage
 pnpm-lock.yaml
 *.min.js
 *.min.css
+
+deploy/helm/**
