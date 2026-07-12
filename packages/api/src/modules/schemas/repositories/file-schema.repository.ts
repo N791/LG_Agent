@@ -9,7 +9,7 @@ export class FileSchemaRepository implements OnModuleInit {
   onModuleInit() {
     // Register all schemas from @lg-agent/contracts
     for (const [key, schema] of Object.entries(schemas)) {
-      this.schemaRegistry.registerSchema(key, schema as Record<string, unknown>);
+      this.schemaRegistry.registerSchema(key, schema);
     }
   }
 }

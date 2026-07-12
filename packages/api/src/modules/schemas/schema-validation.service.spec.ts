@@ -28,7 +28,9 @@ describe('SchemaValidationService', () => {
     });
 
     // Should not throw
-    expect(() => service.validate('test-schema', { name: 'Alice' })).not.toThrow();
+    expect(() => {
+      service.validate('test-schema', { name: 'Alice' });
+    }).not.toThrow();
   });
 
   it('should throw BadRequestException on invalid data', () => {
@@ -38,6 +40,8 @@ describe('SchemaValidationService', () => {
       required: ['name'],
     });
 
-    expect(() => service.validate('test-schema', { age: 20 })).toThrow(BadRequestException);
+    expect(() => {
+      service.validate('test-schema', { age: 20 });
+    }).toThrow(BadRequestException);
   });
 });

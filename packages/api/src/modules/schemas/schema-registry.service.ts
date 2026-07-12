@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class SchemaRegistryService {
-  private schemas: Map<string, Record<string, unknown>> = new Map();
+  private schemas = new Map<string, Record<string, unknown>>();
 
   registerSchema(name: string, schema: Record<string, unknown>) {
     this.schemas.set(name, schema);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { IChangeEvent } from '@rjsf/core';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Tabs, Button, message, Layout, Typography, Spin, Space } from 'antd';
 import { MarkdownEditor } from '../../components/common/MarkdownEditor';
@@ -100,8 +101,8 @@ export const TaskEditorPage: React.FC = () => {
           <JsonSchemaEditor
             schemaName="lg-agent:schema:env"
             formData={envConfig}
-            onChange={(e: { formData: Record<string, unknown> }) => {
-              setEnvConfig(e.formData);
+            onChange={(e: IChangeEvent<Record<string, unknown>>) => {
+              if (e.formData) setEnvConfig(e.formData);
             }}
             onSubmit={() => {
               void message.success('Env config valid');
@@ -112,8 +113,8 @@ export const TaskEditorPage: React.FC = () => {
           <JsonSchemaEditor
             schemaName="lg-agent:schema:sandbox"
             formData={sandboxConfig}
-            onChange={(e: { formData: Record<string, unknown> }) => {
-              setSandboxConfig(e.formData);
+            onChange={(e: IChangeEvent<Record<string, unknown>>) => {
+              if (e.formData) setSandboxConfig(e.formData);
             }}
             onSubmit={() => {
               void message.success('Sandbox config valid');
@@ -131,8 +132,8 @@ export const TaskEditorPage: React.FC = () => {
           <JsonSchemaEditor
             schemaName="lg-agent:schema:test"
             formData={testConfig}
-            onChange={(e: { formData: Record<string, unknown> }) => {
-              setTestConfig(e.formData);
+            onChange={(e: IChangeEvent<Record<string, unknown>>) => {
+              if (e.formData) setTestConfig(e.formData);
             }}
             onSubmit={() => {
               void message.success('Test config valid');

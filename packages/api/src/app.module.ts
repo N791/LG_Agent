@@ -41,6 +41,7 @@ import { PlatformModule } from './modules/platform/platform.module';
     SchemasModule,
     SubmissionsModule,
     ReportsModule,
+    PlatformModule,
   ],
   controllers: [AppController],
   providers: [

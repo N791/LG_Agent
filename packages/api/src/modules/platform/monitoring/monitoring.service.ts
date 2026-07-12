@@ -6,9 +6,9 @@ import { InjectMetric } from '@willsoto/nestjs-prometheus';
 export class MonitoringService {
   constructor(
     @InjectMetric('http_request_duration_seconds')
-    private readonly httpRequestDuration: Histogram<string>,
+    private readonly httpRequestDuration: Histogram,
     @InjectMetric('ai_token_usage_total')
-    private readonly aiTokenUsage: Counter<string>,
+    private readonly aiTokenUsage: Counter,
   ) {}
 
   recordHttpRequestDuration(method: string, route: string, durationMs: number) {

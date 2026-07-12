@@ -6,7 +6,7 @@ import addFormats from 'ajv-formats';
 @Injectable()
 export class SchemaValidationService implements OnModuleInit {
   private ajv: Ajv;
-  private validators: Map<string, ValidateFunction> = new Map();
+  private validators = new Map<string, ValidateFunction>();
 
   constructor(private readonly schemaRegistry: SchemaRegistryService) {
     this.ajv = new Ajv({ allErrors: true, useDefaults: true });
@@ -27,7 +27,7 @@ export class SchemaValidationService implements OnModuleInit {
       const schema = this.schemaRegistry.getSchema(schemaName);
       const newValidator = this.ajv.compile(schema);
       this.validators.set(schemaName, newValidator);
-      
+
       if (!newValidator(data)) {
         throw new BadRequestException({
           message: `Validation failed for schema '${schemaName}'`,

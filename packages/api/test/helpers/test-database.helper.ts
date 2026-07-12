@@ -8,7 +8,9 @@ export class TestDatabaseHelper {
       datasources: {
         db: {
           // Use test database URL from environment or fallback
-          url: process.env.TEST_DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/lg_agent_test',
+          url:
+            process.env['TEST_DATABASE_URL'] ??
+            'postgresql://postgres:postgres@localhost:5432/lg_agent_test',
         },
       },
     });
