@@ -158,7 +158,7 @@ const Tasks: React.FC = () => {
           <Button
             type="link"
             onClick={() => {
-              navigate(`/courses/${courseId}/tasks/${record.id}/edit`);
+              navigate(`/courses/${courseId ?? ''}/tasks/${record.id}/edit`);
             }}
           >
             高级编辑

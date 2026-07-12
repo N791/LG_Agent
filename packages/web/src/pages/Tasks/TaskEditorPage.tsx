@@ -19,10 +19,10 @@ export const TaskEditorPage: React.FC = () => {
 
   // Form Data
   const [description, setDescription] = useState('');
-  const [envConfig, setEnvConfig] = useState<any>({});
-  const [sandboxConfig, setSandboxConfig] = useState<any>({});
-  const [testConfig, setTestConfig] = useState<any>({});
-  const [promptConfig, setPromptConfig] = useState<any>({});
+  const [envConfig, setEnvConfig] = useState<Record<string, unknown>>({});
+  const [sandboxConfig, setSandboxConfig] = useState<Record<string, unknown>>({});
+  const [testConfig, setTestConfig] = useState<Record<string, unknown>>({});
+  const [promptConfig, setPromptConfig] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -30,18 +30,18 @@ export const TaskEditorPage: React.FC = () => {
         if (!taskId) return;
         const data = await tasksService.getTask(taskId);
         setTask(data);
-        setDescription(data.description || '');
-        setEnvConfig(data.envConfig || {});
-        setSandboxConfig(data.sandboxConfig || {});
-        setTestConfig(data.testConfig || {});
-        setPromptConfig(data.promptConfig || {});
-      } catch (error) {
-        message.error('Failed to load task details');
+        setDescription(data.description ?? '');
+        setEnvConfig(data.envConfig);
+        setSandboxConfig(data.sandboxConfig);
+        setTestConfig(data.testConfig);
+        setPromptConfig(data.promptConfig);
+      } catch (_error) {
+        void message.error('Failed to load task details');
       } finally {
         setLoading(false);
       }
     };
-    fetchTask();
+    void fetchTask();
   }, [taskId]);
 
   const handleSave = async () => {
@@ -55,9 +55,9 @@ export const TaskEditorPage: React.FC = () => {
         testConfig,
         promptConfig,
       });
-      message.success('Task saved successfully');
-    } catch (error) {
-      message.error('Failed to save task');
+      void message.success('Task saved successfully');
+    } catch (_error) {
+      void message.error('Failed to save task');
     } finally {
       setSaving(false);
     }
@@ -84,7 +84,9 @@ export const TaskEditorPage: React.FC = () => {
           <Title level={5}>Task Description</Title>
           <MarkdownEditor
             value={description}
-            onChange={(val) => { setDescription(val || ''); }}
+            onChange={(val) => {
+              setDescription(val ?? '');
+            }}
           />
         </div>
       ),
@@ -98,16 +100,24 @@ export const TaskEditorPage: React.FC = () => {
           <JsonSchemaEditor
             schemaName="lg-agent:schema:env"
             formData={envConfig}
-            onChange={(e: any) => { setEnvConfig(e.formData); }}
-            onSubmit={() => message.success('Env config valid')}
+            onChange={(e: { formData: Record<string, unknown> }) => {
+              setEnvConfig(e.formData);
+            }}
+            onSubmit={() => {
+              void message.success('Env config valid');
+            }}
           />
           <div style={{ marginTop: 24 }} />
           <Title level={5}>Sandbox Config</Title>
           <JsonSchemaEditor
             schemaName="lg-agent:schema:sandbox"
             formData={sandboxConfig}
-            onChange={(e: any) => { setSandboxConfig(e.formData); }}
-            onSubmit={() => message.success('Sandbox config valid')}
+            onChange={(e: { formData: Record<string, unknown> }) => {
+              setSandboxConfig(e.formData);
+            }}
+            onSubmit={() => {
+              void message.success('Sandbox config valid');
+            }}
           />
         </div>
       ),
@@ -121,8 +131,12 @@ export const TaskEditorPage: React.FC = () => {
           <JsonSchemaEditor
             schemaName="lg-agent:schema:test"
             formData={testConfig}
-            onChange={(e: any) => { setTestConfig(e.formData); }}
-            onSubmit={() => message.success('Test config valid')}
+            onChange={(e: { formData: Record<string, unknown> }) => {
+              setTestConfig(e.formData);
+            }}
+            onSubmit={() => {
+              void message.success('Test config valid');
+            }}
           />
         </div>
       ),
@@ -132,10 +146,7 @@ export const TaskEditorPage: React.FC = () => {
       label: 'AI Prompt',
       children: (
         <div style={{ padding: '24px 0' }}>
-          <PromptEditor
-            value={promptConfig}
-            onChange={setPromptConfig}
-          />
+          <PromptEditor value={promptConfig} onChange={setPromptConfig} />
         </div>
       ),
     },
@@ -143,11 +154,27 @@ export const TaskEditorPage: React.FC = () => {
 
   return (
     <Layout style={{ background: '#fff', minHeight: '100%' }}>
-      <Header style={{ background: '#fff', padding: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title level={3} style={{ margin: 0 }}>Edit Task: {task.title}</Title>
+      <Header
+        style={{
+          background: '#fff',
+          padding: 0,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Title level={3} style={{ margin: 0 }}>
+          Edit Task: {task.title}
+        </Title>
         <Space>
-          <Button onClick={() => { navigate(`/courses/${courseId}/tasks`); }}>Cancel</Button>
-          <Button type="primary" loading={saving} onClick={handleSave}>
+          <Button
+            onClick={() => {
+              navigate(`/courses/${courseId ?? ''}/tasks`);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button type="primary" loading={saving} onClick={() => void handleSave()}>
             Save Changes
           </Button>
         </Space>

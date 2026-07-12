@@ -2,9 +2,7 @@ import React from 'react';
 import Editor, { EditorProps } from '@monaco-editor/react';
 import { Spin } from 'antd';
 
-export interface CodeEditorProps extends EditorProps {
-  // Add any common custom code editor properties here
-}
+export type CodeEditorProps = EditorProps;
 
 export const CodeEditor: React.FC<CodeEditorProps> = (props) => {
   return (

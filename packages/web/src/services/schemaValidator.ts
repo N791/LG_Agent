@@ -1,10 +1,10 @@
-import Ajv from 'ajv';
+import Ajv, { ValidateFunction } from 'ajv';
 import addFormats from 'ajv-formats';
 import { schemasService } from './schemas';
 
 class SchemaValidatorService {
   private ajv: Ajv;
-  private validators = new Map<string, any>();
+  private validators = new Map<string, ValidateFunction>();
   private isInitialized = false;
 
   constructor() {
@@ -14,7 +14,7 @@ class SchemaValidatorService {
 
   async initialize() {
     if (this.isInitialized) return;
-    
+
     try {
       const allSchemas = await schemasService.getAllSchemas();
       Object.entries(allSchemas).forEach(([name, schema]) => {
@@ -26,7 +26,7 @@ class SchemaValidatorService {
     }
   }
 
-  getValidator(schemaName: string) {
+  getValidator(schemaName: string): ValidateFunction | undefined {
     return this.validators.get(schemaName);
   }
 

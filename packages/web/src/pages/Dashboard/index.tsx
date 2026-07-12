@@ -1,15 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Col, Row, Statistic, Table, Typography } from 'antd';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { statisticsService, OverviewStats, BlockerStat, AiAuditStat } from '../../services/statistics';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from 'recharts';
+import {
+  statisticsService,
+  OverviewStats,
+  BlockerStat,
+  AiAuditStat,
+} from '../../services/statistics';
 import { ChartAdapter } from './adapters/chart.adapter';
 
 const { Title } = Typography;
 
 const Dashboard: React.FC = () => {
   const [overview, setOverview] = useState<OverviewStats | null>(null);
-  const [trendsData, setTrendsData] = useState<any[]>([]);
-  const [aiUsageData, setAiUsageData] = useState<any[]>([]);
+  const [trendsData, setTrendsData] = useState<Record<string, unknown>[]>([]);
+  const [aiUsageData, setAiUsageData] = useState<Record<string, unknown>[]>([]);
   const [blockers, setBlockers] = useState<BlockerStat[]>([]);
   const [aiAudit, setAiAudit] = useState<AiAuditStat[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -22,7 +38,7 @@ const Dashboard: React.FC = () => {
           statisticsService.getLearningTrends(),
           statisticsService.getBlockers(),
           statisticsService.getAiUsage(),
-          statisticsService.getAiAudit()
+          statisticsService.getAiAudit(),
         ]);
 
         setOverview(overviewRes);
@@ -37,7 +53,7 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    fetchData();
+    void fetchData();
   }, []);
 
   const blockerColumns = [
@@ -45,7 +61,12 @@ const Dashboard: React.FC = () => {
     { title: 'Task Title', dataIndex: 'taskTitle', key: 'taskTitle' },
     { title: 'Total Attempts', dataIndex: 'totalAttempts', key: 'totalAttempts' },
     { title: 'Failed Attempts', dataIndex: 'failedAttempts', key: 'failedAttempts' },
-    { title: 'Failure Rate (%)', dataIndex: 'failureRate', key: 'failureRate', render: (val: number) => `${val}%` },
+    {
+      title: 'Failure Rate (%)',
+      dataIndex: 'failureRate',
+      key: 'failureRate',
+      render: (val: number) => String(val) + '%',
+    },
   ];
 
   const auditColumns = [
@@ -56,14 +77,44 @@ const Dashboard: React.FC = () => {
   return (
     <div style={{ padding: 24 }}>
       <Title level={2}>Admin Dashboard</Title>
-      
+
       {/* Overview Stats */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={4}><Card><Statistic title="Total Users" value={overview?.totalUsers} loading={loading} /></Card></Col>
-        <Col span={4}><Card><Statistic title="Total Courses" value={overview?.totalCourses} loading={loading} /></Card></Col>
-        <Col span={4}><Card><Statistic title="Total Tasks" value={overview?.totalTasks} loading={loading} /></Card></Col>
-        <Col span={4}><Card><Statistic title="Total Submissions" value={overview?.totalSubmissions} loading={loading} /></Card></Col>
-        <Col span={8}><Card><Statistic title="Overall Pass Rate" value={overview?.overallPassRate} suffix="%" precision={2} loading={loading} /></Card></Col>
+        <Col span={4}>
+          <Card>
+            <Statistic title="Total Users" value={overview?.totalUsers} loading={loading} />
+          </Card>
+        </Col>
+        <Col span={4}>
+          <Card>
+            <Statistic title="Total Courses" value={overview?.totalCourses} loading={loading} />
+          </Card>
+        </Col>
+        <Col span={4}>
+          <Card>
+            <Statistic title="Total Tasks" value={overview?.totalTasks} loading={loading} />
+          </Card>
+        </Col>
+        <Col span={4}>
+          <Card>
+            <Statistic
+              title="Total Submissions"
+              value={overview?.totalSubmissions}
+              loading={loading}
+            />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <Statistic
+              title="Overall Pass Rate"
+              value={overview?.overallPassRate}
+              suffix="%"
+              precision={2}
+              loading={loading}
+            />
+          </Card>
+        </Col>
       </Row>
 
       <Row gutter={[16, 16]}>
@@ -105,12 +156,12 @@ const Dashboard: React.FC = () => {
         {/* Blocker Analysis */}
         <Col span={12}>
           <Card title="Top Blockers (Failed Tasks)" loading={loading}>
-            <Table 
-              dataSource={blockers} 
-              columns={blockerColumns} 
-              rowKey="taskId" 
-              pagination={false} 
-              size="small" 
+            <Table
+              dataSource={blockers}
+              columns={blockerColumns}
+              rowKey="taskId"
+              pagination={false}
+              size="small"
             />
           </Card>
         </Col>
@@ -118,12 +169,12 @@ const Dashboard: React.FC = () => {
         {/* AI Audit Logs */}
         <Col span={12}>
           <Card title="Top AI Security Triggers" loading={loading}>
-            <Table 
-              dataSource={aiAudit} 
-              columns={auditColumns} 
-              rowKey="rule" 
-              pagination={false} 
-              size="small" 
+            <Table
+              dataSource={aiAudit}
+              columns={auditColumns}
+              rowKey="rule"
+              pagination={false}
+              size="small"
             />
           </Card>
         </Col>

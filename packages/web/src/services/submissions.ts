@@ -8,7 +8,7 @@ export interface Submission {
   status: string;
   score: number;
   logs?: string;
-  report?: any;
+  report?: Record<string, unknown>;
   createdAt: string;
   user?: User;
   task?: Task;

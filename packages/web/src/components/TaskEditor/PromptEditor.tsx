@@ -7,9 +7,16 @@ import { ModelInfoDTO } from '@lg-agent/contracts';
 const { Option } = Select;
 const { Text } = Typography;
 
+export interface PromptEditorValue {
+  model?: string;
+  systemPrompt?: string;
+  userPromptTemplate?: string;
+  [key: string]: unknown;
+}
+
 interface PromptEditorProps {
-  value?: any;
-  onChange?: (value: any) => void;
+  value?: PromptEditorValue;
+  onChange?: (value: PromptEditorValue) => void;
 }
 
 export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) => {
@@ -27,10 +34,10 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
         setLoading(false);
       }
     };
-    fetchModels();
+    void fetchModels();
   }, []);
 
-  const handleChange = (field: string, fieldValue: any) => {
+  const handleChange = (field: string, fieldValue: unknown) => {
     onChange?.({
       ...value,
       [field]: fieldValue,
@@ -47,24 +54,37 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
             placeholder="Select AI Model"
             loading={loading}
             value={value?.model}
-            onChange={(val) => { handleChange('model', val); }}
+            onChange={(val) => {
+              handleChange('model', val);
+            }}
           >
-            {models.filter(m => m.enabled && m.capabilities.includes('chat')).map((model) => (
-              <Option key={model.id} value={model.id}>
-                {model.name} ({model.provider})
-              </Option>
-            ))}
+            {models
+              .filter((m) => m.enabled && m.capabilities.includes('chat'))
+              .map((model) => (
+                <Option key={model.id} value={model.id}>
+                  {model.name} ({model.provider})
+                </Option>
+              ))}
           </Select>
         </div>
 
         <div>
           <Text strong>System Prompt</Text>
-          <div style={{ marginTop: 8, border: '1px solid #d9d9d9', borderRadius: 6, overflow: 'hidden' }}>
+          <div
+            style={{
+              marginTop: 8,
+              border: '1px solid #d9d9d9',
+              borderRadius: 6,
+              overflow: 'hidden',
+            }}
+          >
             <CodeEditor
               height="200px"
               language="markdown"
-              value={value?.systemPrompt || ''}
-              onChange={(val) => { handleChange('systemPrompt', val); }}
+              value={value?.systemPrompt ?? ''}
+              onChange={(val) => {
+                handleChange('systemPrompt', val);
+              }}
               options={{ minimap: { enabled: false } }}
             />
           </div>
@@ -72,12 +92,21 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
 
         <div>
           <Text strong>User Prompt Template</Text>
-          <div style={{ marginTop: 8, border: '1px solid #d9d9d9', borderRadius: 6, overflow: 'hidden' }}>
+          <div
+            style={{
+              marginTop: 8,
+              border: '1px solid #d9d9d9',
+              borderRadius: 6,
+              overflow: 'hidden',
+            }}
+          >
             <CodeEditor
               height="200px"
               language="markdown"
-              value={value?.userPromptTemplate || ''}
-              onChange={(val) => { handleChange('userPromptTemplate', val); }}
+              value={value?.userPromptTemplate ?? ''}
+              onChange={(val) => {
+                handleChange('userPromptTemplate', val);
+              }}
               options={{ minimap: { enabled: false } }}
             />
           </div>

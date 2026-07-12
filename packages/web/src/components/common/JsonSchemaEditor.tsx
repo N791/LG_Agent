@@ -10,7 +10,7 @@ export interface JsonSchemaEditorProps extends Omit<FormProps, 'schema' | 'valid
 }
 
 export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({ schemaName, ...props }) => {
-  const [schema, setSchema] = useState<Record<string, any> | null>(null);
+  const [schema, setSchema] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({ schemaName, 
         setLoading(false);
       }
     };
-    fetchSchema();
+    void fetchSchema();
   }, [schemaName]);
 
   if (loading) {
@@ -35,11 +35,5 @@ export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({ schemaName, 
     return <div>Failed to load schema for {schemaName}</div>;
   }
 
-  return (
-    <Form
-      {...props}
-      schema={schema}
-      validator={validator}
-    />
-  );
+  return <Form {...props} schema={schema} validator={validator} />;
 };
