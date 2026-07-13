@@ -1,41 +1,41 @@
-# Enterprise MVP Sign-Off (Release Gate)
+# 企业级 MVP 验收单 (发布门禁)
 
-> **Status**: PENDING
-> **Version**: v1.0.0-MVP
-> **Date**: 2026-07-12
+> **状态**: 待处理 (PENDING)
+> **版本**: v1.0.0-MVP
+> **日期**: 2026-07-12
 
-This document serves as the Enterprise Release Gate. All items must be verified and checked before the MVP is considered releasable.
+本文档作为企业级发布门禁。在 MVP 被认为可以发布之前，必须对所有条目进行验证和检查。
 
 ---
 
-### A. Functional Verification
+### A. 功能验证 (Functional Verification)
 
 - `[ ]` 用户登录 (User Login & Auth)
-- `[ ]` Dashboard (Trainee & Mentor)
-- `[ ]` Task CRUD
+- `[ ]` 仪表盘 (Trainee & Mentor)
+- `[ ]` 任务增删改查 (Task CRUD)
 - `[ ]` Markdown 编辑 (Markdown Editor)
-- `[ ]` JSON Schema Editor
-- `[ ]` Prompt Editor
-- `[ ]` AI Tutor (Context-aware responses)
-- `[ ]` AI Chat (General assistance)
-- `[ ]` AI Model Switch (OpenAI / DeepSeek / Qwen)
-- `[ ]` Rule Engine (Rule creation & validation)
-- `[ ]` Knowledge Base (RAG Document upload & indexing)
-- `[ ]` Learning Report (Trainee analytics)
-- `[ ]` Statistics Dashboard (Platform-wide analytics)
-- `[ ]` Export (CSV generation via ExportService)
-- `[ ]` Audit Log (AI interaction traceability)
+- `[ ]` JSON Schema 编辑器 (JSON Schema Editor)
+- `[ ]` 提示词编辑器 (Prompt Editor)
+- `[ ]` AI 导师 (上下文感知的回答)
+- `[ ]` AI 对话 (通用协助)
+- `[ ]` AI 模型切换 (OpenAI / DeepSeek / Qwen)
+- `[ ]` 规则引擎 (规则创建与验证)
+- `[ ]` 知识库 (RAG 文档上传与索引)
+- `[ ]` 学习报告 (学员分析)
+- `[ ]` 统计仪表盘 (平台全局分析)
+- `[ ]` 导出功能 (通过 ExportService 生成 CSV)
+- `[ ]` 审计日志 (AI 交互可追溯性)
 
-### B. Platform Verification
+### B. 平台验证 (Platform Verification)
 
-- `[ ]` Contracts Package (Independent `@lg-agent/contracts`)
-- `[ ]` Schema Governance (Shared JSON Schemas & OpenAPI)
-- `[ ]` AI Gateway (Provider routing & fallback)
-- `[ ]` Quality Engineering (Test foundations established)
-- `[ ]` Platform Operations (Observability & Configurations)
-- `[ ]` Release Management (Changesets pipeline)
+- `[ ]` 契约包 (独立的 `@lg-agent/contracts`)
+- `[ ]` Schema 治理 (共享的 JSON Schemas 与 OpenAPI)
+- `[ ]` AI 网关 (供应商路由与降级)
+- `[ ]` 质量工程 (建立测试基础)
+- `[ ]` 平台运维 (可观测性与配置)
+- `[ ]` 发布管理 (Changesets 流水线)
 
-### C. Quality Gate
+### C. 质量门禁 (Quality Gate)
 
 - `[ ]` Build 成功 (Turbo build passes)
 - `[ ]` Lint 通过 (ESLint passes)
@@ -45,14 +45,14 @@ This document serves as the Enterprise Release Gate. All items must be verified 
 - `[ ]` Playwright Smoke Test 通过 (E2E baseline passes)
 - `[ ]` CI Workflow 全部通过 (GitHub Actions green)
 
-### D. Database
+### D. 数据库 (Database)
 
 - `[ ]` Prisma Generate (Client generation successful)
 - `[ ]` Prisma Validate (Schema validated)
 - `[ ]` Migration 成功 (Database migrated)
 - `[ ]` Seed 成功 (Initial users/roles seeded)
 
-### E. Deployment
+### E. 部署 (Deployment)
 
 - `[ ]` Docker Build (Multi-stage API & Web successful)
 - `[ ]` Docker Run (Images execute locally)
@@ -62,36 +62,36 @@ This document serves as the Enterprise Release Gate. All items must be verified 
 - `[ ]` Metrics Endpoint (`/metrics` returns Prometheus data)
 - `[ ]` Logging 正常 (Pino outputs JSON logs)
 
-### F. AI Platform
+### F. AI 平台 (AI Platform)
 
-- `[ ]` LLM Gateway (Centralized token & routing logic)
-- `[ ]` Model Registry (Dynamic model configurations)
-- `[ ]` Prompt Template (Template compilation)
-- `[ ]` Sensitive Data Masking (PII stripping verified)
-- `[ ]` Rule Engine (Custom interceptor rules)
-- `[ ]` Cost Statistics (Token usage recorded)
-- `[ ]` Audit Log (Prompts and Responses archived)
+- `[ ]` LLM 网关 (集中的 token 计数与路由逻辑)
+- `[ ]` 模型注册表 (动态模型配置)
+- `[ ]` 提示词模板 (模板编译)
+- `[ ]` 敏感数据脱敏 (验证 PII 过滤)
+- `[ ]` 规则引擎 (自定义拦截器规则)
+- `[ ]` 成本统计 (记录 Token 使用量)
+- `[ ]` 审计日志 (归档 Prompt 与响应)
 
-### G. Security
+### G. 安全性 (Security)
 
-- `[ ]` Environment Variables (No hardcoded credentials)
-- `[ ]` Secret Management (ConfigMap & Secrets utilized)
-- `[ ]` Input Validation (DTOs & ValidationPipe)
-- `[ ]` Output Filtering (Password hashes stripped)
-- `[ ]` Prompt Injection Protection (Guardrails in place)
-- `[ ]` Sensitive Information Masking (Active in gateway)
+- `[ ]` 环境变量 (无硬编码凭证)
+- `[ ]` 密钥管理 (利用 ConfigMap 与 Secrets)
+- `[ ]` 输入验证 (DTOs & ValidationPipe)
+- `[ ]` 输出过滤 (剔除密码哈希)
+- `[ ]` 提示词注入防护 (安全护栏已就位)
+- `[ ]` 敏感信息掩码 (在网关中生效)
 
-### H. Documentation
+### H. 文档 (Documentation)
 
-- `[ ]` README (Project landing page)
-- `[ ]` Architecture (`docs/Architecture.md`)
-- `[ ]` API Documentation (OpenAPI / Swagger)
-- `[ ]` Deployment Guide (`docs/Platform/01_Deployment_Guide.md`)
-- `[ ]` Developer Guide (Monorepo structure)
-- `[ ]` Release Guide (`docs/Platform/03_Release_Guide.md`)
-- `[ ]` Rollback Guide (Included in Release Guide)
+- `[ ]` README (项目主页)
+- `[ ]` 架构 (`docs/Architecture.md`)
+- `[ ]` API 文档 (OpenAPI / Swagger)
+- `[ ]` 部署指南 (`docs/Platform/01_Deployment_Guide.md`)
+- `[ ]` 开发者指南 (Monorepo 结构)
+- `[ ]` 发布指南 (`docs/Platform/03_Release_Guide.md`)
+- `[ ]` 回滚指南 (包含在发布指南中)
 
-### I. Release Readiness
+### I. 发布准备 (Release Readiness)
 
 - `[ ]` Semantic Version 已生成 (Changeset bumped versions)
 - `[ ]` Git Tag 已创建 (v1.0.0-MVP tag pushed)

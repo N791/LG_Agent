@@ -1,27 +1,27 @@
-# Platform Observability Guide
+# 平台可观测性指南
 
-## 1. Structured Logging (Pino)
+## 1. 结构化日志 (Structured Logging / Pino)
 
-The `lg-agent` backend completely disables the standard `console.log` in favor of `nestjs-pino`.
+`lg-agent` 后端完全禁用了标准的 `console.log`，转而使用 `nestjs-pino` 记录日志。
 
-- **JSON Format**: In production, all logs are written as JSON objects.
-- **Pretty Print**: In development, `pino-pretty` is automatically enabled for readability.
-- **Request Traceability**: Every HTTP request is automatically logged with a unique `req.id` to trace the entire lifecycle of a request.
+- **JSON 格式**: 在生产环境中，所有日志都以 JSON 对象的形式输出。
+- **Pretty Print**: 在开发环境中，自动启用 `pino-pretty` 以提高可读性。
+- **请求追踪**: 每一个 HTTP 请求都会自动附加一个唯一的 `req.id` 记录在日志中，以便追踪整个请求的生命周期。
 
-## 2. Prometheus Metrics
+## 2. Prometheus 指标 (Metrics)
 
-We use `@willsoto/nestjs-prometheus` to expose a standard `/metrics` endpoint for Prometheus scraping.
+我们使用 `@willsoto/nestjs-prometheus` 暴露了一个标准的 `/metrics` 接口供 Prometheus 抓取数据。
 
-### Available Metrics
+### 现有指标
 
-- **HTTP Metrics**: Handled automatically (e.g., `http_request_duration_seconds`).
-- **AI Token Usage**: A custom counter `ai_token_usage_total` tracks token consumption grouped by `provider` and `model`.
+- **HTTP 指标**: 自动处理 (例如: `http_request_duration_seconds`)。
+- **AI Token 使用量**: 自定义计数器 `ai_token_usage_total`，按 `provider` (供应商) 和 `model` (模型) 进行分组，追踪 Token 消耗量。
 
-All custom metrics are registered and managed exclusively inside the `MonitoringModule`. Controllers should never instantiate or manipulate Prometheus Counters directly; they must call the `MonitoringService`.
+所有自定义指标的注册与管理仅在 `MonitoringModule` 内部进行。Controller 绝不能直接实例化或操作 Prometheus 计数器，它们必须统一调用 `MonitoringService`。
 
-## 3. Health Checks (Terminus)
+## 3. 健康检查 (Health Checks / Terminus)
 
-The application exposes a `/health` endpoint to Kubernetes.
+应用向 Kubernetes 暴露了一个 `/health` 接口。
 
-- **Liveness Probe**: Confirms the node process is running and not deadlocked.
-- **Readiness Probe**: Confirms database connectivity (via Prisma Health Indicator) before Kubernetes routes traffic to the pod.
+- **存活探针 (Liveness Probe)**: 确认 Node 进程正在运行且未发生死锁。
+- **就绪探针 (Readiness Probe)**: 确认数据库连接正常 (通过 Prisma Health Indicator 检测)，在 Kubernetes 将流量路由到该 Pod 之前生效。

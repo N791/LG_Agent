@@ -78,7 +78,7 @@ pnpm --filter @lg-agent/api exec prisma generate
 pnpm --filter @lg-agent/api exec prisma db push
 
 # 启动全部服务 (API + Web)
-pnpm turbo run start:dev
+pnpm run dev
 ```
 
 - **Web 管理后台**: `http://localhost:5173`

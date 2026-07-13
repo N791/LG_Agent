@@ -9,7 +9,7 @@ export class SchemaValidationService implements OnModuleInit {
   private validators = new Map<string, ValidateFunction>();
 
   constructor(private readonly schemaRegistry: SchemaRegistryService) {
-    this.ajv = new Ajv({ allErrors: true, useDefaults: true });
+    this.ajv = new Ajv({ allErrors: true, useDefaults: true, strict: false });
     addFormats(this.ajv);
   }
 

@@ -1,46 +1,46 @@
-# Trainee Manual
+# 学员手册 (Trainee Manual)
 
-Welcome to the LG-Agent platform! This guide will help you navigate your training courses and interact with your AI Tutor.
+欢迎来到 LG-Agent 平台！本指南将帮助您了解如何浏览培训课程并与您的 AI 导师进行交互。
 
-## 1. Getting Started
+## 1. 快速入门 (Getting Started)
 
-1. **Login**: Access the Web Console and sign in with the credentials provided by your Mentor.
-2. **Dashboard**: Your dashboard displays your current enrolled courses, overall progress, and recent AI Tutor interactions.
+1. **登录 (Login)**: 访问 Web 控制台，并使用您的导师提供的凭据进行登录。
+2. **仪表盘 (Dashboard)**: 您的仪表盘会显示您当前注册的课程、总体进度以及最近与 AI 导师的交互记录。
 
-## 2. Using the CLI
+## 2. 使用命令行工具 (Using the CLI)
 
-Most of your practical coding will be done using the LG-Agent CLI on your local machine.
+您的大部分实际编码工作都将在您的本地计算机上使用 LG-Agent CLI 完成。
 
-### Installation
+### 安装与登录 (Installation)
 
-Ensure you have Node.js installed, then log in:
+请确保您已安装 Node.js，然后进行登录：
 
 ```bash
 npx @lg-agent/cli login
 ```
 
-### Pulling a Workspace
+### 拉取工作区 (Pulling a Workspace)
 
-To start working on a task:
+开始一个任务：
 
 ```bash
 npx @lg-agent/cli pull <task-id>
 ```
 
-This will download the starter code, necessary environment files, and local test scripts.
+这将下载初始代码、必要的环境文件以及本地测试脚本。
 
-### Submitting Work
+### 提交作业 (Submitting Work)
 
-Once your tests pass locally, submit your work:
+一旦您的测试在本地通过，请提交您的作业：
 
 ```bash
 npx @lg-agent/cli submit
 ```
 
-## 3. Interacting with the AI Tutor
+## 3. 与 AI 导师交互 (Interacting with the AI Tutor)
 
-If you get stuck, the AI Tutor is available both via the CLI and the Web Console.
+如果您在学习过程中遇到困难，可以通过 CLI 和 Web 控制台向 AI 导师寻求帮助。
 
-- The Tutor has access to your course's specific knowledge base (RAG).
-- The Tutor will guide you with hints rather than just giving you the answer.
-- **Note**: All interactions are monitored for quality and sensitive information masking is enforced automatically.
+- 导师可以访问您课程的专属知识库 (RAG)。
+- 导师会通过提供提示和引导来帮助您，而不是直接给出答案。
+- **注意**: 所有的交互记录都会被监控以保证质量，并且系统会自动执行敏感信息的脱敏过滤。

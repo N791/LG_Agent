@@ -1,35 +1,35 @@
-# Platform Deployment Guide
+# 平台部署指南
 
-## 1. Registry Agnostic Configuration
+## 1. 与镜像仓库无关的配置 (Registry Agnostic Configuration)
 
-All CI/CD workflows and deployment manifests use environment variables to define the container registry, ensuring we are not locked into any specific vendor (like Docker Hub or GitHub Container Registry).
+所有的 CI/CD 流水线和部署清单都使用环境变量来定义容器镜像仓库，确保我们不会被锁定在任何特定的供应商（例如 Docker Hub 或 GitHub Container Registry）。
 
-### Core Environment Variables
+### 核心环境变量
 
-When deploying or building, the following variables govern image naming:
+在部署或构建时，以下变量用于控制镜像命名：
 
-- `IMAGE_REGISTRY`: The domain of the registry (e.g., `ghcr.io`, `docker.io`, `0123456789.dkr.ecr.us-east-1.amazonaws.com`).
-- `IMAGE_NAMESPACE`: The organization or user namespace (e.g., `lg-agent`, `my-company`).
-- `IMAGE_NAME`: The base name of the image (e.g., `lg-agent-api`).
-- `IMAGE_TAG`: The specific version or commit SHA (e.g., `v1.0.0`).
+- `IMAGE_REGISTRY`: 镜像仓库的域名 (例如: `ghcr.io`, `docker.io`, `0123456789.dkr.ecr.us-east-1.amazonaws.com`)。
+- `IMAGE_NAMESPACE`: 组织或用户命名空间 (例如: `lg-agent`, `my-company`)。
+- `IMAGE_NAME`: 镜像的基础名称 (例如: `lg-agent-api`)。
+- `IMAGE_TAG`: 特定版本或 Git Commit SHA (例如: `v1.0.0`)。
 
-## 2. Docker Multi-stage Builds
+## 2. Docker 多阶段构建 (Docker Multi-stage Builds)
 
-We use multi-stage Dockerfiles leveraging `turbo prune` to keep images lightweight and secure.
+我们利用 `turbo prune` 进行多阶段 Docker 构建，以保持镜像轻量且安全。
 
-- **Pruner Stage**: Extracts only the packages required for the target workspace.
-- **Installer Stage**: Installs dependencies and runs builds.
-- **Runner Stage**: Uses Alpine Linux, copies only the compiled output, and runs under a non-root user (`nestjs` for API, `nginx` for Web).
+- **Pruner 阶段**: 仅提取目标工作区所需的相关包和依赖。
+- **Installer 阶段**: 安装依赖并执行构建。
+- **Runner 阶段**: 基于 Alpine Linux，仅复制编译后的输出文件，并以非 root 用户（API 使用 `nestjs`，Web 使用 `nginx`）运行。
 
-## 3. Kubernetes Deployment (Helm)
+## 3. Kubernetes 部署 (Helm)
 
-We deploy to Kubernetes using the unified Helm Chart located in `deploy/helm/lg-agent`.
+我们使用位于 `deploy/helm/lg-agent` 的统一 Helm Chart 将服务部署到 Kubernetes 集群中。
 
-### External Dependencies
+### 外部依赖
 
-Following cloud-native best practices, our Helm chart **does not** embed databases or object storage. PostgreSQL, Redis, and MinIO must be provisioned externally (via managed cloud services like RDS/ElastiCache or dedicated operators).
+遵循云原生最佳实践，我们的 Helm Chart **不包含** 数据库或对象存储的部署。PostgreSQL、Redis 和 MinIO 必须在外部独立供应（例如通过 RDS/ElastiCache 等托管云服务或专用 Operators 提供）。
 
-Pass connection details via `values.yaml` or secrets:
+请通过 `values.yaml` 或 Kubernetes Secrets 传递连接信息：
 
 ```yaml
 api:
@@ -37,7 +37,7 @@ api:
     DATABASE_URL: 'postgresql://...'
 ```
 
-### Installation
+### 安装命令
 
 ```bash
 helm upgrade --install lg-agent ./deploy/helm/lg-agent -f values-prod.yaml --namespace lg-agent-prod --create-namespace

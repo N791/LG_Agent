@@ -12,6 +12,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "prelint": "turbo run build --filter=@lg-agent/contracts",
+    "dev": "turbo run dev --ui=tui",
     "build": "turbo run build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint packages/*/src --fix",

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "AI 沉浸式入职引擎 — 管理后台（React + Vite + Ant Design）",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
