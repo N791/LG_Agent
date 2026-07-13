@@ -49,7 +49,6 @@ pnpm-debug.log*
 # git
 CODEOWNERS
 .agents/
-self_docs/
 skills-lock.json
 
 # Playwright & Testing
