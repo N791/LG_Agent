@@ -4,6 +4,61 @@
 
 LG-Agent 是一个基于云原生原则设计的企业级 AI 辅助学习平台。该平台由一个统一的 Monorepo 组成，使用 Turborepo 和 pnpm workspaces 进行管理。
 
+```mermaid
+graph TD
+    %% User Interfaces
+    subgraph Clients ["客户端层 (Clients)"]
+        Web[Web Console<br/>React/Vite SPA]
+        CLI[LG-Agent CLI<br/>Node.js]
+    end
+
+    %% API Layer
+    subgraph API ["后端服务层 (API)"]
+        Nest[NestJS API Server<br/>DDD Architecture]
+        Auth[Auth Module]
+        Task[Task Manager]
+        RAG[RAG & AI Tutor]
+        Gateway[LLM Gateway<br/>+ Rule Engine]
+
+        Nest --- Auth
+        Nest --- Task
+        Nest --- RAG
+        Nest --- Gateway
+    end
+
+    %% External & Persistence Layer
+    subgraph Infrastructure ["基础设施层 (Infrastructure)"]
+        PG[(PostgreSQL<br/>Core Data)]
+        Redis[(Redis<br/>Cache & Rate Limit)]
+        MinIO[(MinIO/S3<br/>Object Storage)]
+    end
+
+    %% LLM Providers
+    subgraph LLM ["大型语言模型 (LLM)"]
+        OpenAI(OpenAI)
+        DeepSeek(DeepSeek)
+        Qwen(Qwen)
+    end
+
+    %% Connections
+    Web -->|HTTP/REST| Nest
+    CLI -->|HTTP/REST| Nest
+
+    Auth --> PG
+    Task --> PG
+    Gateway -.->|Token Logs| PG
+
+    Auth --> Redis
+    Gateway --> Redis
+
+    Task --> MinIO
+    RAG --> MinIO
+
+    Gateway -->|Unified API| OpenAI
+    Gateway -->|Unified API| DeepSeek
+    Gateway -->|Unified API| Qwen
+```
+
 ### 1. 核心服务 (Core Services)
 
 - **Web 控制台 (`@lg-agent/web`)**: 一个基于 Vite 和 Ant Design 构建的现代 React 单页应用 (SPA)。它为导师 (Mentors) 和学员 (Trainees) 提供基于角色的仪表盘。

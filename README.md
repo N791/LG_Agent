@@ -18,20 +18,30 @@ LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化�
 
 📚 **核心文档导航**：
 
-- [系统架构概览 (Architecture)](docs/Architecture.md)
-- [MVP 验收清单 (MVP Sign-Off)](docs/MVP_Sign_Off.md)
-- [Release Notes (v1.0.0-MVP)](docs/Release_Notes.md)
+为了提供更清晰的文档体验，我们将文档按受众拆分为两部分：
+
+- [部署与使用文档 (prod_docs/)](prod_docs/index.md) - 面向运维与终端用户。
+- [开发与内部设计文档 (dev_docs/)](dev_docs/index.md) - 面向核心研发与架构师。
+
+- [Release Notes (v1.0.0-MVP)](prod_docs/Release_Notes.md)
+- [MVP 验收清单 (MVP Sign-Off)](dev_docs/MVP_Sign_Off.md)
 
 👩‍💻 **用户手册**：
 
-- [学员使用手册 (Trainee Manual)](docs/User/Trainee_Manual.md)
-- [导师使用手册 (Mentor Manual)](docs/User/Mentor_Manual.md)
+- [学员使用手册 (Trainee Manual)](prod_docs/User/Trainee_Manual.md)
+- [导师使用手册 (Mentor Manual)](prod_docs/User/Mentor_Manual.md)
 
 ⚙️ **平台运维 (DevOps)**：
 
-- [部署指南 (Deployment Guide)](docs/Platform/01_Deployment_Guide.md)
-- [可观测性指南 (Observability Guide)](docs/Platform/02_Observability_Guide.md)
-- [发布与回滚策略 (Release Guide)](docs/Platform/03_Release_Guide.md)
+- [高可用系统拓扑 (System Topology)](prod_docs/System_Topology.md)
+- [部署指南 (Deployment Guide)](prod_docs/Platform/01_Deployment_Guide.md)
+- [安全生产指南 (Security Guide)](prod_docs/Platform/04_Security_Guide.md)
+
+💻 **开发与架构 (Development)**：
+
+- [本地搭建指南 (Local Setup)](dev_docs/Developer_Guide/01_Local_Setup.md)
+- [系统核心架构 (System Architecture)](dev_docs/Architecture/01_System_Architecture.md)
+- [数据库 ER 设计 (Database Design)](dev_docs/Architecture/02_Database_Design.md)
 
 ---
 
