@@ -10,7 +10,7 @@ import { useWorkspaceStore } from '../../store/workspaceStore';
 
 const fetchTask = async (id: string): Promise<TaskDTO> => {
   const res = await request.get<{ data?: TaskDTO } | TaskDTO>(`/tasks/${id}`);
-  const data = (res as { data?: TaskDTO }).data ?? (res as TaskDTO);
+  const data = (res as unknown as { data?: TaskDTO }).data ?? (res as unknown as TaskDTO);
   return data;
 };
 
@@ -72,12 +72,9 @@ export const LeftPanel: React.FC = () => {
                     className={`p-3 rounded-lg ${msg.role === 'user' ? 'bg-blue-50 ml-4' : 'bg-gray-50 mr-4'}`}
                   >
                     <span className="text-xs font-bold text-gray-500 uppercase">{msg.role}</span>
-                    <Markdown
-                      remarkPlugins={[remarkGfm]}
-                      className="prose prose-sm dark:prose-invert"
-                    >
-                      {msg.content}
-                    </Markdown>
+                    <div className="prose prose-sm dark:prose-invert">
+                      <Markdown remarkPlugins={[remarkGfm]}>{msg.content}</Markdown>
+                    </div>
                   </div>
                 ),
               )}

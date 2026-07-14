@@ -48,7 +48,7 @@ const WorkspacePage: React.FC = () => {
 
     const payload = filesToSave.map((path) => ({
       path,
-      content: fileContents[path],
+      content: fileContents[path] ?? '',
     }));
 
     try {

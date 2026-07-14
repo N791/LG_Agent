@@ -36,7 +36,7 @@ export const FileTree: React.FC = () => {
   }, [taskId]);
 
   const onSelect = (
-    selectedKeys: React.Key[],
+    _selectedKeys: React.Key[],
     info: { node: { isLeaf?: boolean; key: React.Key } },
   ) => {
     if (info.node.isLeaf) {

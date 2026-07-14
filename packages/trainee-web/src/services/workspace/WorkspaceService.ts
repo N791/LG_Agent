@@ -23,7 +23,8 @@ export class WorkspaceService {
         `/api/v1/workspaces/${taskId}`,
       );
       this.currentWorkspace =
-        (response as { data?: WorkspaceDTO }).data ?? (response as WorkspaceDTO);
+        (response as unknown as { data?: WorkspaceDTO }).data ??
+        (response as unknown as WorkspaceDTO);
       return this.currentWorkspace;
     } catch (err: unknown) {
       const error = err as { response?: { status?: number } };
@@ -34,7 +35,8 @@ export class WorkspaceService {
           { taskId },
         );
         this.currentWorkspace =
-          (initResponse as { data?: WorkspaceDTO }).data ?? (initResponse as WorkspaceDTO);
+          (initResponse as unknown as { data?: WorkspaceDTO }).data ??
+          (initResponse as unknown as WorkspaceDTO);
         return this.currentWorkspace;
       }
       throw err;
@@ -50,7 +52,8 @@ export class WorkspaceService {
       { files },
     );
     this.currentWorkspace =
-      (response as { data?: WorkspaceDTO }).data ?? (response as WorkspaceDTO);
+      (response as unknown as { data?: WorkspaceDTO }).data ??
+      (response as unknown as WorkspaceDTO);
   }
 
   async createVersion(taskId: string, trigger: 'RUN' | 'SUBMIT' | 'MANUAL'): Promise<void> {
@@ -67,13 +70,13 @@ export class WorkspaceService {
     files.forEach((f) => {
       const parts = f.path.split('/');
       if (parts.length === 1) {
-        nodes.push({ key: f.path, title: f.path, isLeaf: true, path: f.path } as FileNode);
+        nodes.push({ key: f.path, name: f.path, type: 'file', path: f.path } as FileNode);
       } else {
         // Grouping logic would go here, omitting for simplicity since mock had a flat list mostly
         nodes.push({
           key: f.path,
-          title: parts[parts.length - 1],
-          isLeaf: true,
+          name: parts[parts.length - 1],
+          type: 'file',
           path: f.path,
         } as FileNode);
       }

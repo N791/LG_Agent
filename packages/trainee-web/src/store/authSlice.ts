@@ -7,7 +7,7 @@ export interface User {
   role: string;
 }
 
-interface AuthState {
+export interface AuthState {
   token: string | null;
   user: User | null;
 }

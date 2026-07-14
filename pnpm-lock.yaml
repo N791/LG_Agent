@@ -287,6 +287,9 @@ importers:
       '@playwright/test':
         specifier: ^1.61.1
         version: 1.61.1
+      '@remix-run/router':
+        specifier: ^1.23.3
+        version: 1.23.3
       '@testing-library/dom':
         specifier: ^10.4.1
         version: 10.4.1

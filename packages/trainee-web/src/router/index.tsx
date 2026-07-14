@@ -4,7 +4,9 @@ import WorkspacePage from '../pages/Workspace';
 import Login from '../pages/Login';
 import AuthGuard from './AuthGuard';
 
-export const router = createBrowserRouter([
+import type { Router } from '@remix-run/router';
+
+export const router: Router = createBrowserRouter([
   {
     path: '/',
     element: <Navigate to="/mission-hub" replace />,
