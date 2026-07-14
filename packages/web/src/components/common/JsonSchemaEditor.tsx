@@ -3,7 +3,7 @@ import Form from '@rjsf/antd';
 import { FormProps, IChangeEvent } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { schemasService } from '../../services/schemas';
-import { Spin, Radio, Alert, Card } from 'antd';
+import { Spin, Radio, Alert, Card, type RadioChangeEvent } from 'antd';
 import Editor from '@monaco-editor/react';
 
 export interface JsonSchemaEditorProps extends Omit<FormProps, 'schema' | 'validator'> {
@@ -68,8 +68,8 @@ export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({
     }
   };
 
-  const handleModeChange = (e: { target: { value: Mode } }) => {
-    const newMode = e.target.value;
+  const handleModeChange = (e: RadioChangeEvent) => {
+    const newMode = e.target.value as Mode;
     if (newMode === 'FORM' && jsonError) {
       // Don't switch if JSON is invalid
       return;
