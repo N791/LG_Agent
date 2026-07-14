@@ -8,6 +8,6 @@
     "target": "ES2022",
     "esModuleInterop": true
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*", "test/**/*", "prisma/**/*"],
   "exclude": ["node_modules", "dist", "coverage"]
 }

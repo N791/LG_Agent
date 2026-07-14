@@ -46,7 +46,7 @@ request.interceptors.response.use(
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
-    } else {
+    } else if (error.response?.status !== 403) {
       void message.error(error.response?.data.message ?? 'Network Error');
     }
     return Promise.reject(error instanceof Error ? error : new Error(String(error)));

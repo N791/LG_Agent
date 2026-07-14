@@ -1,31 +1,62 @@
-import { Controller, Post, Body, Res, BadRequestException, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  BadRequestException,
+  Get,
+  UseGuards,
+  Request,
+  Param,
+} from '@nestjs/common';
 import type { Response } from 'express';
-import { AiTutorService } from './tutor/ai-tutor.service';
 import { ChatRequestDto } from './tutor/interfaces';
 import { LLMResponse } from './interfaces/llm-provider.interface';
+import { AiConversationService } from './conversation/ai-conversation.service';
 import { ModelRegistryService } from './model-registry.service';
 import { ModelInfoDTO } from '@lg-agent/contracts';
+import { Ai2TaskService, GenerateTaskRequest } from './ai2task.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('ai')
+@UseGuards(JwtAuthGuard)
 export class AiController {
   constructor(
-    private readonly aiTutorService: AiTutorService,
-    private readonly modelRegistry: ModelRegistryService
+    private readonly aiConversationService: AiConversationService,
+    private readonly modelRegistry: ModelRegistryService,
+    private readonly ai2taskService: Ai2TaskService,
   ) {}
+
+  @Post('generate-task')
+  async generateTask(@Body() request: GenerateTaskRequest) {
+    return this.ai2taskService.generateTaskDraft(request);
+  }
 
   @Get('models')
   async getModels(): Promise<ModelInfoDTO[]> {
     return this.modelRegistry.listModels();
   }
 
-  @Post('chat')
-  async chat(@Body() request: ChatRequestDto, @Res() res: Response) {
+  @Post('tutor/chat')
+  async chat(
+    @Request() req: { user: { id: string; organizationId?: string } },
+    @Body() request: ChatRequestDto,
+    @Res() res: Response,
+  ) {
     if (!request.action || !request.content) {
       throw new BadRequestException('action and content are required');
     }
 
     try {
-      const result = await this.aiTutorService.chat(request);
+      const result = await this.aiConversationService.chat({
+        action: request.action,
+        taskId: request.taskId,
+        content: request.content,
+        stream: request.stream,
+        conversationId: request.conversationId,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+      });
 
       // Handle Stream
       if (request.stream) {
@@ -58,5 +89,13 @@ export class AiController {
         res.status(500).json({ error: 'Internal Server Error', details: err.message });
       }
     }
+  }
+
+  @Get('tutor/conversations/:taskId')
+  async getConversationHistory(
+    @Request() req: { user: { id: string } },
+    @Param('taskId') taskId: string,
+  ) {
+    return this.aiConversationService.getConversationHistory(taskId, req.user.id);
   }
 }

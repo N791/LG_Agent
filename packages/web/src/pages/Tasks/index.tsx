@@ -209,15 +209,29 @@ const Tasks: React.FC = () => {
           </Button>
           <h1 className="text-2xl font-bold mb-0">任务管理</h1>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            showModal();
-          }}
-        >
-          新增任务
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              showModal();
+            }}
+          >
+            新增任务
+          </Button>
+          <Button
+            onClick={() => {
+              navigate(`/courses/${courseId ?? ''}/tasks/generate`);
+            }}
+            style={{
+              background: 'linear-gradient(90deg, #1890ff, #722ed1)',
+              color: 'white',
+              border: 'none',
+            }}
+          >
+            ✨ AI 生成任务
+          </Button>
+        </div>
       </div>
 
       <Table

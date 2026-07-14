@@ -8,7 +8,9 @@ import Organizations from '../pages/Organizations';
 import Courses from '../pages/Courses';
 import Tasks from '../pages/Tasks';
 import { TaskEditorPage } from '../pages/Tasks/TaskEditorPage';
+import { GenerateTaskPage } from '../pages/Tasks/GenerateTaskPage';
 import Submissions from '../pages/Submissions';
+import NotFound from '../pages/NotFound';
 
 /*
   Temporary Workaround
@@ -33,32 +35,48 @@ export const router: any = createBrowserRouter([
           {
             index: true,
             element: <Dashboard />,
+            handle: { roles: ['ADMIN', 'MENTOR'] },
           },
           {
             path: 'organizations',
             element: <Organizations />,
+            handle: { roles: ['ADMIN'] },
           },
           {
             path: 'users',
             element: <Users />,
+            handle: { roles: ['ADMIN', 'MENTOR'] },
           },
           {
             path: 'courses',
             element: <Courses />,
+            handle: { roles: ['ADMIN', 'MENTOR'] },
           },
           {
             path: 'courses/:courseId/tasks',
             element: <Tasks />,
+            handle: { roles: ['ADMIN', 'MENTOR'] },
           },
           {
             path: 'courses/:courseId/tasks/:taskId/edit',
             element: <TaskEditorPage />,
+            handle: { roles: ['ADMIN', 'MENTOR'] },
+          },
+          {
+            path: 'courses/:courseId/tasks/generate',
+            element: <GenerateTaskPage />,
+            handle: { roles: ['ADMIN', 'MENTOR'] },
+          },
+          {
+            path: 'submissions',
+            element: <Submissions />,
+            handle: { roles: ['ADMIN', 'MENTOR'] },
+          },
+          {
+            path: '*',
+            element: <NotFound />,
           },
         ],
-      },
-      {
-        path: 'submissions',
-        element: <Submissions />,
       },
     ],
   },

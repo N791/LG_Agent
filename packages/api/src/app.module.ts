@@ -21,6 +21,7 @@ import { SchemasModule } from './modules/schemas/schemas.module';
 import { SubmissionsModule } from './modules/submissions/submissions.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { PlatformModule } from './modules/platform/platform.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { PlatformModule } from './modules/platform/platform.module';
     SubmissionsModule,
     ReportsModule,
     PlatformModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [

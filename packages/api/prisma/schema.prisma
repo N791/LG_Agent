@@ -13,6 +13,17 @@ enum Role {
   TRAINEE
 }
 
+enum TaskType {
+  MANDATORY
+  ELECTIVE
+}
+
+enum TaskDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
 model Organization {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @db.VarChar
@@ -20,8 +31,9 @@ model Organization {
   status    Int      @default(1) @db.SmallInt
   createdAt DateTime @default(now()) @map("created_at")
 
-  users     User[]
-  courses   Course[]
+  users         User[]
+  courses       Course[]
+  conversations Conversation[]
 
   @@map("organizations")
 }
@@ -39,9 +51,11 @@ model User {
 
   organization   Organization @relation(fields: [organizationId], references: [id])
 
-  coursesCreated Course[]     @relation("CourseCreator")
+  coursesCreated Course[]       @relation("CourseCreator")
   submissions    Submission[]
   llmRequestLogs LlmRequestLog[]
+  conversations  Conversation[]
+  workspaces     Workspace[]
 
   @@map("users")
 }
@@ -66,19 +80,24 @@ model Course {
 model Task {
   id             String       @id @default(uuid()) @db.Uuid
   courseId       String       @map("course_id") @db.Uuid
-  title          String       @db.VarChar
-  description    String?      @db.Text
-  stage          Int          @db.Integer
-  version        Int          @default(1) @db.Integer
-  envConfig      Json         @map("env_config") @db.JsonB
-  sandboxConfig  Json         @map("sandbox_config") @db.JsonB
-  testConfig     Json         @map("test_config") @db.JsonB
-  promptConfig   Json         @map("prompt_config") @db.JsonB
-  config         Json?        @db.JsonB
-  metadata       Json?        @db.JsonB
+  title          String         @db.VarChar
+  summary        String?        @db.VarChar // 任务摘要（列表展示）
+  description    String?        @db.Text    // Markdown 任务内容
+  stage          Int            @db.Integer
+  taskType       TaskType       @default(MANDATORY) @map("task_type")
+  difficulty     TaskDifficulty @default(BEGINNER)
+  version        Int            @default(1) @db.Integer
+  envConfig      Json           @map("env_config") @db.JsonB
+  sandboxConfig  Json           @map("sandbox_config") @db.JsonB
+  testConfig     Json           @map("test_config") @db.JsonB
+  promptConfig   Json           @map("prompt_config") @db.JsonB
+  config         Json?          @db.JsonB
+  metadata       Json?          @db.JsonB
 
-  course         Course       @relation(fields: [courseId], references: [id])
+  course         Course         @relation(fields: [courseId], references: [id])
   submissions    Submission[]
+  conversations  Conversation[]
+  workspaces     Workspace[]
 
   @@map("tasks")
 }
@@ -133,3 +152,85 @@ model LlmAuditLog {
 
   @@map("llm_audit_logs")
 }
+
+model Conversation {
+  id             String                @id @default(uuid()) @db.Uuid
+  organizationId String                @map("organization_id") @db.Uuid
+  userId         String                @map("user_id") @db.Uuid
+  taskId         String                @map("task_id") @db.Uuid
+  status         String                @default("ACTIVE") @db.VarChar
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+
+  organization   Organization          @relation(fields: [organizationId], references: [id])
+  user           User                  @relation(fields: [userId], references: [id])
+  task           Task                  @relation(fields: [taskId], references: [id])
+  messages       ConversationMessage[]
+
+  @@map("conversations")
+}
+
+model ConversationMessage {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @map("conversation_id") @db.Uuid
+  role           String       @db.VarChar // USER, ASSISTANT, SYSTEM
+  content        String       @db.Text
+  model          String?      @db.VarChar
+  tokenUsage     Int?         @map("token_usage") @db.Integer
+  metadata       Json?        @db.JsonB
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  @@map("conversation_messages")
+}
+
+model Workspace {
+  id        String             @id @default(uuid()) @db.Uuid
+  userId    String             @map("user_id") @db.Uuid
+  taskId    String             @map("task_id") @db.Uuid
+  status    String             @default("DRAFT") @db.VarChar // DRAFT, ACTIVE, ARCHIVED
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  user      User               @relation(fields: [userId], references: [id])
+  task      Task               @relation(fields: [taskId], references: [id])
+  files     WorkspaceFile[]
+  versions  WorkspaceVersion[]
+
+  @@unique([userId, taskId])
+  @@map("workspaces")
+}
+
+model WorkspaceFile {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @map("workspace_id") @db.Uuid
+  path        String    @db.VarChar
+  content     String    @db.Text
+  language    String?   @db.VarChar
+  encoding    String?   @db.VarChar
+  readonly    Boolean   @default(false)
+  hidden      Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, path])
+  @@map("workspace_files")
+}
+
+model WorkspaceVersion {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @map("workspace_id") @db.Uuid
+  version     Int       @db.Integer
+  trigger     String    @db.VarChar // RUN, SUBMIT, MANUAL
+  snapshot    Json      @db.JsonB // Stores the file snapshot
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("workspace_versions")
+}
+
+

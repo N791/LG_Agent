@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SandboxService } from '../sandbox/sandbox.service';
 import { PrismaService } from '../../common/prisma.service';
-import { ScoreCalculator } from './score.calculator';
+import { ExecutionEventType } from '@lg-agent/contracts';
 
 @Injectable()
 export class TrainingService {
@@ -10,7 +10,6 @@ export class TrainingService {
   constructor(
     private sandboxService: SandboxService,
     private prisma: PrismaService,
-    private scoreCalculator: ScoreCalculator,
   ) {}
 
   async submitTask(taskId: string, userId: string, code: string) {
@@ -40,15 +39,37 @@ export class TrainingService {
       };
 
       // 4. Pass to SandboxEngine
-      const result = await this.sandboxService.runTask(taskId, userId, code, taskConfig);
+      const stream = this.sandboxService.runTask(
+        taskId,
+        userId,
+        {
+          taskId,
+          workspace: {
+            entry: 'index.js',
+            files: [{ path: 'index.js', content: code }],
+          },
+        },
+        taskConfig,
+      );
 
-      // 5. Calculate detailed score
-      const finalResult = this.scoreCalculator.calculate({
-        testPassed: result.passed,
-        compilePassed: result.passed,
-        exitCode: result.report['exitCode'] as number | undefined,
-        message: result.report['message'] as string | undefined,
-      });
+      const finalResult = { passed: false, totalScore: 0, logs: '', report: {} };
+
+      for await (const event of stream) {
+        if (event.type === ExecutionEventType.LOG) {
+          finalResult.logs += (event.data as { text?: string }).text ?? '';
+        } else if (
+          event.type === ExecutionEventType.SUCCESS ||
+          event.type === ExecutionEventType.FAILED
+        ) {
+          const data = event.data as
+            { passed?: boolean; score?: number; report?: Record<string, unknown> } | undefined;
+          finalResult.passed = data?.passed ?? false;
+          finalResult.totalScore = data?.score ?? 0;
+          finalResult.report = data?.report ?? {};
+        } else if (event.type === ExecutionEventType.ERROR) {
+          finalResult.logs += `\nError: ${event.message ?? 'Unknown'}`;
+        }
+      }
 
       // 6. Update submission
       const updated = await this.prisma.submission.update({
@@ -56,8 +77,8 @@ export class TrainingService {
         data: {
           status: finalResult.passed ? 'PASSED' : 'FAILED',
           score: finalResult.totalScore,
-          logs: result.logs,
-          report: finalResult.details as import('@prisma/client').Prisma.InputJsonObject, // Save detailed evaluation report
+          logs: finalResult.logs,
+          report: finalResult.report, // Save detailed evaluation report
         },
       });
 

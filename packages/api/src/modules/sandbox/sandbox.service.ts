@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { IExecutor, ExecutionResult } from './interfaces/executor.interface';
+import { IExecutor } from './interfaces/executor.interface';
 import { DockerExecutor } from './docker.executor';
 import { EnvDetectorService } from './env-detector.service';
+import { ExecutionEventDTO, ExecutionEventType, WorkspaceDTO } from '@lg-agent/contracts';
 
 @Injectable()
 export class SandboxService {
@@ -15,27 +16,36 @@ export class SandboxService {
     this.executor = this.dockerExecutor;
   }
 
-  async runTask(
+  async *runTask(
     taskId: string,
     userId: string,
-    code: string,
+    workspace: WorkspaceDTO,
     config: {
       env?: import('./env-detector.service').EnvRequirement | null;
       testScript?: string | null;
     },
-  ): Promise<ExecutionResult> {
+  ): AsyncGenerator<ExecutionEventDTO, void, unknown> {
     // Phase 1: Environment Detection
     const envCheck = await this.envDetector.checkEnvironment(config.env ?? null);
     if (!envCheck.passed) {
-      return {
-        passed: false,
-        score: 0,
-        logs: `[Environment Verification Failed]\n${envCheck.message ?? 'Unknown error'}`,
-        report: { error: 'Environment check failed' },
+      yield {
+        type: ExecutionEventType.ERROR,
+        message: `[Environment Verification Failed]\n${envCheck.message ?? 'Unknown error'}`,
+        timestamp: new Date().toISOString(),
       };
+      yield {
+        type: ExecutionEventType.FAILED,
+        data: { passed: false, score: 0, report: { error: 'Environment check failed' } },
+        timestamp: new Date().toISOString(),
+      };
+      yield {
+        type: ExecutionEventType.COMPLETE,
+        timestamp: new Date().toISOString(),
+      };
+      return;
     }
 
     // Phase 2: Execution
-    return this.executor.execute(taskId, userId, code, config);
+    yield* this.executor.execute(taskId, userId, workspace, config);
   }
 }

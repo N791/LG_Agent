@@ -19,18 +19,22 @@ import { BlockActionExecutor } from './filters/rule-engine/executors/block-actio
 import { RegexMatcher } from './filters/rule-engine/matchers/regex.matcher';
 import { KeywordMatcher } from './filters/rule-engine/matchers/keyword.matcher';
 import { ContentFilterEngine } from './filters/rule-engine/rule-engine.service';
-import { AiTutorService } from './tutor/ai-tutor.service';
+import { AiConversationService } from './conversation/ai-conversation.service';
+import { PromptAssemblyPipeline } from './conversation/prompt-assembly.pipeline';
 import { AskStrategy } from './tutor/strategies/ask.strategy';
 import { CodeReviewStrategy } from './tutor/strategies/code-review.strategy';
 import { ExplainErrorStrategy } from './tutor/strategies/explain-error.strategy';
 import { JsonPricingRepository } from './cost/json-pricing.repository';
 import { CostCalculator } from './cost/cost-calculator.service';
 import { ModelRegistryService } from './model-registry.service';
+import { Ai2TaskService } from './ai2task.service';
 
 import { PrismaModule } from '../../common/prisma.module';
 
+import { WorkspaceModule } from '../workspace/workspace.module';
+
 @Module({
-  imports: [ConfigModule, PrismaModule],
+  imports: [ConfigModule, PrismaModule, WorkspaceModule],
   controllers: [AiController],
   providers: [
     {
@@ -57,6 +61,7 @@ import { PrismaModule } from '../../common/prisma.module';
     },
     ContentFilterEngine,
     PromptBuilderService,
+    PromptAssemblyPipeline,
     LLMGatewayService,
     ProviderRegistry,
     MockLLMProvider,
@@ -85,9 +90,18 @@ import { PrismaModule } from '../../common/prisma.module';
     },
     CostCalculator,
     ModelRegistryService,
-    AiTutorService,
+    AiConversationService,
+    Ai2TaskService,
   ],
-  exports: [PromptBuilderService, LLMGatewayService, RagService, AiTutorService, CostCalculator, ModelRegistryService],
+  exports: [
+    PromptBuilderService,
+    LLMGatewayService,
+    RagService,
+    AiConversationService,
+    CostCalculator,
+    ModelRegistryService,
+    Ai2TaskService,
+  ],
 })
 export class AiModule implements OnModuleInit {
   private readonly logger = new Logger(AiModule.name);

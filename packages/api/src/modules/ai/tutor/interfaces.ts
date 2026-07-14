@@ -2,8 +2,10 @@ import { LLMResponse } from '../interfaces/llm-provider.interface';
 
 export class ChatRequestDto {
   action!: string;
+  taskId!: string;
   content!: string;
   stream?: boolean;
+  conversationId?: string; // Passed internally
 }
 
 export interface ITutorStrategy {

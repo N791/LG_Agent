@@ -2,7 +2,6 @@ import { Layout, Menu, Button, Dropdown } from 'antd';
 import {
   UserOutlined,
   BookOutlined,
-  CheckSquareOutlined,
   DashboardOutlined,
   LineChartOutlined,
   LogoutOutlined,
@@ -27,38 +26,40 @@ const AdminLayout: React.FC = () => {
     navigate('/login');
   };
 
-  const menuItems = [
+  const allMenuItems = [
     {
       key: '/',
       icon: <DashboardOutlined />,
       label: '控制台',
+      roles: ['ADMIN', 'MENTOR'],
     },
     {
       key: '/organizations',
-      icon: <BookOutlined />, // or BankOutlined, but we use Book for now
+      icon: <BookOutlined />,
       label: '组织管理',
+      roles: ['ADMIN'],
     },
     {
       key: '/users',
       icon: <UserOutlined />,
       label: '用户管理',
+      roles: ['ADMIN', 'MENTOR'],
     },
     {
       key: '/courses',
       icon: <BookOutlined />,
       label: '课程管理',
-    },
-    {
-      key: '/tasks',
-      icon: <CheckSquareOutlined />,
-      label: 'Tasks',
+      roles: ['ADMIN', 'MENTOR'],
     },
     {
       key: '/submissions',
       icon: <LineChartOutlined />,
       label: 'Learning Analytics',
+      roles: ['ADMIN', 'MENTOR'],
     },
   ];
+
+  const menuItems = allMenuItems.filter((item) => item.roles.includes(user?.role ?? ''));
 
   const userMenu = {
     items: [

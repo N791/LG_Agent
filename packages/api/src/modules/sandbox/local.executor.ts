@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ExecutionResult, IExecutor } from './interfaces/executor.interface';
+import { IExecutor } from './interfaces/executor.interface';
 import { exec } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+import { ExecutionEventDTO, ExecutionEventType, WorkspaceDTO } from '@lg-agent/contracts';
 
 const execPromise = util.promisify(exec);
 
@@ -11,12 +12,12 @@ const execPromise = util.promisify(exec);
 export class LocalExecutor implements IExecutor {
   private readonly logger = new Logger(LocalExecutor.name);
 
-  async execute(
+  async *execute(
     taskId: string,
     userId: string,
-    code: string,
+    workspaceDto: WorkspaceDTO,
     config: { testScript?: string; env?: { node?: boolean } },
-  ): Promise<ExecutionResult> {
+  ): AsyncGenerator<ExecutionEventDTO, void, unknown> {
     const workspaceId = `ws_${userId}_${taskId}_${Date.now().toString()}`;
     const workspacePath = path.join(process.cwd(), 'temp_workspaces', workspaceId);
 
@@ -25,9 +26,27 @@ export class LocalExecutor implements IExecutor {
       fs.mkdirSync(workspacePath, { recursive: true });
 
       // 2. Write User Code
-      // As a simple MVP, we assume the code is a single js file
-      const mainFile = path.join(workspacePath, 'index.js');
-      fs.writeFileSync(mainFile, code);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (workspaceDto.workspace.files) {
+        for (const file of workspaceDto.workspace.files) {
+          const filePath = path.join(workspacePath, file.path);
+          const dir = path.dirname(filePath);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+          fs.writeFileSync(
+            filePath,
+            file.content,
+            (file.encoding as BufferEncoding | undefined) ?? 'utf-8',
+          );
+        }
+      }
+
+      yield {
+        type: ExecutionEventType.RUNNING,
+        timestamp: new Date().toISOString(),
+        message: 'Sandbox environment starting...',
+      };
 
       // 3. Write Test Code (if any provided in config)
       let testFile = '';
@@ -36,44 +55,43 @@ export class LocalExecutor implements IExecutor {
         fs.writeFileSync(testFile, config.testScript);
       }
 
-      // 4. Check for project dependencies and install
-      const packageJsonPath = path.join(workspacePath, 'package.json');
-      if (fs.existsSync(packageJsonPath)) {
-        this.logger.log(`Found package.json in ${workspaceId}, running npm install...`);
-        try {
-          await execPromise('npm install', { cwd: workspacePath, timeout: 30000 }); // 30s for npm install
-          this.logger.log(`npm install completed in ${workspaceId}`);
-        } catch (installErr: unknown) {
-          this.logger.warn(
-            `npm install failed in ${workspaceId}: ${(installErr as Error).message}`,
-          );
-          // We can proceed even if it fails, or we could throw. Let's proceed for now.
-        }
-      }
-
-      // 5. Execute via child_process
-      // To simulate isolation, we might just run node index.js or test.js
+      // 4. Execute via child_process
       let cmd = `node index.js`;
       if (testFile) {
-        // E.g. we could run a test runner, or just execute the test file which requires index.js
         cmd = `node test.js`;
+      } else if (workspaceDto.workspace.entry) {
+        cmd = `node ${workspaceDto.workspace.entry}`;
       }
+
+      this.logger.log(`Execution starting in ${workspaceId}`);
 
       const { stdout, stderr } = await execPromise(cmd, {
         cwd: workspacePath,
-        timeout: 5000, // 5 seconds limit for pseudo-sandbox
+        timeout: 5000,
       });
 
       this.logger.log(`Execution success in ${workspaceId}`);
 
-      // Clean up workspace
-      fs.rmSync(workspacePath, { recursive: true, force: true });
+      if (stdout) {
+        yield {
+          type: ExecutionEventType.LOG,
+          data: { stream: 'stdout', text: stdout },
+          timestamp: new Date().toISOString(),
+        };
+      }
 
-      return {
-        passed: true,
-        score: 100,
-        logs: stdout + (stderr ? `\nErrors:\n${stderr}` : ''),
-        report: { message: 'All tests passed' },
+      if (stderr) {
+        yield {
+          type: ExecutionEventType.LOG,
+          data: { stream: 'stderr', text: stderr },
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      yield {
+        type: ExecutionEventType.SUCCESS,
+        data: { passed: true, score: 100, report: { message: 'All tests passed' } },
+        timestamp: new Date().toISOString(),
       };
     } catch (error: unknown) {
       const execError = error as {
@@ -83,21 +101,35 @@ export class LocalExecutor implements IExecutor {
       };
       this.logger.error(`Execution failed in ${workspaceId}`, execError.message);
 
-      // Clean up workspace even on failure
+      if (execError.stdout) {
+        yield {
+          type: ExecutionEventType.LOG,
+          data: { stream: 'stdout', text: String(execError.stdout) },
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      if (execError.stderr) {
+        yield {
+          type: ExecutionEventType.LOG,
+          data: { stream: 'stderr', text: String(execError.stderr) },
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      yield {
+        type: ExecutionEventType.FAILED,
+        data: { passed: false, score: 0, report: { error: execError.message } },
+        timestamp: new Date().toISOString(),
+      };
+    } finally {
+      // Clean up workspace
       if (fs.existsSync(workspacePath)) {
         fs.rmSync(workspacePath, { recursive: true, force: true });
       }
-
-      return {
-        passed: false,
-        score: 0,
-        logs:
-          String(execError.stdout ?? '') +
-          '\n' +
-          String(execError.stderr ?? '') +
-          '\n' +
-          execError.message,
-        report: { error: execError.message },
+      yield {
+        type: ExecutionEventType.COMPLETE,
+        timestamp: new Date().toISOString(),
       };
     }
   }

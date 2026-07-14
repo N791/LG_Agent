@@ -3,6 +3,8 @@ import { Table, Button, Modal, Form, Input, Select, message, Popconfirm, Tag } f
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getUsers, createUser, updateUser, deleteUser, getOrganizations } from '../../services/api';
 import { User, Organization } from '../../types';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 const { Option } = Select;
 
@@ -13,6 +15,9 @@ const Users: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form] = Form.useForm();
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isMentor = user?.role === 'MENTOR';
 
   const fetchUsers = async () => {
     try {
@@ -127,24 +132,29 @@ const Users: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: unknown, record: User) => (
-        <div className="flex gap-2">
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => {
-              showModal(record);
-            }}
-          >
-            编辑
-          </Button>
-          <Popconfirm title="确定要删除吗?" onConfirm={() => void handleDelete(record.id)}>
-            <Button type="link" danger icon={<DeleteOutlined />}>
-              删除
+      render: (_: unknown, record: User) => {
+        if (isMentor) {
+          return <span className="text-gray-400">无权限</span>;
+        }
+        return (
+          <div className="flex gap-2">
+            <Button
+              type="link"
+              icon={<EditOutlined />}
+              onClick={() => {
+                showModal(record);
+              }}
+            >
+              编辑
             </Button>
-          </Popconfirm>
-        </div>
-      ),
+            <Popconfirm title="确定要删除吗?" onConfirm={() => void handleDelete(record.id)}>
+              <Button type="link" danger icon={<DeleteOutlined />}>
+                删除
+              </Button>
+            </Popconfirm>
+          </div>
+        );
+      },
     },
   ];
 
@@ -152,15 +162,17 @@ const Users: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">用户管理</h1>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            showModal();
-          }}
-        >
-          新增用户
-        </Button>
+        {!isMentor && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              showModal();
+            }}
+          >
+            新增用户
+          </Button>
+        )}
       </div>
 
       <Table

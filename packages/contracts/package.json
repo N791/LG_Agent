@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node -e \"require('fs').cpSync('schemas', 'dist/schemas', {recursive: true})\"",
     "dev": "tsc -w"
   },
   "devDependencies": {

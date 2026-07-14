@@ -13,11 +13,12 @@ import {
   Bar,
 } from 'recharts';
 import {
-  statisticsService,
-  OverviewStats,
-  BlockerStat,
-  AiAuditStat,
-} from '../../services/statistics';
+  analyticsServiceApi,
+  FunnelStat,
+  BottleneckStat,
+  PerformanceStat,
+} from '../../services/analytics';
+import { statisticsService, OverviewStats } from '../../services/statistics';
 import { ChartAdapter } from './adapters/chart.adapter';
 
 const { Title } = Typography;
@@ -26,26 +27,34 @@ const Dashboard: React.FC = () => {
   const [overview, setOverview] = useState<OverviewStats | null>(null);
   const [trendsData, setTrendsData] = useState<Record<string, unknown>[]>([]);
   const [aiUsageData, setAiUsageData] = useState<Record<string, unknown>[]>([]);
-  const [blockers, setBlockers] = useState<BlockerStat[]>([]);
-  const [aiAudit, setAiAudit] = useState<AiAuditStat[]>([]);
+
+  // New Analytics Data
+  const [funnelData, setFunnelData] = useState<FunnelStat[]>([]);
+  const [bottlenecks, setBottlenecks] = useState<BottleneckStat[]>([]);
+  const [performance, setPerformance] = useState<PerformanceStat | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [overviewRes, trendsRes, blockersRes, aiUsageRes, aiAuditRes] = await Promise.all([
-          statisticsService.getOverview(),
-          statisticsService.getLearningTrends(),
-          statisticsService.getBlockers(),
-          statisticsService.getAiUsage(),
-          statisticsService.getAiAudit(),
-        ]);
+        const [overviewRes, trendsRes, aiUsageRes, , funnelRes, bottlenecksRes, perfRes] =
+          await Promise.all([
+            statisticsService.getOverview(),
+            statisticsService.getLearningTrends(),
+            statisticsService.getAiUsage(),
+            statisticsService.getAiAudit(),
+            analyticsServiceApi.getFunnel(),
+            analyticsServiceApi.getBottlenecks(),
+            analyticsServiceApi.getPerformance(),
+          ]);
 
         setOverview(overviewRes);
         setTrendsData(ChartAdapter.toLearningTrendsChart(trendsRes));
-        setBlockers(blockersRes);
         setAiUsageData(ChartAdapter.toAiUsageChart(aiUsageRes));
-        setAiAudit(aiAuditRes);
+
+        setFunnelData(funnelRes);
+        setBottlenecks(bottlenecksRes);
+        setPerformance(perfRes);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       } finally {
@@ -56,22 +65,11 @@ const Dashboard: React.FC = () => {
     void fetchData();
   }, []);
 
-  const blockerColumns = [
-    { title: 'Task ID', dataIndex: 'taskId', key: 'taskId', ellipsis: true },
-    { title: 'Task Title', dataIndex: 'taskTitle', key: 'taskTitle' },
-    { title: 'Total Attempts', dataIndex: 'totalAttempts', key: 'totalAttempts' },
-    { title: 'Failed Attempts', dataIndex: 'failedAttempts', key: 'failedAttempts' },
-    {
-      title: 'Failure Rate (%)',
-      dataIndex: 'failureRate',
-      key: 'failureRate',
-      render: (val: number) => String(val) + '%',
-    },
-  ];
-
-  const auditColumns = [
-    { title: 'Triggered Rule', dataIndex: 'rule', key: 'rule' },
-    { title: 'Trigger Count', dataIndex: 'triggers', key: 'triggers' },
+  const bottleneckColumns = [
+    { title: 'Task Name', dataIndex: 'taskName', key: 'taskName' },
+    { title: 'Total Submissions', dataIndex: 'totalSubmissions', key: 'totalSubmissions' },
+    { title: 'Failed Submissions', dataIndex: 'failedSubmissions', key: 'failedSubmissions' },
+    { title: 'Failure Rate', dataIndex: 'failRate', key: 'failRate' },
   ];
 
   return (
@@ -87,7 +85,11 @@ const Dashboard: React.FC = () => {
         </Col>
         <Col span={4}>
           <Card>
-            <Statistic title="Total Courses" value={overview?.totalCourses} loading={loading} />
+            <Statistic
+              title="Active Trainees"
+              value={performance?.activeTrainees ?? 0}
+              loading={loading}
+            />
           </Card>
         </Col>
         <Col span={4}>
@@ -108,9 +110,7 @@ const Dashboard: React.FC = () => {
           <Card>
             <Statistic
               title="Overall Pass Rate"
-              value={overview?.overallPassRate}
-              suffix="%"
-              precision={2}
+              value={performance?.overallPassRate ?? overview?.overallPassRate}
               loading={loading}
             />
           </Card>
@@ -118,19 +118,19 @@ const Dashboard: React.FC = () => {
       </Row>
 
       <Row gutter={[16, 16]}>
-        {/* Learning Trends */}
+        {/* Ramp-up Funnel */}
         <Col span={12}>
-          <Card title="Learning Trends (Submissions)" loading={loading}>
+          <Card title="Ramp-up Funnel (Conversion)" loading={loading}>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={trendsData}>
+              <BarChart data={funnelData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
+                <XAxis type="number" />
+                <YAxis dataKey="taskName" type="category" width={100} />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="Passed" stroke="#52c41a" />
-                <Line type="monotone" dataKey="Failed" stroke="#ff4d4f" />
-              </LineChart>
+                <Bar dataKey="passedCount" fill="#8884d8" name="Passed Users" />
+                <Bar dataKey="dropOff" fill="#ff4d4f" name="Drop-offs" />
+              </BarChart>
             </ResponsiveContainer>
           </Card>
         </Col>
@@ -155,10 +155,10 @@ const Dashboard: React.FC = () => {
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         {/* Blocker Analysis */}
         <Col span={12}>
-          <Card title="Top Blockers (Failed Tasks)" loading={loading}>
+          <Card title="Top Bottlenecks (Highest Failure Rates)" loading={loading}>
             <Table
-              dataSource={blockers}
-              columns={blockerColumns}
+              dataSource={bottlenecks}
+              columns={bottleneckColumns}
               rowKey="taskId"
               pagination={false}
               size="small"
@@ -166,16 +166,20 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* AI Audit Logs */}
+        {/* Learning Trends */}
         <Col span={12}>
-          <Card title="Top AI Security Triggers" loading={loading}>
-            <Table
-              dataSource={aiAudit}
-              columns={auditColumns}
-              rowKey="rule"
-              pagination={false}
-              size="small"
-            />
+          <Card title="Learning Trends (Submissions)" loading={loading}>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={trendsData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="Passed" stroke="#52c41a" />
+                <Line type="monotone" dataKey="Failed" stroke="#ff4d4f" />
+              </LineChart>
+            </ResponsiveContainer>
           </Card>
         </Col>
       </Row>

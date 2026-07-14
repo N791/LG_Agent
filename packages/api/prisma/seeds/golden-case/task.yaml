@@ -1,0 +1,9 @@
+title: 企业网关鉴权开发
+stage: 1
+task_type: MANDATORY
+difficulty: INTERMEDIATE
+version: 1
+env_config:
+  image: node:20-alpine
+  packages: {}
+  node: true

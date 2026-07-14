@@ -18,7 +18,10 @@ export const TaskFixture = {
   createBasic: (overrides?: Partial<Task>): Task => ({
     id: 'task-1',
     title: 'Hello World Task',
+    summary: null,
     description: null,
+    taskType: 'MANDATORY',
+    difficulty: 'INTERMEDIATE',
     version: 1,
     courseId: 'course-1',
     stage: 1,
@@ -26,8 +29,8 @@ export const TaskFixture = {
     sandboxConfig: {},
     testConfig: {},
     promptConfig: {},
-    config: null,
-    metadata: null,
+    config: {},
+    metadata: {},
     ...overrides,
   }),
 };

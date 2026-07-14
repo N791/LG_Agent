@@ -4,6 +4,8 @@ import * as path from 'path';
 import * as os from 'os';
 import { randomUUID } from 'crypto';
 
+import { WorkspaceDTO } from '@lg-agent/contracts';
+
 export interface WorkspaceMetadata {
   workspaceId: string;
   path: string;
@@ -31,17 +33,25 @@ export class WorkspaceService {
   /**
    * Writes the necessary source code files into the workspace.
    */
-  writeFiles(workspace: WorkspaceMetadata, code: string, config: { testScript?: string }): void {
-    const indexFile = path.join(workspace.path, 'index.js');
-    fs.writeFileSync(indexFile, code);
-
-    if (config.testScript) {
-      const testFile = path.join(workspace.path, 'test.js');
-      fs.writeFileSync(testFile, config.testScript);
+  writeFiles(workspace: WorkspaceMetadata, workspaceDto: WorkspaceDTO): void {
+    // Write all files from WorkspaceDTO
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (workspaceDto.workspace.files) {
+      for (const file of workspaceDto.workspace.files) {
+        const filePath = path.join(workspace.path, file.path);
+        const dir = path.dirname(filePath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(
+          filePath,
+          file.content,
+          (file.encoding as BufferEncoding | undefined) ?? 'utf-8',
+        );
+      }
     }
 
     // MVP logic for package.json to trigger npm install inside docker
-    // In future this will be replaced by actual template cloning
     const packageJsonFile = path.join(workspace.path, 'package.json');
     if (!fs.existsSync(packageJsonFile)) {
       fs.writeFileSync(
