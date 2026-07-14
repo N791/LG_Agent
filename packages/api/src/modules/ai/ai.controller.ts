@@ -55,7 +55,7 @@ export class AiController {
         stream: request.stream,
         conversationId: request.conversationId,
         userId: req.user.id,
-        organizationId: req.user.organizationId,
+        organizationId: req.user.organizationId ?? '',
       });
 
       // Handle Stream

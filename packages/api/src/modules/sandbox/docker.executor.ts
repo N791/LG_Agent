@@ -125,7 +125,7 @@ export class DockerExecutor implements IExecutor {
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (processError) {
-        throw processError instanceof Error ? processError : new Error(String(processError));
+        throw new Error((processError as Error).message);
       }
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (isTimeout) {

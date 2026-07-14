@@ -100,7 +100,7 @@ export class WorkspaceService {
         workspaceId: workspace.id,
         version: currentVersionCount + 1,
         trigger,
-        snapshot: snapshot as unknown as Record<string, unknown>[],
+        snapshot,
       },
     });
 

@@ -1,4 +1,4 @@
-import { PrismaClient, Role, TaskType, TaskDifficulty } from '@prisma/client';
+import { PrismaClient, Prisma, Role, TaskType, TaskDifficulty } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
@@ -72,7 +72,7 @@ async function main() {
       organizationId: org.id,
       title: 'Node.js Backend Security',
       description: 'Master backend security concepts with hands-on labs.',
-      version: '1.0.0',
+      version: '1.0.0', // Course version is string
       status: 1,
       createdById: admin.id,
     },
@@ -89,7 +89,7 @@ async function main() {
       stage: number;
       task_type: string;
       difficulty: string;
-      version: string;
+      version: number;
     }
     const taskYaml = yaml.parse(
       fs.readFileSync(path.join(goldenCaseDir, 'task.yaml'), 'utf8'),
@@ -124,7 +124,7 @@ async function main() {
       update: {
         title: taskYaml.title,
         description,
-        envConfig: taskYaml.env_config,
+        envConfig: taskYaml.env_config as Prisma.InputJsonObject,
         sandboxConfig,
         testConfig,
         promptConfig: {},
@@ -139,7 +139,7 @@ async function main() {
         taskType: TaskType[taskYaml.task_type as keyof typeof TaskType],
         difficulty: TaskDifficulty[taskYaml.difficulty as keyof typeof TaskDifficulty],
         version: taskYaml.version,
-        envConfig: taskYaml.env_config,
+        envConfig: taskYaml.env_config as Prisma.InputJsonObject,
         sandboxConfig,
         testConfig,
         promptConfig: {},

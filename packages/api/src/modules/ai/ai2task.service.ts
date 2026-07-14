@@ -76,9 +76,17 @@ CRITICAL RULES:
         jsonStr = jsonStr.substring(0, jsonStr.length - 3);
       }
 
-      jsonStr = jsonStr.trim();
-
-      const parsedTask = JSON.parse(jsonStr) as Record<string, unknown>;
+      interface TaskDraft {
+        title?: string;
+        summary?: string;
+        description?: string;
+        taskType?: string;
+        difficulty?: string;
+        envConfig?: Record<string, unknown>;
+        sandboxConfig?: Record<string, unknown>;
+        testConfig?: Record<string, unknown>;
+      }
+      const parsedTask = JSON.parse(jsonStr) as TaskDraft;
 
       // Provide defaults for missing fields
       return {
