@@ -28,7 +28,7 @@ export const FileTree: React.FC = React.memo(() => {
   const activeFile = useWorkspaceStore((state) => state.activeFile);
 
   const fetchTree = () => {
-    const files = workspaceService['currentWorkspace']?.workspace.files || [];
+    const files = workspaceService.currentWorkspace?.workspace.files ?? [];
     const nodes = WorkspaceTreeService.buildTree(files);
     setTreeData(nodes);
   };
@@ -92,8 +92,8 @@ export const FileTree: React.FC = React.memo(() => {
       // Reload from backend to get full sync
       await workspaceService.loadWorkspace(taskId);
       fetchTree();
-    } catch (err) {
-      message.error(`Failed to ${modalAction}`);
+    } catch (_err) {
+      message.error(`Failed to ${modalAction ?? 'action'}`);
     }
     setIsModalOpen(false);
     setInputValue('');
@@ -113,7 +113,7 @@ export const FileTree: React.FC = React.memo(() => {
           await workspaceService.loadWorkspace(taskId);
           fetchTree();
           message.success('Deleted');
-        } catch (err) {
+        } catch (_err) {
           message.error('Failed to delete');
         }
       },
@@ -122,8 +122,8 @@ export const FileTree: React.FC = React.memo(() => {
 
   const titleRender = (node: DataNode) => {
     const isLeaf = node.isLeaf;
-    const metadata = (node as any).metadata as WorkspaceFileDTO | undefined;
-    const isReadonly = metadata?.readonly || metadata?.locked;
+    const metadata = (node as { metadata?: WorkspaceFileDTO }).metadata;
+    const isReadonly = metadata?.readonly === true || metadata?.locked === true;
 
     const items: MenuProps['items'] = [];
     if (!isLeaf) {
@@ -161,7 +161,7 @@ export const FileTree: React.FC = React.memo(() => {
             if (key === 'delete') {
               confirmDelete(node.key as string);
             } else {
-              setModalAction(key as any);
+              setModalAction(key as 'new_file' | 'new_folder' | 'rename' | null);
               setTargetPath(node.key as string);
               setInputValue(key === 'rename' ? (node.title as string) : '');
               setIsModalOpen(true);
@@ -175,10 +175,10 @@ export const FileTree: React.FC = React.memo(() => {
     );
   };
 
-  const getParentKey = (key: React.Key, tree: DataNode[]): React.Key => {
-    let parentKey: React.Key;
+  const getParentKey = (key: React.Key, tree: DataNode[]): React.Key | undefined => {
+    let parentKey: React.Key | undefined;
     for (const node of tree) {
-      if (node && node.children) {
+      if (node.children) {
         if (node.children.some((item) => item.key === key)) {
           parentKey = node.key;
         } else if (getParentKey(key, node.children)) {
@@ -186,14 +186,13 @@ export const FileTree: React.FC = React.memo(() => {
         }
       }
     }
-    return parentKey!;
+    return parentKey;
   };
 
   const dataList = React.useMemo(() => {
     const list: { key: React.Key; title: string }[] = [];
     const generateList = (data: DataNode[]) => {
       for (const node of data) {
-        if (!node) continue;
         const { key } = node;
         list.push({ key, title: node.title as string });
         if (node.children) {
@@ -209,7 +208,7 @@ export const FileTree: React.FC = React.memo(() => {
     const { value } = e.target;
     const newExpandedKeys = dataList
       .map((item) => {
-        if (item.title.indexOf(value) > -1) {
+        if (item.title.includes(value)) {
           return getParentKey(item.key, treeData);
         }
         return null;
@@ -264,14 +263,14 @@ export const FileTree: React.FC = React.memo(() => {
         }
         open={isModalOpen}
         onOk={() => { void handleModalSubmit(); }}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => { setIsModalOpen(false); }}
         okText="Confirm"
       >
         <Input
           autoFocus
           value={inputValue}
           aria-label={modalAction === 'rename' ? 'Rename item' : modalAction === 'new_folder' ? 'New folder name' : 'New file name'}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => { setInputValue(e.target.value); }}
           onPressEnter={() => { void handleModalSubmit(); }}
           placeholder={
             modalAction === 'rename'

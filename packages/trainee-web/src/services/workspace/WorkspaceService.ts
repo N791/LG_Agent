@@ -23,7 +23,7 @@ export class WorkspaceService {
         `/workspaces/${taskId}`,
       );
       this.currentWorkspace =
-        (response as unknown as { data?: WorkspaceDTO })?.data ??
+        (response as unknown as { data?: WorkspaceDTO }).data ??
         (response as unknown as WorkspaceDTO);
       return this.currentWorkspace;
     } catch (err: unknown) {
@@ -35,7 +35,7 @@ export class WorkspaceService {
           { taskId },
         );
         this.currentWorkspace =
-          (initResponse as unknown as { data?: WorkspaceDTO })?.data ??
+          (initResponse as unknown as { data?: WorkspaceDTO }).data ??
           (initResponse as unknown as WorkspaceDTO);
         return this.currentWorkspace;
       }
@@ -52,7 +52,7 @@ export class WorkspaceService {
       { files },
     );
     this.currentWorkspace =
-      (response as unknown as { data?: WorkspaceDTO })?.data ??
+      (response as unknown as { data?: WorkspaceDTO }).data ??
       (response as unknown as WorkspaceDTO);
   }
 
@@ -61,7 +61,7 @@ export class WorkspaceService {
       `/workspaces/${taskId}/files?path=${encodeURIComponent(path)}`
     );
     this.currentWorkspace =
-      (response as unknown as { data?: WorkspaceDTO })?.data ??
+      (response as unknown as { data?: WorkspaceDTO }).data ??
       (response as unknown as WorkspaceDTO);
   }
 
@@ -73,7 +73,7 @@ export class WorkspaceService {
     const response = await request.get<{ data?: WorkspaceVersionDTO[] } | WorkspaceVersionDTO[]>(
       `/workspaces/${taskId}/versions`
     );
-    return (response as unknown as { data?: WorkspaceVersionDTO[] })?.data ?? 
+    return (response as unknown as { data?: WorkspaceVersionDTO[] }).data ??
            (response as unknown as WorkspaceVersionDTO[]);
   }
 
@@ -81,7 +81,7 @@ export class WorkspaceService {
     const response = await request.post<{ data?: WorkspaceDTO } | WorkspaceDTO>(
       `/workspaces/${taskId}/versions/${versionId}/restore`
     );
-    this.currentWorkspace = (response as unknown as { data?: WorkspaceDTO })?.data ?? 
+    this.currentWorkspace = (response as unknown as { data?: WorkspaceDTO }).data ?? 
                             (response as unknown as WorkspaceDTO);
     return this.currentWorkspace;
   }

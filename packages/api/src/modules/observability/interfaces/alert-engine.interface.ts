@@ -20,7 +20,7 @@ export interface AlertEvent {
   ruleName: string;
   severity: AlertSeverity;
   timestamp: Date;
-  details?: any;
+  details?: unknown;
 }
 
 export interface AlertChannel {

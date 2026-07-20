@@ -8,7 +8,7 @@ interface VirtualizedListProps<T> {
   height?: number;
   itemHeight?: number;
   itemKey?: (item: T) => React.Key;
-  onScroll?: (e: React.UIEvent<HTMLElement, UIEvent>) => void;
+  onScroll?: (e: React.UIEvent<HTMLElement>) => void;
   emptyText?: string;
   className?: string;
   header?: React.ReactNode;
@@ -30,7 +30,7 @@ export function VirtualizedList<T>({
   return (
     <List 
       className={className} 
-      locale={{ emptyText: emptyText || 'No data' }}
+      locale={{ emptyText: emptyText ?? 'No data' }}
       header={header}
       footer={footer}
     >
@@ -38,7 +38,7 @@ export function VirtualizedList<T>({
         data={data}
         height={height}
         itemHeight={itemHeight}
-        itemKey={itemKey || ((item: any) => item.id || item.key || JSON.stringify(item))}
+        itemKey={itemKey ?? ((item: T) => (item as { id?: React.Key }).id ?? (item as { key?: React.Key }).key ?? JSON.stringify(item))}
         onScroll={onScroll}
       >
         {(item: T, index: number) => renderItem(item, index)}

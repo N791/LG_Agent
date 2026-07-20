@@ -1,3 +1,4 @@
+ 
 import { Controller, Get, Param, Query, UseGuards, NotFoundException } from '@nestjs/common';
 import { MarkdownKnowledgeRepository } from './markdown-knowledge.repository';
 import { RagService } from '../rag/rag.service';
@@ -23,7 +24,7 @@ export class KnowledgeController {
     
     const results = await this.ragService.search(query, 5);
     return results.map(r => {
-      const source = (r.chunk.metadata && r.chunk.metadata['source']) ? String(r.chunk.metadata['source']) : 'unknown';
+      const source = (r.chunk.metadata?.['source']) ? r.chunk.metadata['source'] as string : 'unknown';
       return {
         chunkContent: r.chunk.content,
         source,

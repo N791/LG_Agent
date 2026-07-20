@@ -4,6 +4,7 @@ import {
   AlertEngine, 
   AlertRule, 
   ALERT_CHANNEL, 
+  AlertSeverity,
 } from '../interfaces/alert-engine.interface';
 import type { AlertEvent, AlertChannel } from '../interfaces/alert-engine.interface';
 
@@ -11,15 +12,16 @@ import type { AlertEvent, AlertChannel } from '../interfaces/alert-engine.interf
 export class NativeLogAlertChannel implements AlertChannel {
   private readonly logger = new Logger(NativeLogAlertChannel.name);
 
-  async sendAlert(event: AlertEvent): Promise<void> {
+  sendAlert(event: AlertEvent): Promise<void> {
     const msg = `[ALERT] [${event.severity}] Rule: ${event.ruleName} | Triggered at: ${event.timestamp.toISOString()}`;
-    if (event.severity === 'CRITICAL') {
+    if (event.severity === AlertSeverity.CRITICAL) {
       this.logger.error(msg, JSON.stringify(event.details));
-    } else if (event.severity === 'WARNING') {
+    } else if (event.severity === AlertSeverity.WARNING) {
       this.logger.warn(msg);
     } else {
       this.logger.log(msg);
     }
+    return Promise.resolve();
   }
 }
 

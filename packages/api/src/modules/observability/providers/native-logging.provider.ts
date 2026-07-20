@@ -9,8 +9,8 @@ export class NativeLoggingProvider implements LoggingProvider {
   constructor(private readonly cls: ClsService) {}
 
   private formatMessage(message: string, context?: string): string {
-    const traceId = this.cls.get('traceId');
-    const correlationId = this.cls.get('correlationId');
+    const traceId = this.cls.get<string | undefined>('traceId');
+    const correlationId = this.cls.get<string | undefined>('correlationId');
     const ctxPrefix = context ? `[${context}] ` : '';
     const tracePrefix = traceId ? `[TraceID: ${traceId}] ` : '';
     const corrPrefix = correlationId ? `[CorrID: ${correlationId}] ` : '';

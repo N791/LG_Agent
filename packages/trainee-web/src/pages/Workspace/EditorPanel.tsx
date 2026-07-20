@@ -86,10 +86,8 @@ export const EditorPanel: React.FC = React.memo(() => {
   const setCursorPosition = useWorkspaceStore((state) => state.setCursorPosition);
   const reorderOpenFiles = useWorkspaceStore((state) => state.reorderOpenFiles);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const editorRef = useRef<any>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const monacoRef = useRef<any>(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoRef = useRef<typeof monaco | null>(null);
   const cursorDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Drag state for tab reorder
@@ -98,7 +96,7 @@ export const EditorPanel: React.FC = React.memo(() => {
   // ---- Check if active file is readonly ----
   const isActiveFileReadonly = React.useMemo(() => {
     if (!activeFile) return false;
-    const ws = workspaceService['currentWorkspace'];
+    const ws = workspaceService.currentWorkspace;
     const file = ws?.workspace.files.find((f) => f.path === activeFile);
     return file?.readonly === true || file?.locked === true;
   }, [activeFile]);
@@ -154,15 +152,12 @@ export const EditorPanel: React.FC = React.memo(() => {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => { window.removeEventListener('keydown', handleKeyDown); };
   }, [activeFile, openFiles, closeFile, setActiveFile, setLeftPanelTab, setEditorTheme, editorTheme]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleEditorMount: OnMount = (editor, monaco: any) => {
+  const handleEditorMount: OnMount = (editor) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
-
-    /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment */
     // Ctrl/Cmd+S binding
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
       const currentFile = useWorkspaceStore.getState().activeFile;
@@ -181,29 +176,37 @@ export const EditorPanel: React.FC = React.memo(() => {
     editor.addCommand(
       monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF,
       () => {
-        editor.getAction('editor.action.formatDocument')?.run();
+        void editor.getAction('editor.action.formatDocument')?.run();
       },
     );
 
     // Setup TypeScript Linter & Compiler Options
-    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.ES2020,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+    const ts = (monaco.languages as any).typescript;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    ts.typescriptDefaults.setCompilerOptions({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+      target: ts.ScriptTarget.ES2020,
       allowNonTsExtensions: true,
-      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      module: monaco.languages.typescript.ModuleKind.CommonJS,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+      module: ts.ModuleKind.CommonJS,
       noEmit: true,
       esModuleInterop: true,
-      jsx: monaco.languages.typescript.JsxEmit.React,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+      jsx: ts.JsxEmit.React,
       reactNamespace: 'React',
       allowJs: true,
       typeRoots: ['node_modules/@types'],
     });
 
-    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    ts.typescriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: false,
       noSyntaxValidation: false,
     });
-    /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment */
 
     // Track cursor position changes with debounce
     editor.onDidChangeCursorPosition(() => {
@@ -296,10 +299,10 @@ export const EditorPanel: React.FC = React.memo(() => {
             <div
               key={file}
               draggable
-              onDragStart={() => onDragStart(index)}
-              onDragOver={(e) => onDragOver(e, index)}
-              onDrop={(e) => onDrop(e, index)}
-              onClick={() => setActiveFile(file)}
+              onDragStart={() => { onDragStart(index); }}
+              onDragOver={(e) => { onDragOver(e, index); }}
+              onDrop={(e) => { onDrop(e, index); }}
+              onClick={() => { setActiveFile(file); }}
               className="flex items-center gap-1.5 px-3 py-1.5 cursor-pointer select-none border-r"
               style={{
                 background: isActive
@@ -349,7 +352,7 @@ export const EditorPanel: React.FC = React.memo(() => {
               key: t.key,
               label: t.label,
             })),
-            onClick: ({ key }) => setEditorTheme(key),
+            onClick: ({ key }) => { setEditorTheme(key); },
             selectedKeys: [editorTheme],
           }}
           trigger={['click']}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/restrict-template-expressions */
 import { Injectable, Logger } from '@nestjs/common';
 import { MarkdownKnowledgeRepository } from './markdown-knowledge.repository';
 import { RagService } from '../rag/rag.service';

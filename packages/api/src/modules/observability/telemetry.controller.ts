@@ -16,7 +16,7 @@ export class TelemetryController {
   async recordTelemetry(@Body() batch: TelemetryBatchDto) {
     // Optionally we can extract userId from JWT if logged in,
     // but the frontend can also provide it in the payload if needed.
-    await this.telemetryService.processBatch(batch.logs || [], batch.metrics || []);
+    await this.telemetryService.processBatch(batch.logs, batch.metrics);
     return { success: true };
   }
 

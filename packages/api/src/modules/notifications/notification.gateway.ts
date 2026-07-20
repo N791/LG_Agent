@@ -20,11 +20,11 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   server!: Server;
 
   private readonly logger = new Logger(NotificationGateway.name);
-  async handleConnection(client: Socket) {
+  handleConnection(client: Socket) {
     try {
       const token =
-        (client.handshake.auth?.['token'] as string) ??
-        (client.handshake.query?.['token'] as string);
+        (client.handshake.auth['token'] as string | undefined) ??
+        (client.handshake.query['token'] as string | undefined);
 
       if (!token) {
         client.disconnect();

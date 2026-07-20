@@ -35,8 +35,8 @@ export class OfflineWorkspaceService {
           db.createObjectStore(this.storeName, { keyPath: 'taskId' });
         }
       };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => resolve(null);
+      request.onsuccess = () => { resolve(request.result); };
+      request.onerror = () => { resolve(null); };
     });
 
     return this.dbPromise;
@@ -56,8 +56,8 @@ export class OfflineWorkspaceService {
       const tx = db.transaction(this.storeName, 'readwrite');
       const store = tx.objectStore(this.storeName);
       const request = store.put(payload);
-      request.onsuccess = () => resolve();
-      request.onerror = () => resolve();
+      request.onsuccess = () => { resolve(); };
+      request.onerror = () => { resolve(); };
     });
   }
 
@@ -69,8 +69,8 @@ export class OfflineWorkspaceService {
       const tx = db.transaction(this.storeName, 'readonly');
       const store = tx.objectStore(this.storeName);
       const request = store.get(taskId);
-      request.onsuccess = () => resolve(request.result ?? null);
-      request.onerror = () => resolve(null);
+      request.onsuccess = () => { resolve((request.result as OfflineWorkspaceSnapshot | undefined) ?? null); };
+      request.onerror = () => { resolve(null); };
     });
   }
 
@@ -82,13 +82,13 @@ export class OfflineWorkspaceService {
       const tx = db.transaction(this.storeName, 'readwrite');
       const store = tx.objectStore(this.storeName);
       const request = store.delete(taskId);
-      request.onsuccess = () => resolve();
-      request.onerror = () => resolve();
+      request.onsuccess = () => { resolve(); };
+      request.onerror = () => { resolve(); };
     });
   }
 
   private normalizeRemoteFiles(
-    remoteFiles: Record<string, string> | Array<{ path: string; content: string }> | undefined,
+    remoteFiles: Record<string, string> | { path: string; content: string }[] | undefined,
   ): Record<string, string> {
     if (!remoteFiles) return {};
 
@@ -104,7 +104,7 @@ export class OfflineWorkspaceService {
 
   async compareWithRemote(
     taskId: string,
-    remoteFiles: Record<string, string> | Array<{ path: string; content: string }> | undefined,
+    remoteFiles: Record<string, string> | { path: string; content: string }[] | undefined,
   ): Promise<OfflineSyncComparison> {
     const snapshot = await this.loadSnapshot(taskId);
     const localFiles = snapshot?.fileContents ?? {};
@@ -125,7 +125,7 @@ export class OfflineWorkspaceService {
 
   async syncWithRemote(
     taskId: string,
-    remoteFiles: Record<string, string> | Array<{ path: string; content: string }> | undefined,
+    remoteFiles: Record<string, string> | { path: string; content: string }[] | undefined,
   ): Promise<OfflineSyncComparison> {
     const comparison = await this.compareWithRemote(taskId, remoteFiles);
     if (!comparison.hasConflict) {

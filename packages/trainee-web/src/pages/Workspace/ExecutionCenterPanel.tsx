@@ -12,7 +12,7 @@ export interface ExecutionState {
   report: { exitCode?: number | null; message?: string } | null;
   score: number | null;
   error: string | null;
-  aiReview?: any | null; // using any to avoid type issues if AiReviewDTO is not fully exported yet
+  aiReview?: unknown;
 }
 
 export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ state }) => {
@@ -80,7 +80,7 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
         items={[
           {
             key: 'console',
-            label: `Console (${state.metrics?.logCount ?? 0})`,
+            label: `Console (${String(state.metrics?.logCount ?? 0)})`,
             children: (
               <div
                 ref={scrollRef}
@@ -124,13 +124,13 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
               </div>
             )
           },
-          ...((state.status === 'FAILED' || state.status === 'ERROR' || (state as any).aiReview) ? [{
+          ...((state.status === 'FAILED' || state.status === 'ERROR' || state.aiReview) ? [{
             key: 'review',
             label: 'AI Review',
             children: (
               <AIReviewTab 
-                submissionId={state.submissionId as string} 
-                initialReview={(state as any).aiReview} 
+                submissionId={state.submissionId ?? ''} 
+                initialReview={state.aiReview} 
                 status={state.status} 
               />
             )

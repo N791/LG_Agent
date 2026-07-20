@@ -10,9 +10,16 @@ interface ChatPanelProps {
   taskId: string;
 }
 
+interface QuickAction {
+  id: string;
+  action: string;
+  prompt: string;
+  label: string;
+}
+
 export const ChatPanel: React.FC<ChatPanelProps> = ({ taskId }) => {
   const [input, setInput] = useState('');
-  const [quickActions, setQuickActions] = useState<any[]>([]);
+  const [quickActions, setQuickActions] = useState<QuickAction[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const history = useWorkspaceStore((state) => state.aiHistory);
@@ -118,7 +125,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ taskId }) => {
         )}
         <Input.TextArea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => { setInput(e.target.value); }}
           placeholder="Ask a question... (Enter to send, Shift+Enter for new line)"
           autoSize={{ minRows: 2, maxRows: 6 }}
           onKeyDown={(e) => {

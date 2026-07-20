@@ -18,8 +18,8 @@ export class NativeTelemetryProvider implements TelemetryProvider {
           path: log.path,
           userAgent: log.userAgent,
           userId: log.userId,
-          metadata: log.metadata || {},
-          createdAt: log.timestamp || new Date(),
+          metadata: log.metadata ?? {},
+          createdAt: log.timestamp ?? new Date(),
         },
       });
     } catch (err) {
@@ -37,8 +37,8 @@ export class NativeTelemetryProvider implements TelemetryProvider {
           path: metric.path,
           userAgent: metric.userAgent,
           userId: metric.userId,
-          metadata: metric.metadata || {},
-          createdAt: metric.timestamp || new Date(),
+          metadata: metric.metadata ?? {},
+          createdAt: metric.timestamp ?? new Date(),
         },
       });
     } catch (err) {
@@ -57,8 +57,8 @@ export class NativeTelemetryProvider implements TelemetryProvider {
             path: log.path,
             userAgent: log.userAgent,
             userId: log.userId,
-            metadata: log.metadata || {},
-            createdAt: log.timestamp || new Date(),
+            metadata: log.metadata ?? {},
+            createdAt: log.timestamp ?? new Date(),
           })),
           skipDuplicates: true,
         });
@@ -73,8 +73,8 @@ export class NativeTelemetryProvider implements TelemetryProvider {
             path: metric.path,
             userAgent: metric.userAgent,
             userId: metric.userId,
-            metadata: metric.metadata || {},
-            createdAt: metric.timestamp || new Date(),
+            metadata: metric.metadata ?? {},
+            createdAt: metric.timestamp ?? new Date(),
           })),
           skipDuplicates: true,
         });

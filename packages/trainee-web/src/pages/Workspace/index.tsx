@@ -65,7 +65,7 @@ const WorkspacePage: React.FC = () => {
 
           if (recoveryDataRaw) {
             try {
-              recoveredContents = JSON.parse(recoveryDataRaw);
+              recoveredContents = JSON.parse(recoveryDataRaw) as Record<string, string>;
             } catch (e) {
               console.error('Failed to parse recovery data', e);
             }
@@ -113,7 +113,7 @@ const WorkspacePage: React.FC = () => {
                   localStorage.removeItem(recoveryKey);
                 },
                 onCancel: () => {
-                  if (hasRecoveryData && recoverySource) {
+                  if (hasRecoveryData) {
                     workspace.workspace.files.forEach((f) => {
                       const recoveredContent = recoverySource[f.path];
                       useWorkspaceStore.getState().openFile(f.path, recoveredContent ?? f.content);
@@ -143,7 +143,7 @@ const WorkspacePage: React.FC = () => {
           });
         })
         .catch(console.error)
-        .finally(() => setIsInitializing(false));
+        .finally(() => { setIsInitializing(false); });
     }
   }, [taskId]);
 
@@ -232,7 +232,7 @@ const WorkspacePage: React.FC = () => {
             const event = JSON.parse(msg.data) as {
               type?: string;
               message?: string;
-              data?: { text?: string; score?: number; report?: any; exitCode?: number };
+              data?: { text?: string; score?: number; report?: unknown; exitCode?: number };
             };
 
             setExecutionState(prev => {
@@ -250,7 +250,7 @@ const WorkspacePage: React.FC = () => {
                 newState.error = event.message ?? 'Unknown error';
                 if (metrics) metrics.status = 'ERROR';
               } else if (event.type === 'SUCCESS' || event.type === 'FAILED') {
-                newState.status = event.type as 'SUCCESS' | 'FAILED';
+                newState.status = event.type;
                 newState.score = event.data?.score ?? 0;
                 newState.report = event.data?.report ?? null;
                 if (metrics) {
@@ -349,7 +349,13 @@ const WorkspacePage: React.FC = () => {
 
       const stream = streamExecutionLogs(response.executionId, taskId, action);
 
-      for await (const event of stream) {
+      for await (const rawEvent of stream) {
+        const event = rawEvent as {
+          type?: string;
+          message?: string;
+          data?: { text?: string; score?: number; report?: unknown; exitCode?: number };
+        };
+        
         setExecutionState(prev => {
           const newState = { ...prev };
           const metrics = newState.metrics ? { ...newState.metrics } : null;
@@ -365,12 +371,12 @@ const WorkspacePage: React.FC = () => {
             newState.error = event.message ?? 'Unknown error';
             if (metrics) metrics.status = 'ERROR';
           } else if (event.type === 'SUCCESS' || event.type === 'FAILED') {
-            newState.status = event.type as 'SUCCESS' | 'FAILED';
+            newState.status = event.type;
             newState.score = event.data?.score ?? 0;
             newState.report = event.data?.report ?? null;
             if (metrics) {
               metrics.status = newState.status;
-              metrics.exitCode = event.data?.report?.exitCode ?? null;
+              metrics.exitCode = event.data?.exitCode ?? null;
             }
           }
           newState.metrics = metrics;

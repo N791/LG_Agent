@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+ 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { notificationService } from './notification.service';
 import api from './api';

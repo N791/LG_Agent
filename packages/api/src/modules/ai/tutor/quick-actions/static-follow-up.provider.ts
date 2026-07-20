@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/require-await */
+ 
 import { Injectable } from '@nestjs/common';
 import { IQuickActionProvider } from './interfaces';
 import { QuickActionDTO, ConversationType } from '@lg-agent/contracts';

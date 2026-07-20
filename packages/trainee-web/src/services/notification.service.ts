@@ -48,30 +48,33 @@ class NotificationService {
   async connectSocket(token: string): Promise<Socket> {
     if (this.socket?.connected) return this.socket;
 
-    if (!this.socketConnectPromise) {
-      this.socketConnectPromise = new Promise((resolve, reject) => {
-        // Adjust the URL if your API is not at the same host
-        const API_URL = import.meta.env['VITE_API_URL'] || 'http://localhost:3000';
+    this.socketConnectPromise ??= new Promise((resolve, reject) => {
+      // Adjust the URL if your API is not at the same host
+      const envUrl = import.meta.env['VITE_API_URL'] as string | undefined;
+      const API_URL = envUrl ?? 'http://localhost:3000';
 
-        this.socket = io(`${API_URL}/notifications`, {
-          auth: { token },
-          transports: ['websocket'],
-        });
-
-        this.socket.on('connect', () => {
-          console.log('Notification socket connected');
-          resolve();
-        });
-
-        this.socket.on('connect_error', (err) => {
-          console.error('Notification socket connection error:', err);
-          reject(err);
-        });
+      this.socket = io(`${API_URL}/notifications`, {
+        auth: { token },
+        transports: ['websocket'],
       });
-    }
+
+      this.socket.on('connect', () => {
+        console.log('Notification socket connected');
+        resolve();
+      });
+
+      this.socket.on('connect_error', (err) => {
+        console.error('Notification socket connection error:', err);
+        reject(err);
+      });
+    });
 
     await this.socketConnectPromise;
-    return this.socket!;
+    const socket = this.socket;
+    if (!socket) {
+      throw new Error('Socket connection failed to initialize');
+    }
+    return socket;
   }
 
   disconnectSocket() {

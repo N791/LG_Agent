@@ -10,7 +10,7 @@ import { SessionProvider } from './components/SessionProvider';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { telemetry } from './utils/telemetry';
-import { onLCP, onCLS, onINP, onFCP, onTTFB } from 'web-vitals';
+import { onLCP, onCLS, onINP, onFCP, onTTFB, type Metric } from 'web-vitals';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -23,14 +23,16 @@ const queryClient = new QueryClient({
 
 // Set up global error handlers
 window.addEventListener('error', (event) => {
-  telemetry.logError(event.message, event.error?.stack, { type: 'uncaughtException', filename: event.filename, lineno: event.lineno, colno: event.colno });
+  const err = event.error as Error | undefined;
+  telemetry.logError(event.message, err?.stack, { type: 'uncaughtException', filename: event.filename, lineno: event.lineno, colno: event.colno });
 });
 window.addEventListener('unhandledrejection', (event) => {
-  telemetry.logError(event.reason?.message || 'Unhandled Promise Rejection', event.reason?.stack, { type: 'unhandledRejection' });
+  const reason = event.reason as Error | undefined;
+  telemetry.logError(reason?.message ?? 'Unhandled Promise Rejection', reason?.stack, { type: 'unhandledRejection' });
 });
 
 // Set up web-vitals reporting
-const reportVital = (metric: any) => {
+const reportVital = (metric: Metric) => {
   telemetry.recordMetric(metric.name, metric.value, metric.rating, { id: metric.id, delta: metric.delta, navigationType: metric.navigationType });
 };
 onLCP(reportVital);

@@ -51,7 +51,7 @@ export const UserMenu: React.FC = () => {
     {
       key: 'settings',
       label: 'Settings',
-      onClick: () => navigate('/settings'),
+      onClick: () => { navigate('/settings'); },
     },
     {
       key: 'logout',

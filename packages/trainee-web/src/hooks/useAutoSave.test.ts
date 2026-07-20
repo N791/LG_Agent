@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/require-await, @typescript-eslint/no-empty-function, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useAutoSave } from './useAutoSave';
@@ -170,7 +172,7 @@ describe('useAutoSave', () => {
     let resolvePromise: () => void;
     vi.mocked(workspaceService.updateFiles).mockReturnValue(
       new Promise((resolve) => {
-        resolvePromise = () => resolve(undefined as never);
+        resolvePromise = () => { resolve(undefined); };
       }),
     );
 

@@ -24,13 +24,19 @@ export function resolveWorkspaceKeyboardShortcut(
       '3': 'versions',
     };
 
-    return { type: 'switch-left-panel', tab: tabMap[event.key] as 'objective' | 'mentor' | 'versions' };
+    const tab = tabMap[event.key];
+    if (tab) {
+      return { type: 'switch-left-panel', tab };
+    }
   }
 
   if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 't') {
     const currentIndex = THEME_CYCLE.indexOf(currentTheme);
     const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % THEME_CYCLE.length : 0;
-    return { type: 'cycle-editor-theme', nextTheme: THEME_CYCLE[nextIndex] as string };
+    const nextTheme = THEME_CYCLE[nextIndex];
+    if (nextTheme) {
+      return { type: 'cycle-editor-theme', nextTheme };
+    }
   }
 
   return null;

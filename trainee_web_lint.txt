@@ -1,0 +1,474 @@
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\components\NotificationBell.tsx
+   29:19  error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+   41:30  error  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   45:39  error  Unsafe member access .status on an `any` value                                                             @typescript-eslint/no-unsafe-member-access
+   50:22  error  Unsafe member access .status on an `any` value                                                             @typescript-eslint/no-unsafe-member-access
+   56:29  error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+   56:47  error  Unsafe argument of type `any` assigned to a parameter of type `string`                                     @typescript-eslint/no-unsafe-argument
+   56:52  error  Unsafe member access .id on an `any` value                                                                 @typescript-eslint/no-unsafe-member-access
+   65:27  error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+   65:42  error  Unsafe argument of type `any` assigned to a parameter of type `string`                                     @typescript-eslint/no-unsafe-argument
+   65:47  error  Unsafe member access .id on an `any` value                                                                 @typescript-eslint/no-unsafe-member-access
+   71:58  error  Unsafe member access .status on an `any` value                                                             @typescript-eslint/no-unsafe-member-access
+   72:22  error  Unsafe call of an `any` typed value                                                                        @typescript-eslint/no-unsafe-call
+   72:27  error  Unsafe member access .type on an `any` value                                                               @typescript-eslint/no-unsafe-member-access
+   72:43  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   77:40  error  Unsafe member access .status on an `any` value                                                             @typescript-eslint/no-unsafe-member-access
+   77:87  error  Unsafe member access .title on an `any` value                                                              @typescript-eslint/no-unsafe-member-access
+   78:27  error  Unsafe member access .priority on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+   84:29  error  Unsafe member access .message on an `any` value                                                            @typescript-eslint/no-unsafe-member-access
+   87:53  error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                     @typescript-eslint/no-unsafe-argument
+   87:58  error  Unsafe member access .createdAt on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+   97:42  error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+  111:7   error  `overlayClassName` is deprecated. Please use `classNames={{ root: {} }}`                                   @typescript-eslint/no-deprecated
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\components\VirtualizedList.tsx
+  33:38  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  41:26  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  41:37  error  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  41:45  error  Unsafe return of a value of type `any`                                                                     @typescript-eslint/no-unsafe-return
+  41:50  error  Unsafe member access .id on an `any` value                                                                 @typescript-eslint/no-unsafe-member-access
+  41:53  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  41:61  error  Unsafe member access .key on an `any` value                                                                @typescript-eslint/no-unsafe-member-access
+  41:65  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\contexts\NotificationContext.tsx
+   72:7   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   73:7   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  104:45  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  104:63  error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  116:32  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  116:50  error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  130:16  error  The two values in this comparison do not have a shared enum type                                                                                                    @typescript-eslint/no-unsafe-enum-comparison
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\hooks\useAutoSave.test.ts
+   48:12  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+   65:12  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+   97:12  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  103:14  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  116:24  error  Async arrow function has no 'await' expression                                                                                                                                                                                                                                                                                              @typescript-eslint/require-await
+  127:14  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  144:12  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  148:76  error  Unexpected empty arrow function                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-empty-function
+  149:15  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  171:15  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  199:7   error  Forbidden non-null assertion                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-non-null-assertion
+  200:13  error  Forbidden non-null assertion                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-non-null-assertion
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\main.tsx
+  26:37   error  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`                                 @typescript-eslint/no-unsafe-argument
+  26:50   error  Unsafe member access .stack on an `any` value                                                                      @typescript-eslint/no-unsafe-member-access
+  29:22   error  Unsafe argument of type `any` assigned to a parameter of type `string`                                             @typescript-eslint/no-unsafe-argument
+  29:36   error  Unsafe member access .message on an `any` value                                                                    @typescript-eslint/no-unsafe-member-access
+  29:44   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator          @typescript-eslint/prefer-nullish-coalescing
+  29:78   error  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`                                 @typescript-eslint/no-unsafe-argument
+  29:92   error  Unsafe member access .stack on an `any` value                                                                      @typescript-eslint/no-unsafe-member-access
+  33:30   error  Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  34:26   error  Unsafe argument of type `any` assigned to a parameter of type `string`                                             @typescript-eslint/no-unsafe-argument
+  34:33   error  Unsafe member access .name on an `any` value                                                                       @typescript-eslint/no-unsafe-member-access
+  34:39   error  Unsafe argument of type `any` assigned to a parameter of type `number`                                             @typescript-eslint/no-unsafe-argument
+  34:46   error  Unsafe member access .value on an `any` value                                                                      @typescript-eslint/no-unsafe-member-access
+  34:53   error  Unsafe argument of type `any` assigned to a parameter of type `"good" | "needs-improvement" | "poor" | undefined`  @typescript-eslint/no-unsafe-argument
+  34:60   error  Unsafe member access .rating on an `any` value                                                                     @typescript-eslint/no-unsafe-member-access
+  34:70   error  Unsafe assignment of an `any` value                                                                                @typescript-eslint/no-unsafe-assignment
+  34:81   error  Unsafe member access .id on an `any` value                                                                         @typescript-eslint/no-unsafe-member-access
+  34:85   error  Unsafe assignment of an `any` value                                                                                @typescript-eslint/no-unsafe-assignment
+  34:99   error  Unsafe member access .delta on an `any` value                                                                      @typescript-eslint/no-unsafe-member-access
+  34:106  error  Unsafe assignment of an `any` value                                                                                @typescript-eslint/no-unsafe-assignment
+  34:129  error  Unsafe member access .navigationType on an `any` value                                                             @typescript-eslint/no-unsafe-member-access
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Dashboard\index.tsx
+  159:19  error  `bodyStyle` is deprecated. Please use `styles.body` instead                                                @typescript-eslint/no-deprecated
+  169:41  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\MissionHub\LearningTimeline.tsx
+  25:16  error  'err' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\MissionHub\index.tsx
+   49:44  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   50:48  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   61:74  error    Invalid type "string | undefined" of template literal expression                                           @typescript-eslint/restrict-template-expressions
+   62:72  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+   66:20  error    Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   66:25  error    Unsafe member access .__LAST_ERROR on an `any` value                                                       @typescript-eslint/no-unsafe-member-access
+   79:25  error    Invalid type "string | undefined" of template literal expression                                           @typescript-eslint/restrict-template-expressions
+  148:29  error    Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  148:34  error    Unsafe member access .__LAST_ERROR on an `any` value                                                       @typescript-eslint/no-unsafe-member-access
+  148:67  error    Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  148:72  error    Unsafe member access .__LAST_ERROR on an `any` value                                                       @typescript-eslint/no-unsafe-member-access
+  192:62  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  192:81  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  278:60  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Settings\index.tsx
+   35:5   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   47:42  error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   51:9   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   51:26  error  Unsafe member access .nickname on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   52:9   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   52:23  error  Unsafe member access .email on an `any` value                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   59:11  error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   65:14  error  'error' is defined but never used. Allowed unused caught errors must match /^_/u                                                                                    @typescript-eslint/no-unused-vars
+   72:43  error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   76:9   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   76:33  error  Unsafe member access .currentPassword on an `any` value                                                                                                             @typescript-eslint/no-unsafe-member-access
+   77:9   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   77:29  error  Unsafe member access .newPassword on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+   81:21  error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   82:21  error  Unsafe argument of type `any` assigned to a parameter of type `JointContent`                                                                                        @typescript-eslint/no-unsafe-argument
+   82:27  error  Unsafe member access .response on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   82:51  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+   95:14  error  'err' is defined but never used. Allowed unused caught errors must match /^_/u                                                                                      @typescript-eslint/no-unused-vars
+  102:7   error  The case statement does not have a shared enum type with the switch predicate                                                                                       @typescript-eslint/no-unsafe-enum-comparison
+  103:7   error  The case statement does not have a shared enum type with the switch predicate                                                                                       @typescript-eslint/no-unsafe-enum-comparison
+  104:7   error  The case statement does not have a shared enum type with the switch predicate                                                                                       @typescript-eslint/no-unsafe-enum-comparison
+  105:7   error  The case statement does not have a shared enum type with the switch predicate                                                                                       @typescript-eslint/no-unsafe-enum-comparison
+  106:7   error  The case statement does not have a shared enum type with the switch predicate                                                                                       @typescript-eslint/no-unsafe-enum-comparison
+  129:32  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  159:32  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  220:40  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\AIReviewTab.tsx
+   17:74  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+   33:23  error    Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   43:17  error    Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   45:23  error    Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<AiReviewDTO | null>`                                                                  @typescript-eslint/no-unsafe-argument
+   47:45  error    Unsafe argument of type `any` assigned to a parameter of type `string | number | Timeout | undefined`                                                               @typescript-eslint/no-unsafe-argument
+   54:46  error    Unsafe argument of type `any` assigned to a parameter of type `string | number | Timeout | undefined`                                                               @typescript-eslint/no-unsafe-argument
+   60:46  error    Unsafe argument of type `any` assigned to a parameter of type `string | number | Timeout | undefined`                                                               @typescript-eslint/no-unsafe-argument
+   63:16  error    'err' is defined but never used. Allowed unused caught errors must match /^_/u                                                                                      @typescript-eslint/no-unused-vars
+   67:43  error    Unsafe argument of type `any` assigned to a parameter of type `string | number | Timeout | undefined`                                                               @typescript-eslint/no-unsafe-argument
+   73:7   error    Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   74:34  error    Promise returned in function argument where a void return was expected                                                                                              @typescript-eslint/no-misused-promises
+   79:39  error    Unsafe argument of type `any` assigned to a parameter of type `string | number | Timeout | undefined`                                                               @typescript-eslint/no-unsafe-argument
+  114:8   warning  Unnecessary conditional, value is always truthy                                                                                                                     @typescript-eslint/no-unnecessary-condition
+  124:8   warning  Unnecessary conditional, value is always truthy                                                                                                                     @typescript-eslint/no-unnecessary-condition
+  129:69  warning  Unnecessary conditional, value is always truthy                                                                                                                     @typescript-eslint/no-unnecessary-condition
+  134:84  error    Invalid type "number" of template literal expression                                                                                                                @typescript-eslint/restrict-template-expressions
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\ChatPanel.tsx
+   15:52  error  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  106:22  error  Unsafe assignment of an `any` value                                     @typescript-eslint/no-unsafe-assignment
+  106:25  error  Unsafe member access .id on an `any` value                              @typescript-eslint/no-unsafe-member-access
+  110:47  error  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  110:50  error  Unsafe member access .action on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  110:58  error  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+  110:61  error  Unsafe member access .prompt on an `any` value                          @typescript-eslint/no-unsafe-member-access
+  114:21  error  Unsafe member access .label on an `any` value                           @typescript-eslint/no-unsafe-member-access
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\EditorPanel.tsx
+  113:11  error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  113:30  error  Unsafe member access .setPosition on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+  114:11  error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  114:30  error  Unsafe member access .revealPositionInCenter on an `any` value                                                                                                      @typescript-eslint/no-unsafe-member-access
+  163:5   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  184:9   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\ExecutionCenterPanel.tsx
+   15:14  error  Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   15:14  error  'any' overrides all other types in this union type    @typescript-eslint/no-redundant-type-constituents
+   83:32  error  Invalid type "number" of template literal expression  @typescript-eslint/restrict-template-expressions
+  127:83  error  Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  127:88  error  Unsafe member access .aiReview on an `any` value      @typescript-eslint/no-unsafe-member-access
+  132:31  error  Forbidden non-null assertion                          @typescript-eslint/no-non-null-assertion
+  133:32  error  Unsafe assignment of an `any` value                   @typescript-eslint/no-unsafe-assignment
+  133:42  error  Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  133:47  error  Unsafe member access .aiReview on an `any` value      @typescript-eslint/no-unsafe-member-access
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\FileTree.tsx
+   31:70  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                    @typescript-eslint/prefer-nullish-coalescing
+   95:14  error    'err' is defined but never used. Allowed unused caught errors must match /^_/u                                               @typescript-eslint/no-unused-vars
+   96:34  error    Invalid type ""new_file" | "new_folder" | "rename" | null" of template literal expression                                    @typescript-eslint/restrict-template-expressions
+  116:18  error    'err' is defined but never used. Allowed unused caught errors must match /^_/u                                               @typescript-eslint/no-unused-vars
+  125:31  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  125:36  error    Unsafe member access .metadata on an `any` value                                                                             @typescript-eslint/no-unsafe-member-access
+  126:43  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                    @typescript-eslint/prefer-nullish-coalescing
+  164:30  error    Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<"new_file" | "new_folder" | "rename" | null>`  @typescript-eslint/no-unsafe-argument
+  164:37  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  181:15  warning  Unnecessary optional chain on a non-nullish value                                                                            @typescript-eslint/no-unnecessary-condition
+  189:12  error    Forbidden non-null assertion                                                                                                 @typescript-eslint/no-non-null-assertion
+  196:13  warning  Unnecessary conditional, value is always falsy                                                                               @typescript-eslint/no-unnecessary-condition
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\KnowledgePanel.tsx
+   66:20  error  Promise-returning function provided to attribute where a void return was expected  @typescript-eslint/no-misused-promises
+   80:32  error  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+   83:25  error  Promise-returning function provided to attribute where a void return was expected  @typescript-eslint/no-misused-promises
+   83:47  error  Unsafe argument of type `any` assigned to a parameter of type `string`             @typescript-eslint/no-unsafe-argument
+   83:47  error  Unsafe call of an `any` typed value                                                @typescript-eslint/no-unsafe-call
+   83:52  error  Unsafe member access .source on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+   87:33  error  Unsafe member access .source on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+   88:47  error  Unsafe call of an `any` typed value                                                @typescript-eslint/no-unsafe-call
+   88:52  error  Unsafe member access .score on an `any` value                                      @typescript-eslint/no-unsafe-member-access
+   91:27  error  Unsafe member access .chunkContent on an `any` value                               @typescript-eslint/no-unsafe-member-access
+  102:32  error  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  105:25  error  Promise-returning function provided to attribute where a void return was expected  @typescript-eslint/no-misused-promises
+  105:47  error  Unsafe argument of type `any` assigned to a parameter of type `string`             @typescript-eslint/no-unsafe-argument
+  105:52  error  Unsafe member access .id on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  109:58  error  Unsafe member access .title on an `any` value                                      @typescript-eslint/no-unsafe-member-access
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\LeftPanel.tsx
+   18:54  warning  Unnecessary optional chain on a non-nullish value                                                    @typescript-eslint/no-unnecessary-condition
+  112:27  error    Unsafe argument of type `any` assigned to a parameter of type `"objective" | "mentor" | "versions"`  @typescript-eslint/no-unsafe-argument
+  112:34  error    Unexpected any. Specify a different type                                                             @typescript-eslint/no-explicit-any
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\MentorPanel.tsx
+   46:14   error  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+   65:5    error  Definition for rule 'react-hooks/exhaustive-deps' was not found                                            react-hooks/exhaustive-deps
+   87:14   error  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  108:14   error  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  119:90   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  123:14   error  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  139:14   error  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  155:14   error  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  174:122  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  200:40   error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+  224:45   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  226:35   error  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  227:36   error  Unsafe member access .authorId on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  242:32   error  Unsafe member access .authorName on an `any` value                                                         @typescript-eslint/no-unsafe-member-access
+  242:54   error  Unsafe member access .authorRole on an `any` value                                                         @typescript-eslint/no-unsafe-member-access
+  242:79   error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                     @typescript-eslint/no-unsafe-argument
+  242:87   error  Unsafe member access .createdAt on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  244:30   error  Unsafe member access .isInternal on an `any` value                                                         @typescript-eslint/no-unsafe-member-access
+  245:30   error  Unsafe member access .mentions on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  245:50   error  Unsafe member access .mentions on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  245:120  error  Unsafe call of an `any` typed value                                                                        @typescript-eslint/no-unsafe-call
+  245:128  error  Unsafe member access .mentions on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  246:36   error  Unsafe member access .content on an `any` value                                                            @typescript-eslint/no-unsafe-member-access
+  278:33   error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+  279:33   error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+  280:33   error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+  282:46   error  Promise-returning function provided to attribute where a void return was expected                          @typescript-eslint/no-misused-promises
+  323:30   error  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  325:52   error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<DiscussionDTO | null>`       @typescript-eslint/no-unsafe-argument
+  329:43   error  Unsafe member access .title on an `any` value                                                              @typescript-eslint/no-unsafe-member-access
+  333:37   error  Unsafe argument of type `any` assigned to a parameter of type `string`                                     @typescript-eslint/no-unsafe-argument
+  333:42   error  Unsafe member access .status on an `any` value                                                             @typescript-eslint/no-unsafe-member-access
+  334:29   error  Unsafe member access .isOverdue on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  335:29   error  Unsafe member access .priority on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  336:29   error  Unsafe member access .priority on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  339:48   error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                     @typescript-eslint/no-unsafe-argument
+  339:53   error  Unsafe member access .updatedAt on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\SubmissionsPanel.tsx
+   18:50  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   25:22  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<any[]>`   @typescript-eslint/no-unsafe-argument
+   25:31  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   25:36  error  Unsafe member access .data on an `any` value                                            @typescript-eslint/no-unsafe-member-access
+   36:5   error  Definition for rule 'react-hooks/exhaustive-deps' was not found                         react-hooks/exhaustive-deps
+   39:28  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   44:7   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   44:25  error  Unsafe member access .id on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+   45:7   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   45:19  error  Unsafe member access .status on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+   46:7   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   46:17  error  Unsafe member access .logs on an `any` value                                            @typescript-eslint/no-unsafe-member-access
+   48:9   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   48:26  error  Unsafe member access .id on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+   49:9   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   49:21  error  Unsafe member access .status on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+   50:29  error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`  @typescript-eslint/no-unsafe-argument
+   50:33  error  Unsafe member access .createdAt on an `any` value                                       @typescript-eslint/no-unsafe-member-access
+   51:27  error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`  @typescript-eslint/no-unsafe-argument
+   51:31  error  Unsafe member access .createdAt on an `any` value                                       @typescript-eslint/no-unsafe-member-access
+   54:9   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   54:23  error  Unsafe member access .report on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+   56:9   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   56:19  error  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+   56:24  error  Unsafe member access .logs on an `any` value                                            @typescript-eslint/no-unsafe-member-access
+   56:36  error  Unsafe member access .split on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+   56:48  error  Unsafe member access .length on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+   58:7   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   58:19  error  Unsafe member access .report on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+   59:7   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   59:18  error  Unsafe member access .score on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+   61:7   error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+   61:21  error  Unsafe member access .aiReview on an `any` value                                        @typescript-eslint/no-unsafe-member-access
+   85:32  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  103:36  error  Unsafe member access .score on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  106:32  error  Unsafe member access .status on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  108:36  error  Unsafe member access .status on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  114:31  error  Unsafe member access .status on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  118:85  error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`  @typescript-eslint/no-unsafe-argument
+  118:90  error  Unsafe member access .createdAt on an `any` value                                       @typescript-eslint/no-unsafe-member-access
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\VersionsPanel.tsx
+  34:5   error  Definition for rule 'react-hooks/exhaustive-deps' was not found  react-hooks/exhaustive-deps
+  40:63  error  Invalid type "number" of template literal expression             @typescript-eslint/restrict-template-expressions
+  52:50  error  Invalid type "number" of template literal expression             @typescript-eslint/restrict-template-expressions
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\pages\Workspace\index.tsx
+   68:15  error    Unsafe assignment of an `any` value                                                       @typescript-eslint/no-unsafe-assignment
+  116:42  warning  Unnecessary conditional, value is always truthy                                           @typescript-eslint/no-unnecessary-condition
+  235:64  error    Unexpected any. Specify a different type                                                  @typescript-eslint/no-explicit-any
+  255:17  error    Unsafe assignment of an `any` value                                                       @typescript-eslint/no-unsafe-assignment
+  357:21  error    Unsafe member access .type on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  360:28  error    Unsafe member access .type on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  360:52  error    Unsafe member access .data on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  361:30  error    Invalid operand for a '+' operation. Operands must each be a number or string. Got `any`  @typescript-eslint/restrict-plus-operands
+  361:36  error    Unsafe member access .data on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  363:28  error    Unsafe member access .type on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  365:13  error    Unsafe assignment of an `any` value                                                       @typescript-eslint/no-unsafe-assignment
+  365:36  error    Unsafe member access .message on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  367:28  error    Unsafe member access .type on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  367:56  error    Unsafe member access .type on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  368:37  error    Unsafe member access .type on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  369:13  error    Unsafe assignment of an `any` value                                                       @typescript-eslint/no-unsafe-assignment
+  369:36  error    Unsafe member access .data on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  370:13  error    Unsafe assignment of an `any` value                                                       @typescript-eslint/no-unsafe-assignment
+  370:37  error    Unsafe member access .data on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  373:15  error    Unsafe assignment of an `any` value                                                       @typescript-eslint/no-unsafe-assignment
+  373:40  error    Unsafe member access .data on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\achievementService.ts
+  7:68  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\aiService.ts
+  12:58  warning  Unnecessary optional chain on a non-nullish value                                                   @typescript-eslint/no-unnecessary-condition
+  15:50  error    Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  16:44  error    Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  16:54  error    Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  19:12  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  19:40  error    Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  19:48  warning  Unnecessary optional chain on a non-nullish value                                                   @typescript-eslint/no-unnecessary-condition
+  19:77  error    Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  31:28  error    Invalid type "number" of template literal expression                                                @typescript-eslint/restrict-template-expressions
+  68:34  error    Invalid type "number" of template literal expression                                                @typescript-eslint/restrict-template-expressions
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\api.ts
+  4:3   error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  4:44  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\courseService.ts
+  15:63  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\knowledgeService.ts
+   7:12  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+   7:65  warning  Unnecessary optional chain on a non-nullish value                                                   @typescript-eslint/no-unnecessary-condition
+  12:63  warning  Unnecessary optional chain on a non-nullish value                                                   @typescript-eslint/no-unnecessary-condition
+  19:12  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  19:69  warning  Unnecessary optional chain on a non-nullish value                                                   @typescript-eslint/no-unnecessary-condition
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\notification.service.test.ts
+  20:15  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  24:12  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  28:15  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+  32:12  error  A method that is not declared with `this: void` may cause unintentional scoping of `this` when separated from its object.
+Consider using an arrow function or explicitly `.bind()`ing the method to avoid calling the method with an unintended `this` value. 
+If a function does not access `this`, it can be annotated with `this: void`  @typescript-eslint/unbound-method
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\notification.service.ts
+  51:5   error  Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read  @typescript-eslint/prefer-nullish-coalescing
+  54:15  error  Unsafe assignment of an `any` value                                                                             @typescript-eslint/no-unsafe-assignment
+  54:57  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator       @typescript-eslint/prefer-nullish-coalescing
+  56:29  error  Invalid type "any" of template literal expression                                                               @typescript-eslint/restrict-template-expressions
+  74:12  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\offlineWorkspaceService.test.ts
+    5:11  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+    6:10  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+    7:23  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+    8:21  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   10:24  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   11:5   error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+   21:34  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   23:26  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   24:9   error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+   24:16  error  Computed name [value.taskId] resolves to an `any` value                                                                 @typescript-eslint/no-unsafe-member-access
+   24:22  error  Unsafe member access .taskId on an `any` value                                                                          @typescript-eslint/no-unsafe-member-access
+   35:23  error  Do not delete dynamically computed property keys                                                                        @typescript-eslint/no-dynamic-delete
+   43:7   error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+   43:27  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   44:7   error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+   44:24  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   51:11  error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+   51:48  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   54:19  error  Unsafe member access .result on an `any` value                                                                          @typescript-eslint/no-unsafe-member-access
+   56:9   error  Unsafe call of an `any` typed value                                                                                     @typescript-eslint/no-unsafe-call
+   56:21  error  Unsafe member access .onsuccess on an `any` value                                                                       @typescript-eslint/no-unsafe-member-access
+   56:35  error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+   58:7   error  Unsafe return of a value of type `any`                                                                                  @typescript-eslint/no-unsafe-return
+   64:42  error  Unsafe argument of type `any` assigned to a parameter of type `Omit<OfflineWorkspaceSnapshot, "taskId" | "updatedAt">`  @typescript-eslint/no-unsafe-argument
+   70:10  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   79:34  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   81:26  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   82:9   error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+   82:16  error  Computed name [value.taskId] resolves to an `any` value                                                                 @typescript-eslint/no-unsafe-member-access
+   82:22  error  Unsafe member access .taskId on an `any` value                                                                          @typescript-eslint/no-unsafe-member-access
+   93:23  error  Do not delete dynamically computed property keys                                                                        @typescript-eslint/no-dynamic-delete
+  101:7   error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+  101:27  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+  102:7   error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+  102:24  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+  109:11  error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+  109:48  error  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+  112:19  error  Unsafe member access .result on an `any` value                                                                          @typescript-eslint/no-unsafe-member-access
+  114:9   error  Unsafe call of an `any` typed value                                                                                     @typescript-eslint/no-unsafe-call
+  114:21  error  Unsafe member access .onsuccess on an `any` value                                                                       @typescript-eslint/no-unsafe-member-access
+  114:35  error  Unsafe assignment of an `any` value                                                                                     @typescript-eslint/no-unsafe-assignment
+  116:7   error  Unsafe return of a value of type `any`                                                                                  @typescript-eslint/no-unsafe-return
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\offlineWorkspaceService.ts
+  72:43  error  Unsafe argument of type `any` assigned to a parameter of type `OfflineWorkspaceSnapshot | PromiseLike<OfflineWorkspaceSnapshot | null> | null`  @typescript-eslint/no-unsafe-argument
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\sandboxService.ts
+  15:18  error    Invalid type "any" of template literal expression                             @typescript-eslint/restrict-template-expressions
+  20:32  error    Invalid type "string | null" of template literal expression                   @typescript-eslint/restrict-template-expressions
+  31:10  warning  Unnecessary conditional, value is always truthy                               @typescript-eslint/no-unnecessary-condition
+  45:18  error    'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\trainingService.ts
+  16:71  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  22:71  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  28:75  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  34:74  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  40:76  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\workspace\WorkspaceService.ts
+  26:57  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  38:63  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  55:55  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  64:55  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  76:69  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  84:77  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\services\workspace\WorkspaceTreeService.ts
+  24:31  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\utils\telemetry.ts
+   7:29   error  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  17:29   error  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  29:19   error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+  30:47   error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+  34:78   error  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  46:126  error  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+
+C:\Users\Administrator\Desktop\learn_guide\LG_Agent\packages\trainee-web\src\utils\workspaceKeyboardShortcuts.ts
+  27:46  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  33:53  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+✖ 377 problems (345 errors, 32 warnings)
+

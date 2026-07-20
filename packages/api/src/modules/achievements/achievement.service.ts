@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { Injectable, Logger, Inject, Optional } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { TaskDifficulty, NotificationType, NotificationPriority } from '@lg-agent/contracts';

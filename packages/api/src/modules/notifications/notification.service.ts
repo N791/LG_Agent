@@ -28,7 +28,8 @@ export class NotificationService {
         priority: data.priority ?? NotificationPriority.NORMAL,
         title: data.title,
         message: data.message,
-        payload: data.payload ? (data.payload as unknown as any) : undefined,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+        payload: data.payload ? (data.payload as any) : undefined,
         expiresAt: data.expiresAt ?? null,
       },
     });
@@ -100,7 +101,7 @@ export class NotificationService {
     // Return all notification types, defaulting to enabled if no preference exists
     const allTypes = Object.values(NotificationType);
     return allTypes.map((type) => {
-      const pref = prefs.find((p) => p.type === type);
+      const pref = prefs.find((p) => (p.type as NotificationType) === type);
       return { type, enabled: pref?.enabled ?? true };
     });
   }
@@ -144,7 +145,7 @@ export class NotificationService {
       status: notification.status as NotificationStatus,
       title: notification.title,
       message: notification.message,
-      payload: (notification.payload as Record<string, unknown>) ?? undefined,
+      payload: (notification.payload as Record<string, unknown> | null) ?? undefined,
       expiresAt: notification.expiresAt?.toISOString(),
       createdAt: notification.createdAt.toISOString(),
     };

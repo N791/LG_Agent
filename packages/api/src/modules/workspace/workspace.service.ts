@@ -126,6 +126,7 @@ export class WorkspaceService {
       readonly: f.readonly,
       hidden: f.hidden,
       locked: f.locked,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       visibility: f.visibility as any,
     }));
 
@@ -143,7 +144,7 @@ export class WorkspaceService {
       workspaceId: version.workspaceId,
       version: version.version,
       trigger: version.trigger,
-      snapshot: snapshot as any, // Cast to any to bypass strict type check for now since schema has Json
+      snapshot: snapshot, // Cast to any to bypass strict type check for now since schema has Json
       createdAt: version.createdAt.toISOString(),
     };
   }
@@ -166,7 +167,9 @@ export class WorkspaceService {
       id: v.id,
       workspaceId: v.workspaceId,
       version: v.version,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       trigger: v.trigger as any,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       snapshot: v.snapshot as any,
       createdAt: v.createdAt.toISOString(),
     }));
@@ -186,10 +189,11 @@ export class WorkspaceService {
       where: { id: versionId },
     });
 
-    if (!version || version.workspaceId !== workspace.id) {
+    if (version?.workspaceId !== workspace.id) {
       throw new NotFoundException(`Version not found`);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const snapshotFiles = version.snapshot as any as Pick<WorkspaceFileDTO, 'path' | 'content'>[];
 
     return await this.updateFiles(taskId, userId, snapshotFiles);
@@ -227,6 +231,7 @@ export class WorkspaceService {
           readonly: f.readonly,
           hidden: f.hidden,
           locked: f.locked,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
           visibility: f.visibility as any,
         })),
       },

@@ -8,17 +8,21 @@ export class InMemoryExecutionEventBus implements IExecutionEventBus {
   private subjects = new Map<string, Subject<ExecutionEventDTO>>();
 
   publish(executionId: string, event: ExecutionEventDTO): void {
-    if (!this.subjects.has(executionId)) {
-      this.subjects.set(executionId, new Subject<ExecutionEventDTO>());
+    let subject = this.subjects.get(executionId);
+    if (!subject) {
+      subject = new Subject<ExecutionEventDTO>();
+      this.subjects.set(executionId, subject);
     }
-    this.subjects.get(executionId)!.next(event);
+    subject.next(event);
   }
 
   subscribe(executionId: string): Observable<ExecutionEventDTO> {
-    if (!this.subjects.has(executionId)) {
-      this.subjects.set(executionId, new Subject<ExecutionEventDTO>());
+    let subject = this.subjects.get(executionId);
+    if (!subject) {
+      subject = new Subject<ExecutionEventDTO>();
+      this.subjects.set(executionId, subject);
     }
-    return this.subjects.get(executionId)!.asObservable();
+    return subject.asObservable();
   }
 
   complete(executionId: string): void {

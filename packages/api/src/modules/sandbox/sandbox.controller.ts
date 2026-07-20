@@ -20,10 +20,10 @@ export class SandboxController {
   ) {}
 
   @Post('execute')
-  async execute(
+  execute(
     @Body() body: ExecuteSandboxDTO,
     @Req() req: { user?: { id?: string; sub?: string } },
-  ): Promise<ExecutionResponseDTO> {
+  ): ExecutionResponseDTO {
     const userId = req.user?.id ?? req.user?.sub;
     if (!userId) {
       throw new NotFoundException('User not found');
@@ -37,7 +37,7 @@ export class SandboxController {
   @Get('executions/:executionId/logs')
   async streamLogs(
     @Param('executionId') executionId: string,
-    @Req() req: { user?: { id?: string; sub?: string }; query?: any },
+    @Req() req: { user?: { id?: string; sub?: string }; query?: Record<string, unknown> },
     @Res() res: Response,
   ) {
     const userId = req.user?.id ?? req.user?.sub;
@@ -47,8 +47,8 @@ export class SandboxController {
     }
 
     // Since SSE uses GET, we pass taskId and action via query parameters
-    const taskId = req.query.taskId as string;
-    const action = req.query.action as import('@lg-agent/contracts').SandboxAction;
+    const taskId = req.query?.['taskId'] as string;
+    const action = req.query?.['action'] as import('@lg-agent/contracts').SandboxAction;
 
     if (!taskId) {
       res.status(400).send('Missing taskId');
@@ -79,7 +79,7 @@ export class SandboxController {
 
   @Post('executions/:executionId/stop')
   @HttpCode(204)
-  async stopExecution(@Param('executionId') executionId: string) {
+  stopExecution(@Param('executionId') executionId: string) {
     this.executionManager.stop(executionId);
   }
 }

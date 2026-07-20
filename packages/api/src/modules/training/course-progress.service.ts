@@ -72,7 +72,7 @@ export class CourseProgressService {
 
     const totalSubmissions = allSubmissionsForStats.length;
     const successRate = totalSubmissions > 0 ? Math.round((allSubmissionsForStats.filter(s => s.status === 'PASSED').length / totalSubmissions) * 100) : 0;
-    const aiUsage = allSubmissionsForStats.filter(s => s.aiReview !== null && s.aiReview !== undefined).length;
+    const aiUsage = allSubmissionsForStats.filter(s => s.aiReview !== null).length;
     
     const distinctDays = new Set(allSubmissionsForStats.map(s => s.createdAt.toISOString().split('T')[0]));
     const activeDays = distinctDays.size;

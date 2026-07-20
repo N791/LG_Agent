@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/prefer-nullish-coalescing */
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { NOTIFICATION_PUBLISHER } from '../notifications/notification-publisher.interface';

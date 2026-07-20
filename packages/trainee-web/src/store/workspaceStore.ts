@@ -53,8 +53,8 @@ interface WorkspaceState {
   closeFile: (path: string) => void;
   updateFileContent: (path: string, content: string) => void;
   markFileSaved: (path: string) => void;
-  leftPanelTab: 'objective' | 'mentor' | 'versions';
-  setLeftPanelTab: (tab: 'objective' | 'mentor' | 'versions') => void;
+  leftPanelTab: 'objective' | 'mentor' | 'versions' | 'submissions' | 'knowledge' | 'mentor-human';
+  setLeftPanelTab: (tab: 'objective' | 'mentor' | 'versions' | 'submissions' | 'knowledge' | 'mentor-human') => void;
   aiFeedback: string;
   aiLoading: boolean;
   aiHistory: ConversationMessageDTO[];

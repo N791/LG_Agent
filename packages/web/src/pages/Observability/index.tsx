@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Card, Typography, Tabs, Tag } from 'antd';
 import request from '../../utils/request';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+
 
 const { Title, Text } = Typography;
 
 export default function Observability() {
-  const [logs, setLogs] = useState([]);
-  const [metrics, setMetrics] = useState([]);
-  const [auditLogs, setAuditLogs] = useState([]);
+  const [logs, setLogs] = useState<Record<string, unknown>[]>([]);
+  const [metrics, setMetrics] = useState<Record<string, unknown>[]>([]);
+  const [auditLogs, setAuditLogs] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -20,9 +20,9 @@ export default function Observability() {
           request.get('/telemetry/metrics?limit=50'),
           request.get('/observability/audit?limit=50'),
         ]);
-        setLogs(logsRes as any);
-        setMetrics(metricsRes as any);
-        setAuditLogs(auditRes as any);
+        setLogs((logsRes as { data?: Record<string, unknown>[] }).data ?? (logsRes as Record<string, unknown>[]));
+        setMetrics((metricsRes as { data?: Record<string, unknown>[] }).data ?? (metricsRes as Record<string, unknown>[]));
+        setAuditLogs((auditRes as { data?: Record<string, unknown>[] }).data ?? (auditRes as Record<string, unknown>[]));
       } catch (err) {
         console.error('Failed to load telemetry data', err);
       } finally {

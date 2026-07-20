@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { Timeline, Typography, Tag, Button, Spin, Alert } from 'antd';
 import { CheckCircleOutlined, LockOutlined, PlayCircleOutlined } from '@ant-design/icons';
@@ -72,7 +73,7 @@ export const LearningTimeline: React.FC<LearningTimelineProps> = ({ courseId, on
             <Button 
               type={node.status === 'AVAILABLE' ? 'primary' : 'default'} 
               size="small" 
-              onClick={() => onEnterTask(node.taskId)}
+              onClick={() => { onEnterTask(node.taskId); }}
             >
               {node.status === 'PASSED' ? 'Review Mission' : 'Start Mission'}
             </Button>

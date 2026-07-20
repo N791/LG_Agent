@@ -12,12 +12,12 @@ export const stopExecution = async (executionId: string): Promise<void> => {
 
 export async function* streamExecutionLogs(executionId: string, taskId: string, action: SandboxAction) {
   const token = localStorage.getItem('token');
-  const url = `${import.meta.env['VITE_API_URL']}/sandbox/executions/${executionId}/logs?taskId=${taskId}&action=${action}`;
+  const url = `${(import.meta.env as Record<string, string>)['VITE_API_URL'] ?? ''}/sandbox/executions/${executionId}/logs?taskId=${taskId}&action=${action}`;
   
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token ?? ''}`,
     },
   });
 
@@ -28,6 +28,7 @@ export async function* streamExecutionLogs(executionId: string, taskId: string, 
   const reader = response.body.getReader();
   const decoder = new TextDecoder('utf-8');
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -42,7 +43,7 @@ export async function* streamExecutionLogs(executionId: string, taskId: string, 
         }
         try {
           yield JSON.parse(data);
-        } catch (e) {
+        } catch (_e) {
           // ignore incomplete chunks or parse errors
         }
       }

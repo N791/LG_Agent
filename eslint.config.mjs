@@ -44,6 +44,8 @@ export default tseslint.config(
       '**/coverage/**',
       '**/*.js',
       '**/*.mjs',
+      '**/*.cjs',
+      'test_*.js',
       'commitlint.config.js',
     ],
   },

@@ -4,7 +4,7 @@ export interface AuditEventPayload {
   action: string;
   actorId?: string;
   resourceId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
 }

@@ -9,20 +9,30 @@ const { Text } = Typography;
 
 import { ExecutionState } from './ExecutionCenterPanel';
 
+interface SubmissionHistory {
+  id: string;
+  status: 'PENDING' | 'RUNNING' | 'PASSED' | 'FAILED' | 'ERROR' | 'STOPPED';
+  logs?: string;
+  report?: { exitCode?: number; message?: string };
+  score?: number;
+  aiReview?: string;
+  createdAt: string;
+}
+
 interface SubmissionsPanelProps {
   taskId: string;
   setExecutionState?: React.Dispatch<React.SetStateAction<ExecutionState>>;
 }
 
 export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setExecutionState }) => {
-  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [submissions, setSubmissions] = useState<SubmissionHistory[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
-      const data = await request.get(`/submissions?taskId=${taskId}`);
-      setSubmissions((data as any).data ?? data);
+      const data = await request.get<{ data?: SubmissionHistory[] } | SubmissionHistory[]>(`/submissions?taskId=${taskId}`);
+      setSubmissions((data as { data?: SubmissionHistory[] }).data ?? (data as SubmissionHistory[]));
     } catch (err) {
       console.error('Failed to fetch submissions', err);
       message.error('Failed to load submission history');
@@ -33,16 +43,15 @@ export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setE
 
   useEffect(() => {
     void fetchSubmissions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskId]);
 
-  const handleView = (sub: any) => {
+  const handleView = (sub: SubmissionHistory) => {
     if (!setExecutionState) return;
     
     setExecutionState({
       mode: 'HISTORY',
       submissionId: sub.id,
-      status: sub.status as any,
+      status: sub.status,
       logs: sub.logs ?? 'No logs available for this submission.',
       metrics: {
         executionId: sub.id,
@@ -82,7 +91,7 @@ export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setE
             data={submissions}
             height={400}
             emptyText="No previous submissions found."
-            renderItem={(item: any) => (
+            renderItem={(item: SubmissionHistory) => (
               <List.Item
                 className="hover:bg-gray-50 transition-colors"
                 actions={[
@@ -91,7 +100,7 @@ export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setE
                     type="link"
                     size="small"
                     icon={<EyeOutlined />}
-                    onClick={() => handleView(item)}
+                    onClick={() => { handleView(item); }}
                   >
                     View
                   </Button>,

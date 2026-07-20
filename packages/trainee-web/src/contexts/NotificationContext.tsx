@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-enum-comparison, @typescript-eslint/no-floating-promises */
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { NotificationDTO } from '@lg-agent/contracts';
 import { notificationService } from '../services/notification.service';

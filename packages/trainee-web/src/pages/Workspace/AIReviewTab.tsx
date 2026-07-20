@@ -14,7 +14,7 @@ export interface AIReviewTabProps {
 }
 
 export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialReview, status }) => {
-  const [review, setReview] = useState<AiReviewDTO | null>(initialReview || null);
+  const [review, setReview] = useState<AiReviewDTO | null>(initialReview ?? null);
   const [loading, setLoading] = useState(!initialReview && (status === 'FAILED' || status === 'ERROR'));
   const [error, setError] = useState<string | null>(null);
   
@@ -30,7 +30,7 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
     if (!submissionId) return;
 
     let mounted = true;
-    let pollInterval: any;
+    let pollInterval: ReturnType<typeof setInterval> | undefined;
 
     const fetchReview = async () => {
       try {
@@ -40,7 +40,7 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
         });
         
         if (res.ok) {
-          const data = await res.json();
+          const data = (await res.json()) as AiReviewDTO;
           if (mounted) {
             setReview(data);
             setLoading(false);
@@ -60,7 +60,7 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
              if (pollInterval) clearInterval(pollInterval);
           }
         }
-      } catch (err) {
+      } catch (_err) {
         if (mounted) {
           setError('Network error fetching AI Review.');
           setLoading(false);
@@ -70,8 +70,8 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
     };
 
     if (loading) {
-      fetchReview();
-      pollInterval = setInterval(fetchReview, 2000);
+      void fetchReview();
+      pollInterval = setInterval(() => { void fetchReview(); }, 2000);
     }
 
     return () => {
@@ -111,7 +111,7 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
         <Paragraph className="text-gray-300 m-0">{review.summary}</Paragraph>
       </Card>
 
-      {review.suggestions && review.suggestions.length > 0 && (
+      {review.suggestions.length > 0 && (
         <Card size="small" className="mb-4 bg-[#2d2d2d] border-gray-600" title={<span className="text-white">Suggestions</span>}>
           <ul className="list-disc pl-5 m-0 text-gray-300">
             {review.suggestions.map((sug, i) => (
@@ -121,24 +121,24 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
         </Card>
       )}
 
-      {review.errors && review.errors.length > 0 && (
+      {review.errors.length > 0 && (
         <div className="mt-4">
           <Title level={5} className="text-gray-300 mb-2 mt-0">Identified Issues</Title>
           <div className="flex flex-col gap-4">
             {review.errors.map((err, i) => {
-               const fixFile = err.fix?.strategy === 'FULL_FILE' && err.fix.files && err.fix.files.length > 0 ? err.fix.files[0] : null;
+               const fixFile = err.fix?.strategy === 'FULL_FILE' && err.fix.files.length > 0 ? err.fix.files[0] : null;
                
                return (
                 <Card key={i} size="small" className="bg-[#2a2626] border-red-900 border" title={
                   <div className="flex justify-between items-center text-red-400">
-                    <span className="font-mono text-sm">{err.file} {err.line ? `:${err.line}` : ''}</span>
+                    <span className="font-mono text-sm">{err.file} {err.line ? `:${String(err.line)}` : ''}</span>
                     {fixFile && (
                       <Button 
                         size="small" 
                         type="primary" 
                         danger 
                         icon={<CodeOutlined />}
-                        onClick={() => handleApplyFix(fixFile.path, fixFile.content)}
+                        onClick={() => { handleApplyFix(fixFile.path, fixFile.content); }}
                       >
                         Apply Fix
                       </Button>

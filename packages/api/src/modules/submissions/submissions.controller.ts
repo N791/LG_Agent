@@ -38,7 +38,7 @@ export class SubmissionsController {
   }
 
   @Get(':id/logs')
-  async streamLogs(@Param('id') id: string, @Req() req: any, @Res() res: Response) {
+  streamLogs(@Param('id') id: string, @Req() req: import('express').Request, @Res() res: Response) {
     const stream = this.submissionsService.streamSubmissionLogs(id);
 
     res.setHeader('Content-Type', 'text/event-stream');

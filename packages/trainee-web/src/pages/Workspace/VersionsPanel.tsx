@@ -31,13 +31,12 @@ export const VersionsPanel: React.FC<VersionsPanelProps> = ({ taskId }) => {
 
   useEffect(() => {
     void fetchVersions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskId]);
 
   const handleRestore = (version: WorkspaceVersionDTO) => {
     Modal.confirm({
       title: 'Restore Version?',
-      content: `Are you sure you want to restore to version ${version.version}? This will overwrite your current draft.`,
+      content: `Are you sure you want to restore to version ${String(version.version)}? This will overwrite your current draft.`,
       okText: 'Restore',
       okType: 'danger',
       onOk: async () => {
@@ -49,7 +48,7 @@ export const VersionsPanel: React.FC<VersionsPanelProps> = ({ taskId }) => {
             useWorkspaceStore.getState().openFile(f.path, f.content);
             useWorkspaceStore.getState().markFileSaved(f.path);
           });
-          message.success(`Restored to version ${version.version}`);
+          message.success(`Restored to version ${String(version.version)}`);
         } catch (err) {
           console.error(err);
           message.error('Failed to restore version');
@@ -102,7 +101,7 @@ export const VersionsPanel: React.FC<VersionsPanelProps> = ({ taskId }) => {
                     size="small"
                     icon={<UndoOutlined />}
                     loading={restoringId === item.id}
-                    onClick={() => handleRestore(item)}
+                    onClick={() => { handleRestore(item); }}
                   >
                     Restore
                   </Button>,

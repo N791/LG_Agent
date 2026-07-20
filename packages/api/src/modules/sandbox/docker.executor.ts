@@ -23,7 +23,7 @@ export class DockerExecutor implements IExecutor {
     config: { testScript?: string | null; env?: { node?: boolean } | null; action?: SandboxAction; executionId?: string },
   ): AsyncGenerator<ExecutionEventDTO, void, unknown> {
     const workspace = this.workspaceService.createWorkspace(userId, taskId);
-    const executionId = config.executionId || Date.now().toString();
+    const executionId = config.executionId ?? Date.now().toString();
 
     try {
       this.workspaceService.writeFiles(workspace, workspaceDto);
@@ -31,7 +31,7 @@ export class DockerExecutor implements IExecutor {
       yield {
         type: ExecutionEventType.RUNNING,
         timestamp: new Date().toISOString(),
-        message: `Sandbox environment starting (Action: ${config.action || 'run'})...`,
+        message: `Sandbox environment starting (Action: ${config.action ?? 'run'})...`,
       };
 
       const image = config.env?.node ? 'node:20-alpine' : 'node:20-alpine';
@@ -50,10 +50,11 @@ export class DockerExecutor implements IExecutor {
           containerCmd = this.profile.getTestCmd();
           break;
         case 'run':
-        default:
+        default: {
           const targetScript = config.testScript ? 'test.js' : (workspaceDto.workspace.entry ?? 'index.js');
           containerCmd = this.profile.getRunCmd(targetScript);
           break;
+        }
       }
 
       const args = [

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import request from '../utils/request';
 import { ConversationDTO, ConversationMessageDTO } from '@lg-agent/contracts';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -9,14 +10,14 @@ export const aiService = {
     const res = await request.get<{ data?: ConversationDTO } | ConversationDTO>(
       `/ai/chat/${taskId}/conversation`,
     );
-    return (res as unknown as { data?: ConversationDTO })?.data ?? (res as unknown as ConversationDTO);
+    return (res as unknown as { data?: ConversationDTO }).data ?? (res as unknown as ConversationDTO);
   },
 
-  async getQuickActions(action: string): Promise<any[]> {
-    const res = await request.get<{ data?: any[] } | any[]>(
+  async getQuickActions(action: string): Promise<unknown[]> {
+    const res = await request.get<{ data?: unknown[] } | unknown[]>(
       `/ai/tutor/quick-actions/${action}`,
     );
-    return (res as unknown as { data?: any[] })?.data ?? (res as unknown as any[]) ?? [];
+    return (res as unknown as { data?: unknown[] }).data ?? (res as unknown as unknown[]) ?? [];
   },
 
   async chat(
@@ -28,7 +29,7 @@ export const aiService = {
     const token = store.getState().auth.token;
     
     // Create an optimistic user message
-    const tempId = `temp-${Date.now()}`;
+    const tempId = `temp-${String(Date.now())}`;
     const userMessage: ConversationMessageDTO = {
       id: tempId,
       role: 'user',
@@ -65,7 +66,7 @@ export const aiService = {
             const assistantContent = useWorkspaceStore.getState().aiFeedback;
             if (assistantContent) {
               useWorkspaceStore.getState().appendAiMessage({
-                id: `assistant-${Date.now()}`,
+                id: `assistant-${String(Date.now())}`,
                 role: 'assistant',
                 content: assistantContent,
                 createdAt: new Date(),

@@ -21,7 +21,7 @@ export class WorkspaceTreeService {
       let currentPath = '';
 
       for (let i = 0; i < parts.length - 1; i++) {
-        const part = parts[i] || '';
+        const part = parts[i] ?? '';
         const isFirst = i === 0;
         currentPath = isFirst ? part : `${currentPath}/${part}`;
 
@@ -39,8 +39,8 @@ export class WorkspaceTreeService {
             rootNodes.push(folderNode);
           } else {
             const parentPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-            if (nodeMap[parentPath] && nodeMap[parentPath].children) {
-              nodeMap[parentPath].children!.push(folderNode);
+            if (nodeMap[parentPath]?.children) {
+              nodeMap[parentPath].children.push(folderNode);
             }
           }
         }
@@ -65,8 +65,8 @@ export class WorkspaceTreeService {
         rootNodes.push(fileNode);
       } else {
         const parentPath = file.path.substring(0, file.path.lastIndexOf('/'));
-        if (nodeMap[parentPath] && nodeMap[parentPath].children) {
-          nodeMap[parentPath].children!.push(fileNode);
+        if (nodeMap[parentPath]?.children) {
+          nodeMap[parentPath].children.push(fileNode);
         }
       }
     });

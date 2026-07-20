@@ -15,7 +15,7 @@ import { MentorPanel } from './MentorPanel';
 
 const fetchTask = async (id: string): Promise<TaskDTO> => {
   const res = await request.get<{ data?: TaskDTO } | TaskDTO>(`/tasks/${id}`);
-  const data = (res as unknown as { data?: TaskDTO })?.data ?? (res as unknown as TaskDTO);
+  const data = (res as unknown as { data?: TaskDTO }).data ?? (res as unknown as TaskDTO);
   return data;
 };
 
@@ -109,7 +109,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = React.memo(({ setExecutionSta
       <Tabs
         activeKey={leftPanelTab}
         onChange={(key) => {
-          setLeftPanelTab(key as any);
+          setLeftPanelTab(key as "objective" | "mentor" | "versions" | "submissions" | "knowledge" | "mentor-human");
         }}
         items={items}
         className="h-full px-2"

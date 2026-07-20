@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { DiscussionsService } from './discussions.service';
 import { PrismaService } from '../../common/prisma.service';
@@ -66,7 +67,7 @@ describe('DiscussionsService', () => {
       content: 'Please review @alice and share feedback',
       isInternal: true,
       mentions: ['alice'],
-    } as any);
+    });
 
     expect(prisma.discussionComment.create).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({

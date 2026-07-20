@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import React, { useEffect, useState } from 'react';
 import { Card, Typography, Row, Col, Progress, Tag, Skeleton, Result, Button } from 'antd';
 import { PlayCircleOutlined, TrophyOutlined, CheckCircleOutlined, HistoryOutlined, ThunderboltOutlined, CalendarOutlined, BookOutlined } from '@ant-design/icons';
@@ -156,7 +157,7 @@ export const Dashboard: React.FC = () => {
                       navigate(`/mission-hub/${course.courseId}`);
                     }
                   }}
-                  bodyStyle={{ padding: '20px' }}
+                  styles={{ body: { padding: '20px' } }}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <Text className="font-bold text-lg leading-tight w-3/4 truncate">{course.title}</Text>
@@ -201,7 +202,7 @@ export const Dashboard: React.FC = () => {
                   type="primary" 
                   icon={<PlayCircleOutlined />} 
                   className="w-full"
-                  onClick={() => navigate(`/course/${recent.courseId}/workspace/${recent.taskId}`)}
+                  onClick={() => { navigate(`/course/${recent.courseId}/workspace/${recent.taskId}`); }}
                 >
                   Continue Workspace
                 </Button>

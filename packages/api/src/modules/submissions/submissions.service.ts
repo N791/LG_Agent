@@ -66,7 +66,7 @@ export class SubmissionsService {
       },
     });
 
-    this.runBackground(submission.id, userId, taskId).catch(err => {
+    this.runBackground(submission.id, userId, taskId).catch((err: unknown) => {
       console.error(`Background execution failed for submission ${submission.id}`, err);
     });
 
@@ -87,22 +87,22 @@ export class SubmissionsService {
       let passed = false;
       let score = 0;
       let logs = '';
-      let report: any = null;
+      let report: Record<string, unknown> | null = null;
 
       for await (const event of stream) {
         this.eventBus.publish(submissionId, event);
         
         if (event.type === ExecutionEventType.LOG) {
           const data = event.data as { text?: string };
-          if (data?.text) {
+          if (data.text) {
             logs += data.text;
           }
         }
         if (event.type === ExecutionEventType.SUCCESS || event.type === ExecutionEventType.FAILED) {
-          const data = event.data as { passed?: boolean; score?: number; report?: any };
-          passed = data?.passed ?? false;
-          score = data?.score ?? 0;
-          report = data?.report;
+          const data = event.data as { passed?: boolean; score?: number; report?: Record<string, unknown> };
+          passed = data.passed ?? false;
+          score = data.score ?? 0;
+          report = data.report ?? null;
         }
       }
 
@@ -112,14 +112,15 @@ export class SubmissionsService {
           status: passed ? 'PASSED' : 'FAILED',
           score,
           logs,
-          report: report ? (report as any) : undefined,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+          report: (report as any) ?? undefined,
         },
       });
 
       const finalStatus = passed ? 'PASSED' : 'FAILED';
       
       if (passed) {
-        this.achievementService.checkAndAward(userId, taskId).catch(err => {
+        this.achievementService.checkAndAward(userId, taskId).catch((err: unknown) => {
           console.error(`Failed to process achievements for submission ${submissionId}`, err);
         });
       }
@@ -143,7 +144,7 @@ export class SubmissionsService {
 
       if (this.aiReviewPolicy.shouldGenerateReview(finalStatus, logs, score)) {
         // Trigger async AI review generation
-        this.aiReviewService.generateReview(submissionId).catch(err => {
+        this.aiReviewService.generateReview(submissionId).catch((err: unknown) => {
           console.error(`Failed to auto-generate AI review for submission ${submissionId}`, err);
         });
       }
@@ -167,7 +168,7 @@ export class SubmissionsService {
       });
 
       if (this.aiReviewPolicy.shouldGenerateReview('ERROR', errorMessage, 0)) {
-        this.aiReviewService.generateReview(submissionId).catch(err => {
+        this.aiReviewService.generateReview(submissionId).catch((err: unknown) => {
           console.error(`Failed to auto-generate AI review for submission ${submissionId}`, err);
         });
       }

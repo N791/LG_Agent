@@ -4,7 +4,7 @@ interface TelemetryLog {
   stack?: string;
   path?: string;
   userAgent?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   timestamp?: string;
 }
 
@@ -14,24 +14,24 @@ interface TelemetryMetric {
   rating?: 'good' | 'needs-improvement' | 'poor';
   path?: string;
   userAgent?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   timestamp?: string;
 }
 
 class TelemetryClient {
   private logBuffer: TelemetryLog[] = [];
   private metricBuffer: TelemetryMetric[] = [];
-  private flushInterval: number = 10000; // 10 seconds
+  private flushInterval = 10000; // 10 seconds
   private endpoint = '/api/v1/telemetry';
 
   constructor() {
     if (typeof window !== 'undefined') {
-      setInterval(() => this.flush(), this.flushInterval);
-      window.addEventListener('beforeunload', () => this.flush(true));
+      setInterval(() => { void this.flush(); }, this.flushInterval);
+      window.addEventListener('beforeunload', () => { void this.flush(true); });
     }
   }
 
-  public logError(message: string, stack?: string, metadata?: Record<string, any>) {
+  public logError(message: string, stack?: string, metadata?: Record<string, unknown>) {
     this.logBuffer.push({
       level: 'ERROR',
       message,
@@ -43,7 +43,7 @@ class TelemetryClient {
     });
   }
 
-  public recordMetric(name: string, value: number, rating?: 'good' | 'needs-improvement' | 'poor', metadata?: Record<string, any>) {
+  public recordMetric(name: string, value: number, rating?: 'good' | 'needs-improvement' | 'poor', metadata?: Record<string, unknown>) {
     this.metricBuffer.push({
       name,
       value,

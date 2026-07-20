@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-dynamic-delete */
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { OfflineWorkspaceService } from './offlineWorkspaceService';
 
@@ -7,7 +8,7 @@ class MockRequest {
   onsuccess: ((event: any) => void) | null = null;
   onerror: ((event: any) => void) | null = null;
 
-  constructor(result: any = undefined) {
+  constructor(result?: any) {
     this.result = result;
   }
 }
@@ -124,7 +125,7 @@ describe('OfflineWorkspaceService', () => {
       fileContents: { 'src/app.ts': 'console.log("local")' },
       openFiles: ['src/app.ts'],
       unsavedChanges: { 'src/app.ts': true },
-    } as any);
+    });
 
     const result = await service.compareWithRemote('task-2', { 'src/app.ts': 'console.log("remote")' });
 

@@ -36,7 +36,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             title="Something went wrong."
             subTitle="The application encountered an unexpected error. Our team has been notified."
             extra={
-              <Button type="primary" onClick={() => window.location.reload()}>
+              <Button type="primary" onClick={() => { window.location.reload(); }}>
                 Reload Page
               </Button>
             }

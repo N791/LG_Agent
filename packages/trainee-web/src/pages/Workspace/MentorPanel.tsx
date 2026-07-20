@@ -3,7 +3,7 @@ import { Button, Input, Spin, Tag, Typography, message, Space, Avatar, Checkbox,
 import { VirtualizedList } from '../../components/VirtualizedList';
 import { ArrowLeftOutlined, MessageOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
 import { DiscussionApi } from '../../services/discussion.service';
-import { DiscussionDTO } from '@lg-agent/contracts';
+import { DiscussionDTO, DiscussionCommentDTO } from '@lg-agent/contracts';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 
@@ -43,7 +43,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
     try {
       const data = await DiscussionApi.getDiscussions(taskId, workspaceId);
       setDiscussions(data);
-    } catch (err) {
+    } catch (_err) {
       message.error('Failed to load discussions');
     } finally {
       setLoading(false);
@@ -62,8 +62,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
   useEffect(() => {
     void fetchDiscussions();
     void fetchAnalytics();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskId]);
+  }, [taskId, workspaceId]);
 
   const handleCreate = async () => {
     if (!newTitle.trim() || !newComment.trim()) {
@@ -84,7 +83,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
       setNewComment('');
       setDiscussions([discussion, ...discussions]);
       setActiveDiscussion(discussion);
-    } catch (err) {
+    } catch (_err) {
       message.error('Failed to create discussion');
     } finally {
       setLoading(false);
@@ -99,13 +98,13 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
         content: replyText,
         isInternal: internalNote,
         mentions,
-      } as any);
+      });
       setActiveDiscussion(updated);
       setReplyText('');
       setInternalNote(false);
       setMentions([]);
       setDiscussions(discussions.map(d => d.id === updated.id ? updated : d));
-    } catch (err) {
+    } catch (_err) {
       message.error('Failed to send reply');
     } finally {
       setReplying(false);
@@ -116,11 +115,11 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
     if (!activeDiscussion) return;
     setAssigning(true);
     try {
-      const updated = await DiscussionApi.assignDiscussion(activeDiscussion.id, user?.id || '');
+      const updated = await DiscussionApi.assignDiscussion(activeDiscussion.id, user?.id ?? '');
       setActiveDiscussion(updated);
       setDiscussions(discussions.map(d => d.id === updated.id ? updated : d));
       message.success('Discussion assigned to you');
-    } catch (err) {
+    } catch (_err) {
       message.error('Failed to assign discussion');
     } finally {
       setAssigning(false);
@@ -136,7 +135,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
       setDiscussions(prev => prev.map(d => d.id === updated.id ? updated : d));
       await fetchAnalytics();
       message.success('Discussion marked as resolved');
-    } catch (err) {
+    } catch (_err) {
       message.error('Failed to resolve discussion');
     } finally {
       setResolving(false);
@@ -152,7 +151,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
       setDiscussions(prev => prev.map(d => d.id === updated.id ? updated : d));
       await fetchAnalytics();
       message.success('Marked as waiting for trainee');
-    } catch (err) {
+    } catch (_err) {
       message.error('Failed to update discussion status');
     } finally {
       setStatusUpdating(false);
@@ -171,7 +170,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
   };
 
   const queueStats = {
-    needsAttention: discussions.filter(item => item.status !== 'RESOLVED' && item.status !== 'CLOSED' && (item.isOverdue || item.priority === 'URGENT' || item.priority === 'HIGH')).length,
+    needsAttention: discussions.filter(item => item.status !== 'RESOLVED' && item.status !== 'CLOSED' && (item.isOverdue === true || item.priority === 'URGENT' || item.priority === 'HIGH')).length,
     waitingForTrainee: discussions.filter(item => item.status === 'WAITING_FOR_TRAINEE').length,
     resolved: discussions.filter(item => item.status === 'RESOLVED' || item.status === 'CLOSED').length,
   };
@@ -180,24 +179,24 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
     return (
       <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Space style={{ marginBottom: 16 }}>
-          <Button icon={<ArrowLeftOutlined />} type="text" onClick={() => setIsCreating(false)} />
+          <Button icon={<ArrowLeftOutlined />} type="text" onClick={() => { setIsCreating(false); }} />
           <Title level={5} style={{ margin: 0 }}>Ask Mentor</Title>
         </Space>
 
         <Input
           placeholder="Summary of your question"
           value={newTitle}
-          onChange={e => setNewTitle(e.target.value)}
+          onChange={e => { setNewTitle(e.target.value); }}
           style={{ marginBottom: 12 }}
         />
         <TextArea
           placeholder="Describe where you are stuck..."
           value={newComment}
-          onChange={e => setNewComment(e.target.value)}
+          onChange={e => { setNewComment(e.target.value); }}
           rows={6}
           style={{ marginBottom: 16, flex: 1 }}
         />
-        <Button type="primary" onClick={handleCreate} loading={loading} block>
+        <Button type="primary" onClick={() => { void handleCreate(); }} loading={loading} block>
           Send Question
         </Button>
       </div>
@@ -208,7 +207,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
     return (
       <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Space style={{ marginBottom: 16 }}>
-          <Button icon={<ArrowLeftOutlined />} type="text" onClick={() => setActiveDiscussion(null)} />
+          <Button icon={<ArrowLeftOutlined />} type="text" onClick={() => { setActiveDiscussion(null); }} />
           <Title level={5} style={{ margin: 0 }}>{activeDiscussion.title}</Title>
         </Space>
 
@@ -221,9 +220,9 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
             {activeDiscussion.isOverdue ? <Tag color="red">Overdue</Tag> : null}
           </Space>
           <VirtualizedList
-            data={activeDiscussion.comments || []}
+            data={activeDiscussion.comments ?? []}
             height={300}
-            renderItem={(comment: any) => {
+            renderItem={(comment: DiscussionCommentDTO) => {
               const isMe = comment.authorId === user?.id;
               return (
                 <div style={{ marginBottom: 16, display: 'flex', flexDirection: isMe ? 'row-reverse' : 'row' }}>
@@ -254,13 +253,13 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
         {activeDiscussion.status !== 'CLOSED' && activeDiscussion.status !== 'RESOLVED' && (
           <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
             <Space style={{ marginBottom: 8 }}>
-              <Checkbox checked={internalNote} onChange={e => setInternalNote(e.target.checked)}>Internal note</Checkbox>
+              <Checkbox checked={internalNote} onChange={e => { setInternalNote(e.target.checked); }}>Internal note</Checkbox>
               <Select
                 mode="tags"
                 style={{ minWidth: 180 }}
                 placeholder="Mentions"
                 value={mentions}
-                onChange={value => setMentions(value as string[])}
+                onChange={value => { setMentions(value); }}
               >
                 <Option value="alice">alice</Option>
                 <Option value="mentor">mentor</Option>
@@ -269,17 +268,17 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
             <TextArea
               placeholder="Type your reply..."
               value={replyText}
-              onChange={e => setReplyText(e.target.value)}
+              onChange={e => { setReplyText(e.target.value); }}
               autoSize={{ minRows: 2, maxRows: 4 }}
               style={{ marginBottom: 8 }}
             />
             <Space style={{ width: '100%', justifyContent: 'space-between' }}>
               <Space>
-                <Button onClick={handleAssign} loading={assigning}>Take it</Button>
-                <Button onClick={handleWaitingForTrainee} loading={statusUpdating}>Waiting for trainee</Button>
-                <Button onClick={handleResolve} loading={resolving}>Resolve</Button>
+                <Button onClick={() => { void handleAssign(); }} loading={assigning}>Take it</Button>
+                <Button onClick={() => { void handleWaitingForTrainee(); }} loading={statusUpdating}>Waiting for trainee</Button>
+                <Button onClick={() => { void handleResolve(); }} loading={resolving}>Resolve</Button>
               </Space>
-              <Button type="primary" onClick={handleReply} loading={replying}>
+              <Button type="primary" onClick={() => { void handleReply(); }} loading={replying}>
                 Reply
               </Button>
             </Space>
@@ -293,7 +292,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
     <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Space style={{ marginBottom: 16, justifyContent: 'space-between', width: '100%' }}>
         <Title level={5} style={{ margin: 0 }}>Mentor Discussions</Title>
-        <Button type="primary" icon={<MessageOutlined />} onClick={() => setIsCreating(true)}>
+        <Button type="primary" icon={<MessageOutlined />} onClick={() => { setIsCreating(true); }}>
           Ask Mentor
         </Button>
       </Space>
@@ -320,9 +319,9 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
           data={discussions}
           height={500}
           emptyText="No discussions yet. Get stuck? Ask a mentor!"
-          renderItem={(item: any) => (
+          renderItem={(item: DiscussionDTO) => (
             <List.Item
-              onClick={() => setActiveDiscussion(item)}
+              onClick={() => { setActiveDiscussion(item); }}
               style={{ cursor: 'pointer', padding: '12px', border: '1px solid #f0f0f0', borderRadius: 8, marginBottom: 8 }}
             >
               <List.Item.Meta

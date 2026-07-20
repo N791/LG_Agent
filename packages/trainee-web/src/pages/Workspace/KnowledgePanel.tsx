@@ -63,8 +63,8 @@ export const KnowledgePanel: React.FC = () => {
         <Input.Search
           placeholder="Search Knowledge Base..."
           allowClear
-          onSearch={handleSearch}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onSearch={(val) => { void handleSearch(val); }}
+          onChange={(e) => { setSearchQuery(e.target.value); }}
           loading={isSearching}
         />
       </div>
@@ -77,10 +77,10 @@ export const KnowledgePanel: React.FC = () => {
             header={<div className="font-bold text-gray-500 text-xs uppercase">Search Results</div>}
             data={searchResults}
             height={400}
-            renderItem={(item: any) => (
+            renderItem={(item: KnowledgeSearchResultDTO) => (
               <List.Item
                 className="cursor-pointer hover:bg-blue-50 rounded px-2"
-                onClick={() => handleDocClick(item.source.replace('.md', ''))}
+                onClick={() => { void handleDocClick(item.source.replace('.md', '')); }}
               >
                 <div className="flex flex-col w-full">
                   <div className="text-sm font-medium flex justify-between">
@@ -99,10 +99,10 @@ export const KnowledgePanel: React.FC = () => {
             header={<div className="font-bold text-gray-500 text-xs uppercase">Wiki Reference</div>}
             data={documents}
             height={400}
-            renderItem={(item: any) => (
+            renderItem={(item: KnowledgeDocumentDTO) => (
               <List.Item
                 className="cursor-pointer hover:bg-blue-50 rounded px-2"
-                onClick={() => handleDocClick(item.id)}
+                onClick={() => { void handleDocClick(item.id); }}
               >
                 <List.Item.Meta
                   avatar={<BookOutlined className="text-blue-500" />}
@@ -117,7 +117,7 @@ export const KnowledgePanel: React.FC = () => {
       <Modal
         title={selectedDoc?.title}
         open={!!selectedDoc}
-        onCancel={() => setSelectedDoc(null)}
+        onCancel={() => { setSelectedDoc(null); }}
         footer={null}
         width={800}
       >

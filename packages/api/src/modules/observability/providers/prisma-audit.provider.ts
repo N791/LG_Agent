@@ -13,7 +13,7 @@ export class PrismaAuditProvider implements AuditProvider {
   ) {}
 
   async recordEvent(payload: AuditEventPayload): Promise<void> {
-    const traceId = this.cls.get('traceId');
+    const traceId = this.cls.get<string | undefined>('traceId');
     
     try {
       await this.prisma.auditEvent.create({
@@ -21,7 +21,8 @@ export class PrismaAuditProvider implements AuditProvider {
           action: payload.action,
           actorId: payload.actorId,
           resourceId: payload.resourceId,
-          metadata: payload.metadata || {},
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+          metadata: (payload.metadata ?? {}) as any,
           ipAddress: payload.ipAddress,
           userAgent: payload.userAgent,
           traceId,

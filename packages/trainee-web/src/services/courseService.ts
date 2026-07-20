@@ -12,7 +12,7 @@ export interface CourseDTO {
 class CourseService {
   async getCourse(courseId: string): Promise<CourseDTO> {
     const response = await request.get<CourseDTO>(`/courses/${courseId}`);
-    const data = (response as unknown as { data?: CourseDTO })?.data ?? response;
+    const data = (response as unknown as { data?: CourseDTO }).data ?? response;
     return data as CourseDTO;
   }
 }

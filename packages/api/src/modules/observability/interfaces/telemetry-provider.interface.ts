@@ -5,7 +5,7 @@ export interface TelemetryLog {
   stack?: string;
   path?: string;
   userAgent?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   timestamp?: Date;
 }
 
@@ -16,7 +16,7 @@ export interface TelemetryMetric {
   rating?: 'good' | 'needs-improvement' | 'poor';
   path?: string;
   userAgent?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   timestamp?: Date;
 }
 

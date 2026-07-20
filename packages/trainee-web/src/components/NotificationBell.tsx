@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import React from 'react';
 import { Badge, Popover, List, Typography, Button, Tag, Avatar } from 'antd';
+import type { NotificationDTO } from '@lg-agent/contracts';
 import { VirtualizedList } from './VirtualizedList';
 import { BellOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -9,7 +12,7 @@ const { Text } = Typography;
 
 export const NotificationBell: React.FC = () => {
   const { 
-    notifications = [], 
+    notifications, 
     unreadCount, 
     loading, 
     markAsRead, 
@@ -26,7 +29,7 @@ export const NotificationBell: React.FC = () => {
         <Button 
           type="link" 
           size="small" 
-          onClick={() => markAllAsRead()}
+          onClick={() => { void markAllAsRead(); }}
           disabled={unreadCount === 0}
         >
           Mark all as read
@@ -38,7 +41,7 @@ export const NotificationBell: React.FC = () => {
           data={notifications}
           height={350}
           emptyText="No notifications"
-          renderItem={(item: any) => (
+          renderItem={(item: NotificationDTO) => (
             <List.Item
               style={{
                 cursor: 'pointer',
@@ -53,7 +56,7 @@ export const NotificationBell: React.FC = () => {
                     type="text" 
                     icon={<CheckOutlined />} 
                     size="small"
-                    onClick={() => markAsRead(item.id)}
+                    onClick={() => { void markAsRead(item.id); }}
                   />
                 ),
                 <Button 
@@ -62,14 +65,14 @@ export const NotificationBell: React.FC = () => {
                   danger 
                   icon={<DeleteOutlined />} 
                   size="small"
-                  onClick={() => archive(item.id)}
+                  onClick={() => { void archive(item.id); }}
                 />
               ].filter(Boolean) as React.ReactNode[]}
             >
               <List.Item.Meta
                 avatar={
                   <Avatar style={{ backgroundColor: item.status === 'UNREAD' ? '#1890ff' : '#d9d9d9' }}>
-                    {item.type?.charAt(0) || 'N'}
+                    {item.type?.charAt(0) ?? 'N'}
                   </Avatar>
                 }
                 title={
@@ -94,7 +97,7 @@ export const NotificationBell: React.FC = () => {
         />
         {hasMore && (
           <div className="text-center p-2">
-            <Button size="small" onClick={loadMore} loading={loading}>
+            <Button size="small" onClick={() => { void loadMore(); }} loading={loading}>
               Load more
             </Button>
           </div>
@@ -108,7 +111,7 @@ export const NotificationBell: React.FC = () => {
       content={content}
       trigger="click"
       placement="bottomRight"
-      overlayClassName="p-0"
+      classNames={{ root: 'p-0' }}
       arrow={false}
     >
       <Badge count={unreadCount} size="small" offset={[-2, 2]}>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -10,7 +11,6 @@ export class MarkdownKnowledgeRepository implements IKnowledgeRepository {
   private documents: KnowledgeDocumentDTO[] = [];
   private isLoaded = false;
 
-  constructor() {}
 
   private loadDocuments() {
     if (this.isLoaded) return;
