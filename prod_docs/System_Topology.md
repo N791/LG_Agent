@@ -11,7 +11,7 @@ graph TD
     %% External Traffic
     subgraph External ["外部环境 (External)"]
         Users[导师 & 学员终端]
-        CLI[LG-Agent CLI 客户端]
+        CLI[LG-Agent CLI 客户端 (已废弃)]
         LLM_Providers((LLM 供应商<br/>OpenAI/DeepSeek))
     end
 
@@ -21,11 +21,12 @@ graph TD
 
         %% Frontend Services
         subgraph Frontend ["前端服务组"]
-            Web_Svc[Web Console Service]
-            Web_Pod1(Web Pod 1)
-            Web_Pod2(Web Pod 2)
-            Web_Svc --> Web_Pod1
-            Web_Svc --> Web_Pod2
+            Web_Svc[Admin Web Console]
+            Trainee_Svc[Trainee Web Workspace]
+            Web_Pod(Web Pods)
+            Trainee_Pod(Trainee Pods)
+            Web_Svc --> Web_Pod
+            Trainee_Svc --> Trainee_Pod
         end
 
         %% Backend Services
@@ -49,10 +50,11 @@ graph TD
 
     %% Routing
     Users -->|HTTPS| Ingress
-    CLI -->|HTTPS| Ingress
+    CLI -.->|HTTPS| Ingress
 
     Ingress -->|/| Web_Svc
-    Ingress -->|/api| API_Svc
+    Ingress -->|/workspace| Trainee_Svc
+    Ingress -->|/api (HTTP/WS)| API_Svc
 
     %% Internal Connections
     API_Pod1 --> RDS
@@ -62,7 +64,8 @@ graph TD
     API_Pod2 --> ElastiCache
 
     API_Pod1 --> S3
-    Web_Pod1 --> S3
+    Web_Pod --> S3
+    Trainee_Pod --> S3
 
     %% AI Outbound
     API_Pod1 -->|HTTPS Outbound| LLM_Providers
@@ -73,8 +76,9 @@ graph TD
 
 1. **流量入口**: 所有外部流量通过统一的 `Nginx Ingress` 进入集群，并根据路由规则分发到相应的 Service。静态资源请求路由至 Web Service，而数据与业务请求路由至 API Service。
 2. **无状态计算节点**:
-   - 前端 Web 节点主要负责托管由 Vite 构建的静态产物（基于 Nginx Alpine）。
+   - 前端 Web 节点主要负责托管由 Vite 构建的静态产物（包含 Admin Web 与 Trainee Workspace，基于 Nginx Alpine）。
    - 后端 API 节点运行 NestJS 服务。API 节点完全无状态，因此可以通过 HPA (Horizontal Pod Autoscaler) 根据 CPU/内存使用率或并发请求量进行弹性伸缩。
+   - **WebSocket**: 沙盒执行日志 (Terminal) 需要通过 WebSocket 推送至前端 Trainee Workspace，需确保 Ingress 已配置支持 `Upgrade` 协议头，并正确设置超时时间。
 3. **外部持久化存储**:
    - 为了确保数据的安全性和集群的轻量化，数据库（PostgreSQL）、缓存（Redis）和对象存储（MinIO/S3）不在 Kubernetes 内运行，而是依托于云服务提供商的托管服务（如 AWS RDS, ElastiCache 等），以保证跨可用区 (Multi-AZ) 的高可用。
 4. **AI 外网请求**:

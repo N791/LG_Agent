@@ -9,7 +9,8 @@ graph TD
     %% User Interfaces
     subgraph Clients ["客户端层 (Clients)"]
         Web[Web Console<br/>React/Vite SPA]
-        CLI[LG-Agent CLI<br/>Node.js]
+        TraineeWeb[Trainee Workspace<br/>React/Vite SPA]
+        CLI[LG-Agent CLI<br/>Node.js (Deprecated)]
     end
 
     %% API Layer
@@ -42,7 +43,8 @@ graph TD
 
     %% Connections
     Web -->|HTTP/REST| Nest
-    CLI -->|HTTP/REST| Nest
+    TraineeWeb -->|HTTP/REST/WS| Nest
+    CLI -.->|HTTP/REST| Nest
 
     Auth --> PG
     Task --> PG
@@ -61,9 +63,10 @@ graph TD
 
 ### 1. 核心服务 (Core Services)
 
-- **Web 控制台 (`@lg-agent/web`)**: 一个基于 Vite 和 Ant Design 构建的现代 React 单页应用 (SPA)。它为导师 (Mentors) 和学员 (Trainees) 提供基于角色的仪表盘。
-- **API 服务 (`@lg-agent/api`)**: 一个基于 NestJS 的后端，遵循领域驱动设计 (DDD)。它作为主要的编排层，负责身份验证、任务管理、RAG（检索增强生成）以及 LLM 网关路由。
-- **命令行工具 (`@lg-agent/cli`)**: 一个 Node.js 命令行工具，允许开发者拉取课程、初始化工作区、运行本地测试并安全地提交他们的解答。
+- **Web 控制台 (`@lg-agent/web`)**: 导师 (Mentors) 专用的管理后台，用于课程管理和数据洞察。
+- **学员工作区 (`@lg-agent/trainee-web`)**: 一个高度集成的在线学习工作区 (SPA)，内置 Monaco 代码编辑器、任务说明、AI 导师交互面板和沙盒终端输出。
+- **API 服务 (`@lg-agent/api`)**: 基于 NestJS 的后端，作为主要编排层负责身份验证、任务管理、沙盒调度、RAG 与 LLM 路由，以及遥测 (Telemetry) 数据收集。
+- **命令行工具 (`@lg-agent/cli`)**: (已废弃) 早期的 Node.js 命令行工具。
 
 ### 2. 数据持久化 (无状态架构)
 
@@ -79,10 +82,11 @@ AI 网关标准化了对多个 LLM 供应商（如 OpenAI、DeepSeek、Qwen）�
 
 - **敏感信息过滤**: 采用规则引擎在数据传输前剔除 PII（个人身份信息）和内部机密。
 - **成本与审计日志**: 所有的 Prompt（提示词）都会被记录，Token 消耗会被聚合，指标数据通过 Prometheus 暴露。
-- **AI 导师流水线**: 处理 RAG 检索、构建上下文（工作区代码），并以流式输出最终的回答。
+- **AI 导师流水线**: 处理 RAG 检索、构建上下文（工作区代码），并通过 SSE (Server-Sent Events) 以流式输出至前端 AI 导师面板。
 
-### 4. 基础设施与平台运维 (Infrastructure & Platform Operations)
+### 4. 基础设施与执行沙盒 (Infrastructure & Sandbox Execution)
 
+- **沙盒执行**: 后端通过 Docker Runner 安全地隔离运行学员提交的代码，通过 WebSocket 实时推送执行日志至前端终端 (xterm.js)。
 - **Docker**: 多阶段构建生成无发行版 (distroless)、非 root 的 Alpine 镜像。
 - **Kubernetes (Helm)**: 统一的 Helm Charts 管理部署，通过 Nginx Ingress 将系统暴露到外部。
 - **可观测性**: 基于 Prometheus（指标）和 Pino（结构化 JSON 日志）。

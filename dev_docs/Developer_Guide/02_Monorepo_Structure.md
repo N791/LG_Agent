@@ -8,8 +8,9 @@ LG-Agent 采用 Monorepo（单体仓库）的方式组织代码，利用 **Turbo
 LG_Agent/
 ├── packages/           # 核心子包 (微服务与前端)
 │   ├── api/            # 后端服务 (NestJS)
-│   ├── web/            # 前端控制台 (React/Vite)
-│   ├── cli/            # 终端命令行工具 (Node CLI)
+│   ├── web/            # 导师与管理控制台 (React/Vite)
+│   ├── trainee-web/    # 学员专属工作区SPA (React/Vite)
+│   ├── cli/            # 终端命令行工具 (Node CLI - 已废弃)
 │   └── contracts/      # 共享契约与类型定义
 ├── prod_docs/          # 面向用户的部署与使用文档
 ├── dev_docs/           # 内部开发与架构设计文档
@@ -36,16 +37,22 @@ LG_Agent/
 - **技术栈**: React 18, Vite, Ant Design, Tailwind CSS。
 - **打包方式**: 生产环境下编译为静态文件，通过 Nginx 托管。
 
-### 3. `@lg-agent/cli`
+### 3. `@lg-agent/trainee-web`
 
-学员在本地电脑上执行任务时使用的 **Node.js 命令行工具**。
+高度集成的 **学员专属在线工作区 (SPA)**。
 
-- **职责**: 允许学员输入凭证登录、拉取指定的题目工作区代码，并在本地验证通过后打包上传至服务端沙盒。
-- **技术栈**: Commander.js (CLI 框架), axios, chalk/ora (终端美化)。
+- **职责**: 替代原有的 CLI 工具，提供一站式的沉浸式学习体验。内置 Mission Hub (任务大厅)、Monaco Code Editor (代码编辑器)、AI Mentor Chat (AI导师实时辅导)、以及 Execution Center (沙盒执行终端输出)。
+- **技术栈**: React 18, Vite, Ant Design, Monaco Editor, xterm.js, Tailwind CSS。
 
-### 4. `@lg-agent/contracts`
+### 4. `@lg-agent/cli` (已废弃)
+
+早期的 **Node.js 命令行工具**。
+
+- **状态**: 随着 `@lg-agent/trainee-web` 的上线，该模块将被逐渐弃用，现存仅为了向后兼容部分老旧脚本。
+
+### 5. `@lg-agent/contracts`
 
 至关重要的 **共享契约库**，实现了前后端类型的单一真实数据源 (Single Source of Truth)。
 
 - **职责**: 定义系统中所使用的公共接口 (Interfaces)、枚举 (Enums)、数据传输对象 (DTOs) 以及 JSON Schemas。
-- **原理**: `api`, `web`, `cli` 都将 `@lg-agent/contracts` 作为依赖引入。当 API 的出入参发生变更时，修改契约库即可让所有消费者在 TypeScript 编译阶段感知到类型变化，避免运行时的接口不匹配问题。
+- **原理**: `api`, `web`, `trainee-web`, `cli` 都将 `@lg-agent/contracts` 作为依赖引入。当 API 的出入参发生变更时，修改契约库即可让所有消费者在 TypeScript 编译阶段感知到类型变化，避免运行时的接口不匹配问题。

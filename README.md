@@ -8,7 +8,7 @@
 
 LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化环境装配、六阶段闯关训练流程、沙盒代码执行与 AI 导师评审，将新人业务上手周期缩短 50%，资深工程师带教内耗降低 80%。
 
-目前 **v1.0.0-MVP** 已经正式发布！我们完成了涵盖底层基础设施、认证、课程管理、沙盒引擎、AI 导师、和 DevOps 等 28 个核心 Epic 的建设。
+目前 **v1.0.0** 已经正式发布！我们完成了涵盖底层基础设施、认证、课程管理、集成 Monaco Editor 的 Trainee Web 工作区、沙盒代码执行引擎、AI 导师实时指导、和 DevOps 观测监控等核心 Epic 的建设。
 
 ---
 
@@ -21,8 +21,8 @@ LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化�
 - [部署与使用文档 (prod_docs/)](prod_docs/index.md) - 面向运维与终端用户。
 - [开发与内部设计文档 (dev_docs/)](dev_docs/index.md) - 面向核心研发与架构师。
 
-- [Release Notes (v1.0.0-MVP)](prod_docs/Release_Notes.md)
-- [MVP 验收清单 (MVP Sign-Off)](dev_docs/MVP_Sign_Off.md)
+- [Release Notes (v1.0.0)](prod_docs/Release_Notes.md)
+- [发布门禁验收清单 (MVP Sign-Off)](dev_docs/MVP_Sign_Off.md)
 - [产品发布文档总览](prod_docs/index.md)
 
 👩‍💻 **用户手册**：
@@ -50,8 +50,8 @@ LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化�
 | -------------- | ---------------------------------------------------------------- |
 | **Monorepo**   | Turborepo, pnpm workspace, Changesets                            |
 | **后端 API**   | NestJS, Prisma, PostgreSQL, `@nestjs/swagger`                    |
-| **前端 Web**   | React 18, Vite, Ant Design                                       |
-| **CLI 工具**   | Node.js, TypeScript, Commander.js                                |
+| **前端 Web**   | React 18, Vite, Ant Design, Monaco Editor, xterm.js              |
+| **CLI 工具**   | Node.js, TypeScript, Commander.js _(已废弃, 请使用 Web 工作区)_  |
 | **AI 引擎**    | OpenAI / DeepSeek / Qwen 适配, Sensitive Filter Rule Engine      |
 | **沙盒执行**   | 自动化 Docker Runner                                             |
 | **缓存与存储** | Redis, MinIO (S3 Compatible)                                     |
