@@ -10,6 +10,7 @@ export const CourseFixture = {
     createdById: 'user-admin-1',
     organizationId: 'org-1',
     createdAt: new Date(),
+    requiredPoints: 0,
     ...overrides,
   }),
 };

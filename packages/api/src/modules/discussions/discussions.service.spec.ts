@@ -63,19 +63,25 @@ describe('DiscussionsService', () => {
     prisma.discussionComment.create.mockResolvedValue({});
     prisma.discussion.update.mockResolvedValue({});
 
-    await service.addComment('discussion-1', { id: 'mentor-1', username: 'mentor', nickname: 'Mentor', role: 'MENTOR' } as any, {
-      content: 'Please review @alice and share feedback',
-      isInternal: true,
-      mentions: ['alice'],
-    });
-
-    expect(prisma.discussionComment.create).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({
+    await service.addComment(
+      'discussion-1',
+      { id: 'mentor-1', username: 'mentor', nickname: 'Mentor', role: 'MENTOR' } as any,
+      {
         content: 'Please review @alice and share feedback',
         isInternal: true,
         mentions: ['alice'],
+      },
+    );
+
+    expect(prisma.discussionComment.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          content: 'Please review @alice and share feedback',
+          isInternal: true,
+          mentions: ['alice'],
+        }),
       }),
-    }));
+    );
   });
 
   it('should assign a discussion to a mentor and stamp the assignment time', async () => {
@@ -91,13 +97,15 @@ describe('DiscussionsService', () => {
 
     await service.assignDiscussion('discussion-1', 'mentor-1');
 
-    expect(prisma.discussion.update).toHaveBeenCalledWith(expect.objectContaining({
-      where: { id: 'discussion-1' },
-      data: expect.objectContaining({
-        assignedToId: 'mentor-1',
-        assignedAt: expect.any(Date),
+    expect(prisma.discussion.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'discussion-1' },
+        data: expect.objectContaining({
+          assignedToId: 'mentor-1',
+          assignedAt: expect.any(Date),
+        }),
       }),
-    }));
+    );
   });
 
   it('should resolve discussions and expose analytics', async () => {
@@ -114,9 +122,11 @@ describe('DiscussionsService', () => {
 
     await service.resolveDiscussion('discussion-1');
 
-    expect(prisma.discussion.update).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ status: 'RESOLVED' }),
-    }));
+    expect(prisma.discussion.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: 'RESOLVED' }),
+      }),
+    );
 
     prisma.discussion.findMany.mockResolvedValue([
       {
@@ -161,7 +171,7 @@ describe('DiscussionsService', () => {
 
     const discussions = await service.getDiscussions('user-1');
 
-    expect(discussions[0].id).toBe('discussion-1');
-    expect(discussions[0].priority).toBe('URGENT');
+    expect(discussions[0]?.id).toBe('discussion-1');
+    expect(discussions[0]?.priority).toBe('URGENT');
   });
 });
