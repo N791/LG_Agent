@@ -13,6 +13,7 @@ env:
   # Registry Agnostic defaults
   IMAGE_REGISTRY: ${{ vars.IMAGE_REGISTRY || 'ghcr.io' }}
   IMAGE_NAMESPACE: ${{ vars.IMAGE_NAMESPACE || github.repository_owner }}
+  NODE_OPTIONS: '--max-old-space-size=4096'
 
 jobs:
   build-and-push:
