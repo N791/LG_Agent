@@ -36,17 +36,23 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ taskId }) => {
   // Load history and quick actions on mount
   useEffect(() => {
     let mounted = true;
-    aiService.getConversationHistory(taskId).then((conversation) => {
-      if (mounted && conversation) {
-        setAiHistory(conversation.messages);
-      }
-    }).catch(console.error);
+    aiService
+      .getConversationHistory(taskId)
+      .then((conversation) => {
+        if (mounted && conversation) {
+          setAiHistory(conversation.messages);
+        }
+      })
+      .catch(console.error);
 
-    aiService.getQuickActions('chat').then((actions) => {
-      if (mounted) {
-        setQuickActions(actions);
-      }
-    }).catch(console.error);
+    aiService
+      .getQuickActions('chat')
+      .then((actions) => {
+        if (mounted) {
+          setQuickActions(actions as QuickAction[]);
+        }
+      })
+      .catch(console.error);
 
     return () => {
       mounted = false;
@@ -57,7 +63,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ taskId }) => {
     if (!input.trim() || loading) return;
     const content = input.trim();
     setInput('');
-    
+
     // Send to backend
     void aiService.chat(taskId, 'chat', content, activeFile ?? undefined);
   };
@@ -125,7 +131,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ taskId }) => {
         )}
         <Input.TextArea
           value={input}
-          onChange={(e) => { setInput(e.target.value); }}
+          onChange={(e) => {
+            setInput(e.target.value);
+          }}
           placeholder="Ask a question... (Enter to send, Shift+Enter for new line)"
           autoSize={{ minRows: 2, maxRows: 6 }}
           onKeyDown={(e) => {

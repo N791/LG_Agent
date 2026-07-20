@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Tabs, Spin, Tag, Descriptions, Card, Progress } from 'antd';
-import { ExecutionMetricsDTO } from '@lg-agent/contracts';
+import { ExecutionMetricsDTO, AiReviewDTO } from '@lg-agent/contracts';
 import { AIReviewTab } from './AIReviewTab';
 
 export interface ExecutionState {
@@ -12,7 +12,7 @@ export interface ExecutionState {
   report: { exitCode?: number | null; message?: string } | null;
   score: number | null;
   error: string | null;
-  aiReview?: unknown;
+  aiReview?: AiReviewDTO | null;
 }
 
 export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ state }) => {
@@ -53,15 +53,18 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
             {state.status}
           </Tag>
           {state.status === 'RUNNING' && <Spin size="small" />}
-          <Progress 
-            percent={progressPercent} 
-            showInfo={false} 
+          <Progress
+            percent={progressPercent}
+            showInfo={false}
             status={state.status === 'RUNNING' ? 'active' : 'normal'}
             strokeColor={
-              state.status === 'SUCCESS' ? '#52c41a' : 
-              state.status === 'FAILED' ? '#ff4d4f' : 
-              state.status === 'ERROR' ? '#ff4d4f' : 
-              '#1890ff'
+              state.status === 'SUCCESS'
+                ? '#52c41a'
+                : state.status === 'FAILED'
+                  ? '#ff4d4f'
+                  : state.status === 'ERROR'
+                    ? '#ff4d4f'
+                    : '#1890ff'
             }
           />
         </div>
@@ -97,14 +100,35 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
             children: (
               <div className="p-4 overflow-auto bg-gray-50 text-gray-800 h-full">
                 {state.metrics ? (
-                  <Card size="small" title="Execution Metrics" className="mb-4 bg-white border-gray-200 shadow-sm">
-                    <Descriptions column={2} size="small" bordered className="metrics-descriptions bg-white">
+                  <Card
+                    size="small"
+                    title="Execution Metrics"
+                    className="mb-4 bg-white border-gray-200 shadow-sm"
+                  >
+                    <Descriptions
+                      column={2}
+                      size="small"
+                      bordered
+                      className="metrics-descriptions bg-white"
+                    >
                       <Descriptions.Item label="Status">{state.status}</Descriptions.Item>
-                      <Descriptions.Item label="Exit Code">{state.metrics.exitCode ?? 'N/A'}</Descriptions.Item>
-                      <Descriptions.Item label="Duration (ms)">{state.metrics.durationMs}ms</Descriptions.Item>
-                      <Descriptions.Item label="Logs Count">{state.metrics.logCount}</Descriptions.Item>
-                      <Descriptions.Item label="Start Time">{new Date(state.metrics.startTime ?? 0).toLocaleTimeString()}</Descriptions.Item>
-                      <Descriptions.Item label="End Time">{state.metrics.endTime ? new Date(state.metrics.endTime).toLocaleTimeString() : 'N/A'}</Descriptions.Item>
+                      <Descriptions.Item label="Exit Code">
+                        {state.metrics.exitCode ?? 'N/A'}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Duration (ms)">
+                        {state.metrics.durationMs}ms
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Logs Count">
+                        {state.metrics.logCount}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Start Time">
+                        {new Date(state.metrics.startTime ?? 0).toLocaleTimeString()}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="End Time">
+                        {state.metrics.endTime
+                          ? new Date(state.metrics.endTime).toLocaleTimeString()
+                          : 'N/A'}
+                      </Descriptions.Item>
                       <Descriptions.Item label="Score">{state.score ?? 'N/A'}</Descriptions.Item>
                     </Descriptions>
                   </Card>
@@ -112,29 +136,41 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
                   <div className="text-gray-500">No summary available.</div>
                 )}
                 {state.report?.message && (
-                  <Card size="small" title="Report" className="bg-red-50 border-red-200 mt-4 text-red-700 font-mono shadow-sm">
+                  <Card
+                    size="small"
+                    title="Report"
+                    className="bg-red-50 border-red-200 mt-4 text-red-700 font-mono shadow-sm"
+                  >
                     {state.report.message}
                   </Card>
                 )}
                 {state.error && (
-                  <Card size="small" title="System Error" className="bg-red-50 border-red-300 mt-4 text-red-700 font-mono shadow-sm">
+                  <Card
+                    size="small"
+                    title="System Error"
+                    className="bg-red-50 border-red-300 mt-4 text-red-700 font-mono shadow-sm"
+                  >
                     {state.error}
                   </Card>
                 )}
               </div>
-            )
+            ),
           },
-          ...((state.status === 'FAILED' || state.status === 'ERROR' || state.aiReview) ? [{
-            key: 'review',
-            label: 'AI Review',
-            children: (
-              <AIReviewTab 
-                submissionId={state.submissionId ?? ''} 
-                initialReview={state.aiReview} 
-                status={state.status} 
-              />
-            )
-          }] : [])
+          ...(state.status === 'FAILED' || state.status === 'ERROR' || state.aiReview
+            ? [
+                {
+                  key: 'review',
+                  label: 'AI Review',
+                  children: (
+                    <AIReviewTab
+                      submissionId={state.submissionId ?? ''}
+                      initialReview={state.aiReview}
+                      status={state.status}
+                    />
+                  ),
+                },
+              ]
+            : []),
         ]}
       />
     </div>

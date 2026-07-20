@@ -15,7 +15,7 @@ interface SubmissionHistory {
   logs?: string;
   report?: { exitCode?: number; message?: string };
   score?: number;
-  aiReview?: string;
+  aiReview?: import('@lg-agent/contracts').AiReviewDTO;
   createdAt: string;
 }
 
@@ -24,15 +24,23 @@ interface SubmissionsPanelProps {
   setExecutionState?: React.Dispatch<React.SetStateAction<ExecutionState>>;
 }
 
-export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setExecutionState }) => {
+export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({
+  taskId,
+  setExecutionState,
+}) => {
   const [submissions, setSubmissions] = useState<SubmissionHistory[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
-      const data = await request.get<{ data?: SubmissionHistory[] } | SubmissionHistory[]>(`/submissions?taskId=${taskId}`);
-      setSubmissions((data as { data?: SubmissionHistory[] }).data ?? (data as SubmissionHistory[]));
+      const data = await request.get<{ data?: SubmissionHistory[] } | SubmissionHistory[]>(
+        `/submissions?taskId=${taskId}`,
+      );
+      setSubmissions(
+        (data as unknown as { data?: SubmissionHistory[] }).data ??
+          (data as unknown as SubmissionHistory[]),
+      );
     } catch (err) {
       console.error('Failed to fetch submissions', err);
       message.error('Failed to load submission history');
@@ -47,15 +55,15 @@ export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setE
 
   const handleView = (sub: SubmissionHistory) => {
     if (!setExecutionState) return;
-    
+
     setExecutionState({
       mode: 'HISTORY',
       submissionId: sub.id,
-      status: sub.status,
+      status: sub.status === 'PASSED' ? 'SUCCESS' : sub.status,
       logs: sub.logs ?? 'No logs available for this submission.',
       metrics: {
         executionId: sub.id,
-        status: sub.status,
+        status: sub.status === 'PASSED' ? 'SUCCESS' : sub.status,
         startTime: new Date(sub.createdAt).getTime(),
         endTime: new Date(sub.createdAt).getTime(), // Approximated for history
         durationMs: 0,
@@ -64,8 +72,10 @@ export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setE
         retryCount: 0,
         logCount: (sub.logs ?? '').split('\n').length,
       },
-      report: sub.report,
-      score: sub.score,
+      report: sub.report
+        ? { exitCode: sub.report.exitCode ?? null, message: sub.report.message }
+        : null,
+      score: sub.score ?? null,
       error: null,
       aiReview: sub.aiReview,
     });
@@ -77,7 +87,13 @@ export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setE
         <div className="font-semibold text-gray-700 flex items-center">
           <HistoryOutlined className="mr-2" /> Submissions
         </div>
-        <Button size="small" type="primary" onClick={() => { void fetchSubmissions(); }}>
+        <Button
+          size="small"
+          type="primary"
+          onClick={() => {
+            void fetchSubmissions();
+          }}
+        >
           Refresh
         </Button>
       </div>
@@ -100,7 +116,9 @@ export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setE
                     type="link"
                     size="small"
                     icon={<EyeOutlined />}
-                    onClick={() => { handleView(item); }}
+                    onClick={() => {
+                      handleView(item);
+                    }}
                   >
                     View
                   </Button>,
@@ -124,7 +142,11 @@ export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({ taskId, setE
                       </Tag>
                     </span>
                   }
-                  description={<Text type="secondary" className="text-xs">{new Date(item.createdAt).toLocaleString()}</Text>}
+                  description={
+                    <Text type="secondary" className="text-xs">
+                      {new Date(item.createdAt).toLocaleString()}
+                    </Text>
+                  }
                 />
               </List.Item>
             )}

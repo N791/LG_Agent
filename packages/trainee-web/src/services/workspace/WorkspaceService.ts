@@ -4,7 +4,7 @@ import { FileNode } from './WorkspaceRepository';
 
 export class WorkspaceService {
   private static instance: WorkspaceService | undefined;
-  private currentWorkspace: WorkspaceDTO | null = null;
+  public currentWorkspace: WorkspaceDTO | null = null;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
@@ -58,7 +58,7 @@ export class WorkspaceService {
 
   async deleteFile(taskId: string, path: string): Promise<void> {
     const response = await request.delete<{ data?: WorkspaceDTO } | WorkspaceDTO>(
-      `/workspaces/${taskId}/files?path=${encodeURIComponent(path)}`
+      `/workspaces/${taskId}/files?path=${encodeURIComponent(path)}`,
     );
     this.currentWorkspace =
       (response as unknown as { data?: WorkspaceDTO }).data ??
@@ -71,18 +71,21 @@ export class WorkspaceService {
 
   async getVersions(taskId: string): Promise<WorkspaceVersionDTO[]> {
     const response = await request.get<{ data?: WorkspaceVersionDTO[] } | WorkspaceVersionDTO[]>(
-      `/workspaces/${taskId}/versions`
+      `/workspaces/${taskId}/versions`,
     );
-    return (response as unknown as { data?: WorkspaceVersionDTO[] }).data ??
-           (response as unknown as WorkspaceVersionDTO[]);
+    return (
+      (response as unknown as { data?: WorkspaceVersionDTO[] }).data ??
+      (response as unknown as WorkspaceVersionDTO[])
+    );
   }
 
   async restoreVersion(taskId: string, versionId: string): Promise<WorkspaceDTO> {
     const response = await request.post<{ data?: WorkspaceDTO } | WorkspaceDTO>(
-      `/workspaces/${taskId}/versions/${versionId}/restore`
+      `/workspaces/${taskId}/versions/${versionId}/restore`,
     );
-    this.currentWorkspace = (response as unknown as { data?: WorkspaceDTO }).data ?? 
-                            (response as unknown as WorkspaceDTO);
+    this.currentWorkspace =
+      (response as unknown as { data?: WorkspaceDTO }).data ??
+      (response as unknown as WorkspaceDTO);
     return this.currentWorkspace;
   }
 
