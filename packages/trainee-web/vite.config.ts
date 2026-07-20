@@ -28,9 +28,9 @@ export default defineConfig({
           'antd-vendor': ['antd', '@ant-design/icons', 'rc-virtual-list'],
           'monaco-vendor': ['monaco-editor', '@monaco-editor/react'],
           'state-vendor': ['react-redux', '@reduxjs/toolkit', 'zustand'],
-          'utils-vendor': ['axios', 'date-fns', 'socket.io-client', 'lucide-react']
-        }
-      }
-    }
-  }
+          'utils-vendor': ['axios', 'date-fns', 'socket.io-client', 'lucide-react'],
+        },
+      },
+    },
+  },
 });

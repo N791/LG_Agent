@@ -56,7 +56,7 @@ jobs:
         run: pnpm run typecheck
 
       - name: Turbo Build
-        run: npx turbo run build
+        run: npx turbo run build --concurrency=1
 
       - name: Unit & Integration Tests
         run: npx turbo run test

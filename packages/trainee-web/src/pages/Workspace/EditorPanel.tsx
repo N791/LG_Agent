@@ -1,6 +1,18 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import Editor, { OnMount, loader } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
+// @ts-expect-error No type declarations available for this specific path
+import * as monacoApi from 'monaco-editor/esm/vs/editor/editor.api';
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+const monaco = monacoApi as any;
+import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
+import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
+import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution';
+import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
+import 'monaco-editor/esm/vs/basic-languages/python/python.contribution';
+import 'monaco-editor/esm/vs/language/json/monaco.contribution';
+import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
+import 'monaco-editor/esm/vs/language/css/monaco.contribution';
+import 'monaco-editor/esm/vs/language/html/monaco.contribution';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
@@ -19,16 +31,12 @@ self.MonacoEnvironment = {
 };
 
 // Configure @monaco-editor/react to use local monaco instance instead of CDN
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 loader.config({ monaco });
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { workspaceService } from '../../services/workspace/WorkspaceService';
 import { Breadcrumb, Dropdown, Tooltip } from 'antd';
-import {
-  FileOutlined,
-  CloseOutlined,
-  BgColorsOutlined,
-  CodeOutlined,
-} from '@ant-design/icons';
+import { FileOutlined, CloseOutlined, BgColorsOutlined, CodeOutlined } from '@ant-design/icons';
 import { resolveWorkspaceKeyboardShortcut } from '../../utils/workspaceKeyboardShortcuts';
 
 // ---- File icon helper ----
@@ -86,8 +94,10 @@ export const EditorPanel: React.FC = React.memo(() => {
   const setCursorPosition = useWorkspaceStore((state) => state.setCursorPosition);
   const reorderOpenFiles = useWorkspaceStore((state) => state.reorderOpenFiles);
 
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const monacoRef = useRef<typeof monaco | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const editorRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const monacoRef = useRef<any>(null);
   const cursorDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Drag state for tab reorder
@@ -108,8 +118,10 @@ export const EditorPanel: React.FC = React.memo(() => {
       if (savedPos) {
         // Small delay to let Monaco finish loading the new model
         setTimeout(() => {
-          editorRef.current?.setPosition(savedPos);
-          editorRef.current?.revealPositionInCenter(savedPos);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+          editorRef.current.setPosition(savedPos);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+          editorRef.current.revealPositionInCenter(savedPos);
         }, 50);
       }
     }
@@ -152,13 +164,24 @@ export const EditorPanel: React.FC = React.memo(() => {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => { window.removeEventListener('keydown', handleKeyDown); };
-  }, [activeFile, openFiles, closeFile, setActiveFile, setLeftPanelTab, setEditorTheme, editorTheme]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [
+    activeFile,
+    openFiles,
+    closeFile,
+    setActiveFile,
+    setLeftPanelTab,
+    setEditorTheme,
+    editorTheme,
+  ]);
 
   const handleEditorMount: OnMount = (editor) => {
     editorRef.current = editor;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     monacoRef.current = monaco;
-    // Ctrl/Cmd+S binding
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
       const currentFile = useWorkspaceStore.getState().activeFile;
       if (currentFile) {
@@ -174,6 +197,7 @@ export const EditorPanel: React.FC = React.memo(() => {
 
     // Shift+Alt+F: Format document
     editor.addCommand(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF,
       () => {
         void editor.getAction('editor.action.formatDocument')?.run();
@@ -181,32 +205,34 @@ export const EditorPanel: React.FC = React.memo(() => {
     );
 
     // Setup TypeScript Linter & Compiler Options
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-    const ts = (monaco.languages as any).typescript;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    ts.typescriptDefaults.setCompilerOptions({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-      target: ts.ScriptTarget.ES2020,
-      allowNonTsExtensions: true,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-      moduleResolution: ts.ModuleResolutionKind.NodeJs,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-      module: ts.ModuleKind.CommonJS,
-      noEmit: true,
-      esModuleInterop: true,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-      jsx: ts.JsxEmit.React,
-      reactNamespace: 'React',
-      allowJs: true,
-      typeRoots: ['node_modules/@types'],
-    });
+    const ts = monaco.languages.typescript;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    ts.typescriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: false,
-      noSyntaxValidation: false,
-    });
+    if (ts) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      ts.typescriptDefaults.setCompilerOptions({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+        target: ts.ScriptTarget.ES2020,
+        allowNonTsExtensions: true,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+        moduleResolution: ts.ModuleResolutionKind.NodeJs,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+        module: ts.ModuleKind.CommonJS,
+        noEmit: true,
+        esModuleInterop: true,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+        jsx: ts.JsxEmit.React,
+        reactNamespace: 'React',
+        allowJs: true,
+        typeRoots: ['node_modules/@types'],
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      ts.typescriptDefaults.setDiagnosticsOptions({
+        noSemanticValidation: false,
+        noSyntaxValidation: false,
+      });
+    }
 
     // Track cursor position changes with debounce
     editor.onDidChangeCursorPosition(() => {
@@ -226,6 +252,7 @@ export const EditorPanel: React.FC = React.memo(() => {
       const savedPos = useWorkspaceStore.getState().cursorPositions[currentFile];
       if (savedPos) {
         editor.setPosition(savedPos);
+
         editor.revealPositionInCenter(savedPos);
       }
     }
@@ -299,19 +326,29 @@ export const EditorPanel: React.FC = React.memo(() => {
             <div
               key={file}
               draggable
-              onDragStart={() => { onDragStart(index); }}
-              onDragOver={(e) => { onDragOver(e, index); }}
-              onDrop={(e) => { onDrop(e, index); }}
-              onClick={() => { setActiveFile(file); }}
+              onDragStart={() => {
+                onDragStart(index);
+              }}
+              onDragOver={(e) => {
+                onDragOver(e, index);
+              }}
+              onDrop={(e) => {
+                onDrop(e, index);
+              }}
+              onClick={() => {
+                setActiveFile(file);
+              }}
               className="flex items-center gap-1.5 px-3 py-1.5 cursor-pointer select-none border-r"
               style={{
                 background: isActive
-                  ? isDark ? '#1e1e1e' : '#fff'
-                  : isDark ? '#2d2d2d' : '#ececec',
+                  ? isDark
+                    ? '#1e1e1e'
+                    : '#fff'
+                  : isDark
+                    ? '#2d2d2d'
+                    : '#ececec',
                 borderColor: isDark ? '#3c3c3c' : '#e0e0e0',
-                color: isActive
-                  ? isDark ? '#fff' : '#333'
-                  : isDark ? '#969696' : '#666',
+                color: isActive ? (isDark ? '#fff' : '#333') : isDark ? '#969696' : '#666',
                 borderTop: isActive ? '2px solid #007acc' : '2px solid transparent',
                 fontSize: 13,
                 whiteSpace: 'nowrap',
@@ -352,7 +389,9 @@ export const EditorPanel: React.FC = React.memo(() => {
               key: t.key,
               label: t.label,
             })),
-            onClick: ({ key }) => { setEditorTheme(key); },
+            onClick: ({ key }) => {
+              setEditorTheme(key);
+            },
             selectedKeys: [editorTheme],
           }}
           trigger={['click']}
