@@ -63,7 +63,14 @@ blob-report/
 .turbo/
 
 # Scratch & Sandbox
-test_sandbox.js
+test_*.js
+test_*.cjs
+test_*.mjs
+*_out.txt
+*_lint.json
+*_lint.txt
+errors.txt
+scratch/
 
 # --- Enterprise Grade Ignores ---
 
