@@ -12,12 +12,25 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    port: 8081,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'http://127.0.0.1:4000',
         changeOrigin: true,
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'antd-vendor': ['antd', '@ant-design/icons', 'rc-virtual-list'],
+          'monaco-vendor': ['monaco-editor', '@monaco-editor/react'],
+          'state-vendor': ['react-redux', '@reduxjs/toolkit', 'zustand'],
+          'utils-vendor': ['axios', 'date-fns', 'socket.io-client', 'lucide-react']
+        }
+      }
+    }
+  }
 });

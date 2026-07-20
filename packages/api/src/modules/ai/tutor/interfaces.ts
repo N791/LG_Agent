@@ -6,6 +6,7 @@ export class ChatRequestDto {
   content!: string;
   stream?: boolean;
   conversationId?: string; // Passed internally
+  activeFile?: string; // Injects focus context
 }
 
 export interface ITutorStrategy {

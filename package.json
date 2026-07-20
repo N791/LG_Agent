@@ -45,6 +45,7 @@
     "eslint": "^9.28.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.1",
+    "playwright": "^1.61.1",
     "prettier": "^3.5.3",
     "turbo": "^2.10.4",
     "typescript": "^5.8.3",
@@ -54,5 +55,8 @@
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
   },
-  "packageManager": "pnpm@9.15.9"
+  "packageManager": "pnpm@9.15.9",
+  "dependencies": {
+    "puppeteer": "^25.3.0"
+  }
 }

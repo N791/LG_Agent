@@ -23,6 +23,8 @@ export class SandboxService {
     config: {
       env?: import('./env-detector.service').EnvRequirement | null;
       testScript?: string | null;
+      action?: import('@lg-agent/contracts').SandboxAction;
+      executionId?: string;
     },
   ): AsyncGenerator<ExecutionEventDTO, void, unknown> {
     // Phase 1: Environment Detection

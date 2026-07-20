@@ -4,10 +4,13 @@ import { DockerExecutor } from './modules/sandbox/docker.executor';
 import { WorkspaceService } from './modules/sandbox/workspace.service';
 import { WorkspaceDTO, ExecutionEventType } from '@lg-agent/contracts';
 
+import { ExecutionManager } from './modules/sandbox/execution.manager';
+
 async function runTest(pass: boolean) {
   const envDetector = new EnvDetectorService();
   const workspaceService = new WorkspaceService();
-  const dockerExecutor = new DockerExecutor(workspaceService);
+  const executionManager = new ExecutionManager();
+  const dockerExecutor = new DockerExecutor(workspaceService, executionManager);
 
   const sandboxService = new SandboxService(dockerExecutor, envDetector);
 

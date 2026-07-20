@@ -1,17 +1,14 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ChatRequestDto } from '../tutor/interfaces';
 import { ConversationMessageDTO } from '@lg-agent/contracts';
-import type { WorkspaceRepository } from '@lg-agent/contracts';
 import { PromptBuilderService, PromptMessage } from '../prompt-builder.service';
+import { ContextBuilder } from './context-builder';
 
 @Injectable()
 export class PromptAssemblyPipeline {
   constructor(
     private readonly promptBuilder: PromptBuilderService,
-    // Transitional: We will use the workspace payload for now, but inject the repository
-    // TODO (Epic 40): Workspace will be loaded from DB using DatabaseWorkspaceRepository
-    @Inject('WorkspaceRepository')
-    private readonly workspaceRepository: WorkspaceRepository,
+    private readonly contextBuilder: ContextBuilder,
   ) {}
 
   async assemble(
@@ -19,8 +16,8 @@ export class PromptAssemblyPipeline {
     history: ConversationMessageDTO[],
     userId: string,
   ): Promise<PromptMessage[]> {
-    // 1. Get Workspace Context
-    const workspace = await this.workspaceRepository.getWorkspace(request.taskId, userId);
+    // 1. Get Context via ContextBuilder (combines workspace, activeFile, etc.)
+    const promptContext = await this.contextBuilder.buildContext(request, userId);
 
     // 2. Map actions to prompt templates. E.g. 'code-review' -> 'code_review'
     const templateId = request.action.replace('-', '_');
@@ -28,7 +25,8 @@ export class PromptAssemblyPipeline {
     // 3. Prepare variables
     const variables = {
       content: request.content,
-      workspace: JSON.stringify(workspace.fileContents, null, 2),
+      workspace: promptContext.workspaceContent,
+      activeFileContext: promptContext.activeFileContext,
       // Future: add Task instructions from DB
     };
 

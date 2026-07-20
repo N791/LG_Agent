@@ -39,6 +39,36 @@ async function bootstrap() {
     console.log('Default admin user created.');
   }
 
+  const trainee = await prisma.user.findUnique({ where: { username: 'trainee' } });
+  if (!trainee) {
+    const hashedPassword = await bcrypt.hash('trainee123', 10);
+    await prisma.user.create({
+      data: {
+        username: 'trainee',
+        password: hashedPassword,
+        role: 'TRAINEE',
+        organizationId: org.id,
+        nickname: 'Trainee User',
+      },
+    });
+    console.log('Default trainee user created.');
+  }
+
+  const mentor = await prisma.user.findUnique({ where: { username: 'mentor' } });
+  if (!mentor) {
+    const hashedPassword = await bcrypt.hash('mentor123', 10);
+    await prisma.user.create({
+      data: {
+        username: 'mentor',
+        password: hashedPassword,
+        role: 'MENTOR',
+        organizationId: org.id,
+        nickname: 'Mentor User',
+      },
+    });
+    console.log('Default mentor user created.');
+  }
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -22,6 +22,11 @@
 - [安全指南 (Security Guide)](./Platform/04_Security_Guide.md) - 生产环境中的密钥管理、RBAC 权限及网络隔离最佳实践。
 - [数据备份与恢复 (Backup & Restore)](./Platform/05_Backup_Restore.md) - PostgreSQL 与 MinIO 数据的定时备份及灾备策略。
 
+### 🧾 发布资产 (Release Assets)
+
+- [发布说明](./Release_Notes.md) - 面向外部发布与内部交付的版本摘要。
+- [MVP 验收清单](../dev_docs/MVP_Sign_Off.md) - 发布前的质量门禁与交付确认清单。
+
 ---
 
 > **内部开发文档？**

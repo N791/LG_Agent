@@ -23,6 +23,7 @@ LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化�
 
 - [Release Notes (v1.0.0-MVP)](prod_docs/Release_Notes.md)
 - [MVP 验收清单 (MVP Sign-Off)](dev_docs/MVP_Sign_Off.md)
+- [产品发布文档总览](prod_docs/index.md)
 
 👩‍💻 **用户手册**：
 

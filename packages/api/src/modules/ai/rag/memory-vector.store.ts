@@ -1,18 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DocumentChunk } from './markdown-chunker';
+import { IVectorStore, SearchResult } from './interfaces';
 
 interface VectorEntry {
   chunk: DocumentChunk;
   vector: number[];
 }
 
-export interface SearchResult {
-  chunk: DocumentChunk;
-  score: number;
-}
-
 @Injectable()
-export class MemoryVectorStore {
+export class MemoryVectorStore implements IVectorStore {
   private readonly store: VectorEntry[] = [];
 
   addDocuments(chunks: DocumentChunk[], vectors: number[][]): Promise<void> {

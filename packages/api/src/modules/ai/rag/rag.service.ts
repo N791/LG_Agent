@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MarkdownChunker } from './markdown-chunker';
-import { MemoryVectorStore, SearchResult } from './memory-vector.store';
+import { MemoryVectorStore } from './memory-vector.store';
+import { SearchResult } from './interfaces';
 import { LLMGatewayService } from '../gateway/llm-gateway.service';
 
 @Injectable()

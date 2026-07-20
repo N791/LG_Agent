@@ -6,6 +6,8 @@ export interface WorkspaceFileDTO {
   encoding?: string;
   readonly?: boolean;
   hidden?: boolean;
+  locked?: boolean; // enterprise extension point
+  visibility?: 'public' | 'private' | 'internal'; // enterprise extension point
 }
 
 export interface WorkspaceVersionDTO {

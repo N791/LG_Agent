@@ -11,9 +11,18 @@ export const schemas = {
 
 export type SchemaName = keyof typeof schemas;
 
+export * from './dto/achievement.dto';
+export * from './dto/ai-review.dto';
+export * from './dto/conversation.dto';
+export * from './dto/dashboard.dto';
+export * from './dto/discussion.dto';
+export * from './dto/knowledge.dto';
+export * from './dto/learning-progress.dto';
 export * from './dto/model-info.dto';
+export * from './dto/notification.dto';
+export * from './dto/sandbox.dto';
 export * from './dto/task.dto';
 export * from './dto/workspace.dto';
-export * from './dto/conversation.dto';
 export * from './dto/workspace.repository';
+
 export { TaskType, TaskDifficulty } from './dto/task.dto';

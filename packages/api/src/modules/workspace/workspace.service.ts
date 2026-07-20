@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { WorkspaceDTO, WorkspaceFileDTO, WorkspaceVersionDTO } from '@lg-agent/contracts';
 import { WorkspaceInitializer } from './workspace.initializer';
@@ -49,6 +49,10 @@ export class WorkspaceService {
         });
 
         if (existingFile) {
+          if (existingFile.readonly) {
+            // Ignore updates to readonly files, or throw. We will ignore to prevent breaking auto-save
+            continue;
+          }
           await prisma.workspaceFile.update({
             where: { id: existingFile.id },
             data: { content: file.content },
@@ -63,6 +67,34 @@ export class WorkspaceService {
           });
         }
       }
+    });
+
+    return this.getWorkspace(taskId, userId);
+  }
+
+  async deleteFile(taskId: string, userId: string, path: string): Promise<WorkspaceDTO> {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { userId_taskId: { userId, taskId } },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException(`Workspace not found`);
+    }
+
+    const existingFile = await this.prisma.workspaceFile.findUnique({
+      where: { workspaceId_path: { workspaceId: workspace.id, path } },
+    });
+
+    if (!existingFile) {
+      throw new NotFoundException(`File not found: ${path}`);
+    }
+
+    if (existingFile.readonly || existingFile.locked) {
+      throw new BadRequestException(`Cannot delete readonly or locked file: ${path}`);
+    }
+
+    await this.prisma.workspaceFile.delete({
+      where: { id: existingFile.id },
     });
 
     return this.getWorkspace(taskId, userId);
@@ -93,6 +125,8 @@ export class WorkspaceService {
       encoding: f.encoding ?? undefined,
       readonly: f.readonly,
       hidden: f.hidden,
+      locked: f.locked,
+      visibility: f.visibility as any,
     }));
 
     const version = await this.prisma.workspaceVersion.create({
@@ -109,9 +143,56 @@ export class WorkspaceService {
       workspaceId: version.workspaceId,
       version: version.version,
       trigger: version.trigger,
-      snapshot,
+      snapshot: snapshot as any, // Cast to any to bypass strict type check for now since schema has Json
       createdAt: version.createdAt.toISOString(),
     };
+  }
+
+  async getVersions(taskId: string, userId: string): Promise<WorkspaceVersionDTO[]> {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { userId_taskId: { userId, taskId } },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException(`Workspace not found`);
+    }
+
+    const versions = await this.prisma.workspaceVersion.findMany({
+      where: { workspaceId: workspace.id },
+      orderBy: { version: 'desc' },
+    });
+
+    return versions.map((v) => ({
+      id: v.id,
+      workspaceId: v.workspaceId,
+      version: v.version,
+      trigger: v.trigger as any,
+      snapshot: v.snapshot as any,
+      createdAt: v.createdAt.toISOString(),
+    }));
+  }
+
+  async restoreVersion(taskId: string, userId: string, versionId: string): Promise<WorkspaceDTO> {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { userId_taskId: { userId, taskId } },
+      include: { files: true },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException(`Workspace not found`);
+    }
+
+    const version = await this.prisma.workspaceVersion.findUnique({
+      where: { id: versionId },
+    });
+
+    if (!version || version.workspaceId !== workspace.id) {
+      throw new NotFoundException(`Version not found`);
+    }
+
+    const snapshotFiles = version.snapshot as any as Pick<WorkspaceFileDTO, 'path' | 'content'>[];
+
+    return await this.updateFiles(taskId, userId, snapshotFiles);
   }
 
   private mapToDTO(workspace: {
@@ -127,6 +208,8 @@ export class WorkspaceService {
       encoding?: string | null;
       readonly: boolean;
       hidden: boolean;
+      locked: boolean;
+      visibility?: string | null;
     }[];
   }): WorkspaceDTO {
     return {
@@ -143,6 +226,8 @@ export class WorkspaceService {
           encoding: f.encoding ?? undefined,
           readonly: f.readonly,
           hidden: f.hidden,
+          locked: f.locked,
+          visibility: f.visibility as any,
         })),
       },
     };

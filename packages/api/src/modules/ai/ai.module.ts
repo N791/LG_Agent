@@ -21,6 +21,7 @@ import { KeywordMatcher } from './filters/rule-engine/matchers/keyword.matcher';
 import { ContentFilterEngine } from './filters/rule-engine/rule-engine.service';
 import { AiConversationService } from './conversation/ai-conversation.service';
 import { PromptAssemblyPipeline } from './conversation/prompt-assembly.pipeline';
+import { ContextBuilder, WorkspaceContextProvider, ActiveFileProvider } from './conversation/context-builder';
 import { AskStrategy } from './tutor/strategies/ask.strategy';
 import { CodeReviewStrategy } from './tutor/strategies/code-review.strategy';
 import { ExplainErrorStrategy } from './tutor/strategies/explain-error.strategy';
@@ -28,6 +29,12 @@ import { JsonPricingRepository } from './cost/json-pricing.repository';
 import { CostCalculator } from './cost/cost-calculator.service';
 import { ModelRegistryService } from './model-registry.service';
 import { Ai2TaskService } from './ai2task.service';
+import { AiReviewService } from './tutor/ai-review.service';
+import { QuickActionRegistry } from './tutor/quick-actions/quick-action.registry';
+import { StaticFollowUpProvider } from './tutor/quick-actions/static-follow-up.provider';
+import { KnowledgeController } from './knowledge/knowledge.controller';
+import { MarkdownKnowledgeRepository } from './knowledge/markdown-knowledge.repository';
+import { KnowledgeIndexService } from './knowledge/knowledge-index.service';
 
 import { PrismaModule } from '../../common/prisma.module';
 
@@ -35,7 +42,7 @@ import { WorkspaceModule } from '../workspace/workspace.module';
 
 @Module({
   imports: [ConfigModule, PrismaModule, WorkspaceModule],
-  controllers: [AiController],
+  controllers: [AiController, KnowledgeController],
   providers: [
     {
       provide: 'IPromptRepository',
@@ -61,6 +68,9 @@ import { WorkspaceModule } from '../workspace/workspace.module';
     },
     ContentFilterEngine,
     PromptBuilderService,
+    WorkspaceContextProvider,
+    ActiveFileProvider,
+    ContextBuilder,
     PromptAssemblyPipeline,
     LLMGatewayService,
     ProviderRegistry,
@@ -92,6 +102,15 @@ import { WorkspaceModule } from '../workspace/workspace.module';
     ModelRegistryService,
     AiConversationService,
     Ai2TaskService,
+    AiReviewService,
+    {
+      provide: 'IQuickActionProvider',
+      useClass: StaticFollowUpProvider,
+    },
+    QuickActionRegistry,
+    StaticFollowUpProvider,
+    MarkdownKnowledgeRepository,
+    KnowledgeIndexService,
   ],
   exports: [
     PromptBuilderService,
@@ -101,6 +120,8 @@ import { WorkspaceModule } from '../workspace/workspace.module';
     CostCalculator,
     ModelRegistryService,
     Ai2TaskService,
+    AiReviewService,
+    KnowledgeIndexService,
   ],
 })
 export class AiModule implements OnModuleInit {
@@ -112,6 +133,9 @@ export class AiModule implements OnModuleInit {
     private readonly openAIProvider: OpenAIProvider,
     private readonly deepSeekProvider: DeepSeekProvider,
     private readonly configService: ConfigService,
+    private readonly quickActionRegistry: QuickActionRegistry,
+    private readonly staticFollowUpProvider: StaticFollowUpProvider,
+    private readonly knowledgeIndexService: KnowledgeIndexService,
   ) {}
 
   async onModuleInit() {
@@ -133,6 +157,13 @@ export class AiModule implements OnModuleInit {
       this.logger.log('Mock Provider is ENABLED via configuration.');
       this.providerRegistry.register(this.mockLLMProvider);
     }
+
+    // Set Fallback (handled inside getFallbackProvider based on config)
+    // Register Quick Actions
+    this.quickActionRegistry.register(this.staticFollowUpProvider);
+
+    // Build Knowledge Index
+    await this.knowledgeIndexService.buildIndex();
 
     // Verify at least one provider is available
     const available = this.providerRegistry.getAllProviders();

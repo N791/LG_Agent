@@ -39,3 +39,14 @@ pnpm changeset
 
 1. **基础设施回滚 (Infrastructure Rollback)**: 执行 `helm rollback lg-agent 0` 以将 Kubernetes 部署回滚到上一个稳定的修订版本。
 2. **代码回滚 (Code Rollback)**: 由于我们对每个版本都打上了 Tag，您可以将 Git 代码库回退到上一个稳定的 Tag，并可选择通过 changesets 发布一个热修复版本 (hotfix)。
+3. **镜像回滚 (Image Rollback)**: 通过回退到上一稳定镜像标签（例如 `v1.0.0` 或 `v1.0.1`）完成快速恢复，建议在部署前先确认镜像可用性。
+
+## 5. 发布前检查清单 (Pre-release Checklist)
+
+在正式发布前，建议确认以下事项：
+
+- 版本号已通过 Changesets 正确生成。
+- Docker 镜像构建成功且已推送到目标 Registry。
+- Helm Chart 已通过 lint 与模板渲染验证。
+- 发布说明与用户手册已同步更新。
+- 生产环境的环境变量与 Secrets 已准备完毕。

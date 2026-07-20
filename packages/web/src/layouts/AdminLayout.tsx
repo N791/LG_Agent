@@ -4,6 +4,7 @@ import {
   BookOutlined,
   DashboardOutlined,
   LineChartOutlined,
+  MonitorOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
@@ -56,6 +57,12 @@ const AdminLayout: React.FC = () => {
       icon: <LineChartOutlined />,
       label: 'Learning Analytics',
       roles: ['ADMIN', 'MENTOR'],
+    },
+    {
+      key: '/observability',
+      icon: <MonitorOutlined />,
+      label: 'Observability',
+      roles: ['ADMIN'],
     },
   ];
 

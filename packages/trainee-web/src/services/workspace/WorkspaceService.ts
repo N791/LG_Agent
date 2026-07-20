@@ -1,5 +1,5 @@
 import request from '../../utils/request';
-import { WorkspaceDTO, WorkspaceFileDTO } from '@lg-agent/contracts';
+import { WorkspaceDTO, WorkspaceFileDTO, WorkspaceVersionDTO } from '@lg-agent/contracts';
 import { FileNode } from './WorkspaceRepository';
 
 export class WorkspaceService {
@@ -20,10 +20,10 @@ export class WorkspaceService {
   async loadWorkspace(taskId: string): Promise<WorkspaceDTO> {
     try {
       const response = await request.get<{ data?: WorkspaceDTO } | WorkspaceDTO>(
-        `/api/v1/workspaces/${taskId}`,
+        `/workspaces/${taskId}`,
       );
       this.currentWorkspace =
-        (response as unknown as { data?: WorkspaceDTO }).data ??
+        (response as unknown as { data?: WorkspaceDTO })?.data ??
         (response as unknown as WorkspaceDTO);
       return this.currentWorkspace;
     } catch (err: unknown) {
@@ -31,11 +31,11 @@ export class WorkspaceService {
       if (error.response?.status === 404 || error.response?.status === 400) {
         // Not initialized yet, initialize it
         const initResponse = await request.post<{ data?: WorkspaceDTO } | WorkspaceDTO>(
-          `/api/v1/workspaces/init`,
+          `/workspaces/init`,
           { taskId },
         );
         this.currentWorkspace =
-          (initResponse as unknown as { data?: WorkspaceDTO }).data ??
+          (initResponse as unknown as { data?: WorkspaceDTO })?.data ??
           (initResponse as unknown as WorkspaceDTO);
         return this.currentWorkspace;
       }
@@ -48,16 +48,42 @@ export class WorkspaceService {
     files: Pick<WorkspaceFileDTO, 'path' | 'content'>[],
   ): Promise<void> {
     const response = await request.put<{ data?: WorkspaceDTO } | WorkspaceDTO>(
-      `/api/v1/workspaces/${taskId}/files`,
+      `/workspaces/${taskId}/files`,
       { files },
     );
     this.currentWorkspace =
-      (response as unknown as { data?: WorkspaceDTO }).data ??
+      (response as unknown as { data?: WorkspaceDTO })?.data ??
+      (response as unknown as WorkspaceDTO);
+  }
+
+  async deleteFile(taskId: string, path: string): Promise<void> {
+    const response = await request.delete<{ data?: WorkspaceDTO } | WorkspaceDTO>(
+      `/workspaces/${taskId}/files?path=${encodeURIComponent(path)}`
+    );
+    this.currentWorkspace =
+      (response as unknown as { data?: WorkspaceDTO })?.data ??
       (response as unknown as WorkspaceDTO);
   }
 
   async createVersion(taskId: string, trigger: 'RUN' | 'SUBMIT' | 'MANUAL'): Promise<void> {
-    await request.post(`/api/v1/workspaces/${taskId}/versions`, { trigger });
+    await request.post(`/workspaces/${taskId}/versions`, { trigger });
+  }
+
+  async getVersions(taskId: string): Promise<WorkspaceVersionDTO[]> {
+    const response = await request.get<{ data?: WorkspaceVersionDTO[] } | WorkspaceVersionDTO[]>(
+      `/workspaces/${taskId}/versions`
+    );
+    return (response as unknown as { data?: WorkspaceVersionDTO[] })?.data ?? 
+           (response as unknown as WorkspaceVersionDTO[]);
+  }
+
+  async restoreVersion(taskId: string, versionId: string): Promise<WorkspaceDTO> {
+    const response = await request.post<{ data?: WorkspaceDTO } | WorkspaceDTO>(
+      `/workspaces/${taskId}/versions/${versionId}/restore`
+    );
+    this.currentWorkspace = (response as unknown as { data?: WorkspaceDTO })?.data ?? 
+                            (response as unknown as WorkspaceDTO);
+    return this.currentWorkspace;
   }
 
   getFileTree(): FileNode[] {

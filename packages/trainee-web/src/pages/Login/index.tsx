@@ -3,7 +3,7 @@ import { Form, Input, Button, Typography, message } from 'antd';
 import { UserOutlined, LockOutlined, RocketOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import request from '../../utils/request';
+import { authService } from '../../services/authService';
 import { setCredentials } from '../../store/authSlice';
 
 const { Title, Text } = Typography;
@@ -11,12 +11,6 @@ const { Title, Text } = Typography;
 interface LoginValues {
   username?: string;
   password?: string;
-}
-
-interface JwtPayload {
-  sub: string;
-  username: string;
-  role: string;
 }
 
 const Login: React.FC = () => {
@@ -29,48 +23,30 @@ const Login: React.FC = () => {
   const from = state?.from?.pathname ?? '/mission-hub';
 
   const onFinish = async (values: LoginValues) => {
+    if (!values.username || !values.password) return;
+
     setLoading(true);
     try {
-      const res = (await request.post<{ access_token: string }>('/auth/login', {
-        username: values.username,
-        password: values.password,
-      })) as { data?: { access_token?: string }; access_token?: string };
-      // Extract token (handling NestJS transform interceptor wrapper if present)
-      const token: string | undefined = res.data?.access_token ?? res.access_token;
+      const tokens = await authService.login(values.username, values.password);
 
-      if (!token) {
+      if (!tokens.access_token) {
         throw new Error('Token not found in response');
       }
 
-      let decoded: JwtPayload;
-      try {
-        const base64Url = token.split('.')[1];
-        if (!base64Url) throw new Error('Invalid token');
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        // Add padding if needed
-        const pad = base64.length % 4;
-        const paddedBase64 = pad ? base64 + '='.repeat(4 - pad) : base64;
-        const jsonPayload = decodeURIComponent(
-          atob(paddedBase64)
-            .split('')
-            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join(''),
-        );
-        decoded = JSON.parse(jsonPayload) as JwtPayload;
-      } catch (err) {
-        console.error('Failed to parse JWT token:', err);
-        throw new Error('Token parsing failed');
-      }
+      const decoded = authService.decodeToken(tokens.access_token);
 
       dispatch(
         setCredentials({
           user: {
             id: decoded.sub,
-            email: decoded.username, // using username as email for trainee
+            email: decoded.username,
             name: decoded.username,
             role: decoded.role,
+            organizationId: decoded.organizationId,
           },
-          token,
+          token: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          tokenExpiresAt: decoded.exp * 1000,
         }),
       );
 

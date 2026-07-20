@@ -26,11 +26,13 @@ export class CoursesController {
   }
 
   @Get()
+  @Roles('ADMIN', 'MENTOR', 'TRAINEE')
   findAll(@Query('organizationId') organizationId?: string) {
     return this.coursesService.findAll(organizationId);
   }
 
   @Get(':id')
+  @Roles('ADMIN', 'MENTOR', 'TRAINEE')
   findOne(@Param('id') id: string) {
     return this.coursesService.findOne(id);
   }

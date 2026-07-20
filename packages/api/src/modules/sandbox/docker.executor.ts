@@ -2,21 +2,28 @@ import { Injectable, Logger } from '@nestjs/common';
 import { IExecutor } from './interfaces/executor.interface';
 import { WorkspaceService } from './workspace.service';
 import { spawn } from 'child_process';
-import { ExecutionEventDTO, ExecutionEventType, WorkspaceDTO } from '@lg-agent/contracts';
+import { ExecutionEventDTO, ExecutionEventType, WorkspaceDTO, SandboxAction } from '@lg-agent/contracts';
+import { NodeRuntimeProfile } from './node-runtime.profile';
+import { ExecutionManager } from './execution.manager';
 
 @Injectable()
 export class DockerExecutor implements IExecutor {
   private readonly logger = new Logger(DockerExecutor.name);
+  private readonly profile = new NodeRuntimeProfile();
 
-  constructor(private readonly workspaceService: WorkspaceService) {}
+  constructor(
+    private readonly workspaceService: WorkspaceService,
+    private readonly executionManager: ExecutionManager,
+  ) {}
 
   async *execute(
     taskId: string,
     userId: string,
     workspaceDto: WorkspaceDTO,
-    config: { testScript?: string; env?: { node?: boolean } },
+    config: { testScript?: string | null; env?: { node?: boolean } | null; action?: SandboxAction; executionId?: string },
   ): AsyncGenerator<ExecutionEventDTO, void, unknown> {
     const workspace = this.workspaceService.createWorkspace(userId, taskId);
+    const executionId = config.executionId || Date.now().toString();
 
     try {
       this.workspaceService.writeFiles(workspace, workspaceDto);
@@ -24,16 +31,30 @@ export class DockerExecutor implements IExecutor {
       yield {
         type: ExecutionEventType.RUNNING,
         timestamp: new Date().toISOString(),
-        message: 'Sandbox environment starting...',
+        message: `Sandbox environment starting (Action: ${config.action || 'run'})...`,
       };
 
       const image = config.env?.node ? 'node:20-alpine' : 'node:20-alpine';
       const executionTimeoutMs = 30000;
       const hostPath = workspace.path;
-      const targetScript = config.testScript
-        ? 'test.js'
-        : (workspaceDto.workspace.entry ?? 'index.js');
-      const containerCmd = `npm install --no-audit --no-fund && node ${targetScript}`;
+      
+      let containerCmd = '';
+      switch (config.action) {
+        case 'build':
+          containerCmd = this.profile.getBuildCmd();
+          break;
+        case 'lint':
+          containerCmd = this.profile.getLintCmd();
+          break;
+        case 'test':
+          containerCmd = this.profile.getTestCmd();
+          break;
+        case 'run':
+        default:
+          const targetScript = config.testScript ? 'test.js' : (workspaceDto.workspace.entry ?? 'index.js');
+          containerCmd = this.profile.getRunCmd(targetScript);
+          break;
+      }
 
       const args = [
         'run',
@@ -56,6 +77,8 @@ export class DockerExecutor implements IExecutor {
       let isTimeout = false;
 
       const child = spawn('docker', args);
+      this.executionManager.register(executionId, child);
+
       const timer = setTimeout(() => {
         isTimeout = true;
         child.kill('SIGKILL');
@@ -154,6 +177,7 @@ export class DockerExecutor implements IExecutor {
         timestamp: new Date().toISOString(),
       };
     } finally {
+      this.executionManager.unregister(executionId);
       this.workspaceService.cleanupWorkspace(workspace);
       yield {
         type: ExecutionEventType.COMPLETE,

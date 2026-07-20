@@ -10,7 +10,7 @@ export class ExportRequestDto {
   filters?: Record<string, unknown>;
 }
 
-@Controller('v1/reports')
+@Controller('reports')
 @UseGuards(JwtAuthGuard)
 export class ReportsController {
   constructor(

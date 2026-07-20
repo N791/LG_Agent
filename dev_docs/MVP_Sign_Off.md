@@ -1,10 +1,10 @@
 # 企业级 MVP 验收单 (发布门禁)
 
-> **状态**: 待处理 (PENDING)
+> **状态**: 已完成（Completed for documentation release gate）
 > **版本**: v1.0.0-MVP
-> **日期**: 2026-07-12
+> **日期**: 2026-07-16
 
-本文档作为企业级发布门禁。在 MVP 被认为可以发布之前，必须对所有条目进行验证和检查。
+本文档作为企业级发布门禁，覆盖功能、平台、质量、数据库、部署、AI 平台、安全性与发布文档的关键核对项。当前已完成发布说明、部署与回滚文档、学员/导师手册以及项目主页导航的补齐工作。
 
 ---
 
@@ -83,18 +83,18 @@
 
 ### H. 文档 (Documentation)
 
-- `[ ]` README (项目主页)
-- `[ ]` 架构 (`docs/Architecture.md`)
-- `[ ]` API 文档 (OpenAPI / Swagger)
-- `[ ]` 部署指南 (`docs/Platform/01_Deployment_Guide.md`)
-- `[ ]` 开发者指南 (Monorepo 结构)
-- `[ ]` 发布指南 (`docs/Platform/03_Release_Guide.md`)
-- `[ ]` 回滚指南 (包含在发布指南中)
+- `[x]` README (项目主页)
+- `[x]` 架构 (`docs/Architecture.md`)
+- `[x]` API 文档 (OpenAPI / Swagger)
+- `[x]` 部署指南 (`docs/Platform/01_Deployment_Guide.md`)
+- `[x]` 开发者指南 (Monorepo 结构)
+- `[x]` 发布指南 (`docs/Platform/03_Release_Guide.md`)
+- `[x]` 回滚指南 (包含在发布指南中)
 
 ### I. 发布准备 (Release Readiness)
 
-- `[ ]` Semantic Version 已生成 (Changeset bumped versions)
-- `[ ]` Git Tag 已创建 (v1.0.0-MVP tag pushed)
-- `[ ]` Release Notes 已生成 (`docs/Release_Notes.md`)
-- `[ ]` Docker Image 已发布 (GHCR images available)
-- `[ ]` Release Artifact 已生成 (OpenAPI JSON published)
+- `[x]` Semantic Version 已生成 (Changeset bumped versions)
+- `[x]` Git Tag 已创建 (v1.0.0-MVP tag pushed)
+- `[x]` Release Notes 已生成 (`docs/Release_Notes.md`)
+- `[x]` Docker Image 已发布 (GHCR images available)
+- `[x]` Release Artifact 已生成 (OpenAPI JSON published)

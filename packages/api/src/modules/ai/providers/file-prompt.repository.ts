@@ -17,18 +17,34 @@ export class FilePromptRepository implements IPromptRepository {
       if (!fs.existsSync(templatesPath)) {
         fs.mkdirSync(templatesPath, { recursive: true });
 
-        // MVP: Create a default CODE_REVIEW template
-        const defaultTemplate: PromptTemplate = {
-          id: 'CODE_REVIEW',
-          description: 'AI Code Review Template',
-          system:
-            'You are an expert code reviewer. Please review the following code and provide constructive feedback.',
-          user: 'Task Description: {{task_description}}\n\nUser Code:\n```javascript\n{{code}}\n```',
-        };
-        fs.writeFileSync(
-          path.join(templatesPath, 'CODE_REVIEW.json'),
-          JSON.stringify(defaultTemplate, null, 2),
-        );
+        // MVP: Create default templates
+        const templates = [
+          {
+            id: 'CODE_REVIEW',
+            description: 'AI Code Review Template',
+            system: 'You are an expert code reviewer. Please review the following code and provide constructive feedback.\n\nContext:\n{{workspace}}\n{{activeFileContext}}',
+            user: 'Task Description: {{task_description}}\n\nUser Request:\n{{content}}',
+          },
+          {
+            id: 'hint',
+            description: 'AI Tutor Hint Template',
+            system: 'You are an expert programming AI Tutor. Your goal is to guide the trainee through their tasks. Provide a small, conceptual hint to help them progress. DO NOT provide the full code answer.\n\nContext:\n{{workspace}}\n{{activeFileContext}}',
+            user: 'User Request:\n{{content}}',
+          },
+          {
+            id: 'explain_error',
+            description: 'AI Tutor Error Explanation Template',
+            system: 'You are an expert programming AI Tutor. Your goal is to explain compilation or runtime errors to the trainee in simple, understandable terms. Suggest potential causes but encourage them to find the exact fix.\n\nContext:\n{{workspace}}\n{{activeFileContext}}',
+            user: 'Error/Request:\n{{content}}',
+          }
+        ];
+
+        for (const tmpl of templates) {
+          fs.writeFileSync(
+            path.join(templatesPath, `${tmpl.id}.json`),
+            JSON.stringify(tmpl, null, 2),
+          );
+        }
       }
 
       const files = fs.readdirSync(templatesPath).filter((f) => f.endsWith('.json'));

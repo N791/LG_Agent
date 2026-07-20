@@ -18,5 +18,25 @@
     "pattern": "you are now\\s+(?:a|an)\\s+",
     "priority": 100,
     "enabled": true
+  },
+  {
+    "id": "pi-3",
+    "name": "Developer Mode",
+    "type": "KEYWORD",
+    "scope": "request",
+    "action": "BLOCK",
+    "pattern": "developer mode",
+    "priority": 100,
+    "enabled": true
+  },
+  {
+    "id": "pi-4",
+    "name": "System Prompt Override 2",
+    "type": "REGEX",
+    "scope": "request",
+    "action": "BLOCK",
+    "pattern": "(ignore|disregard)\\s+all\\s+(previous|prior)?\\s*instructions",
+    "priority": 100,
+    "enabled": true
   }
 ]

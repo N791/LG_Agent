@@ -1,31 +1,49 @@
+import React, { Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import MissionHub from '../pages/MissionHub';
-import WorkspacePage from '../pages/Workspace';
-import Login from '../pages/Login';
 import AuthGuard from './AuthGuard';
-
+import { PageLoader } from '../components/PageLoader';
 import type { Router } from '@remix-run/router';
+
+const MissionHub = React.lazy(() => import('../pages/MissionHub'));
+const WorkspacePage = React.lazy(() => import('../pages/Workspace'));
+const Dashboard = React.lazy(() => import('../pages/Dashboard'));
+const Login = React.lazy(() => import('../pages/Login'));
+const Settings = React.lazy(() => import('../pages/Settings').then(module => ({ default: module.Settings })));
+
+const withSuspense = (Component: React.FC) => (
+  <Suspense fallback={<PageLoader />}>
+    <Component />
+  </Suspense>
+);
 
 export const router: Router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/mission-hub" replace />,
+    element: <Navigate to="/dashboard" replace />,
   },
   {
     path: '/login',
-    element: <Login />,
+    element: withSuspense(Login),
   },
   {
     path: '/',
     element: <AuthGuard />,
     children: [
       {
-        path: '/mission-hub',
-        element: <MissionHub />,
+        path: '/dashboard',
+        element: withSuspense(Dashboard),
       },
       {
-        path: '/workspace/:taskId',
-        element: <WorkspacePage />,
+        path: '/mission-hub/:courseId',
+        element: withSuspense(MissionHub),
+      },
+      {
+        path: '/course/:courseId/workspace/:taskId',
+        element: withSuspense(WorkspacePage),
+      },
+      {
+        path: '/settings',
+        element: withSuspense(Settings as React.FC),
       },
     ],
   },

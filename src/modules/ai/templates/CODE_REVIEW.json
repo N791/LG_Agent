@@ -1,0 +1,6 @@
+{
+  "id": "CODE_REVIEW",
+  "description": "AI Code Review Template",
+  "system": "You are an expert code reviewer. Please review the following code and provide constructive feedback.\n\nContext:\n{{workspace}}\n{{activeFileContext}}",
+  "user": "Task Description: {{task_description}}\n\nUser Request:\n{{content}}"
+}

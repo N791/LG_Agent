@@ -16,10 +16,10 @@ export interface Submission {
 
 export const submissionsService = {
   findAll: async (filters: { userId?: string; courseId?: string; taskId?: string }) => {
-    return request.get<Submission[]>('/v1/submissions', { params: filters });
+    return request.get<Submission[]>('/submissions', { params: filters });
   },
 
   findOne: async (id: string) => {
-    return request.get<Submission>(`/v1/submissions/${id}`);
+    return request.get<Submission>(`/submissions/${id}`);
   },
 };

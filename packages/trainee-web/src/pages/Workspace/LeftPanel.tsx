@@ -7,14 +7,25 @@ import request from '../../utils/request';
 import { TaskDTO } from '@lg-agent/contracts';
 
 import { useWorkspaceStore } from '../../store/workspaceStore';
+import { VersionsPanel } from './VersionsPanel';
+import { SubmissionsPanel } from './SubmissionsPanel';
+import { ChatPanel } from './ChatPanel';
+import { KnowledgePanel } from './KnowledgePanel';
+import { MentorPanel } from './MentorPanel';
 
 const fetchTask = async (id: string): Promise<TaskDTO> => {
   const res = await request.get<{ data?: TaskDTO } | TaskDTO>(`/tasks/${id}`);
-  const data = (res as unknown as { data?: TaskDTO }).data ?? (res as unknown as TaskDTO);
+  const data = (res as unknown as { data?: TaskDTO })?.data ?? (res as unknown as TaskDTO);
   return data;
 };
 
-export const LeftPanel: React.FC = () => {
+import { ExecutionState } from './ExecutionCenterPanel';
+
+interface LeftPanelProps {
+  setExecutionState?: React.Dispatch<React.SetStateAction<ExecutionState>>;
+}
+
+export const LeftPanel: React.FC<LeftPanelProps> = React.memo(({ setExecutionState }) => {
   const { taskId } = useParams<{ taskId: string }>();
   const leftPanelTab = useWorkspaceStore((state) => state.leftPanelTab);
   const setLeftPanelTab = useWorkspaceStore((state) => state.setLeftPanelTab);
@@ -61,66 +72,49 @@ export const LeftPanel: React.FC = () => {
     {
       key: 'mentor',
       label: 'AI 导师',
+      children: taskId ? <ChatPanel taskId={taskId} /> : <div>No Task</div>,
+    },
+    {
+      key: 'versions',
+      label: '版本历史',
       children: (
-        <div className="p-4 overflow-y-auto h-full">
-          {useWorkspaceStore((state) => state.aiHistory).length > 0 && (
-            <div className="mb-4 space-y-4">
-              {useWorkspaceStore((state) => state.aiHistory).map(
-                (msg: { id: string; role: string; content: string }) => (
-                  <div
-                    key={msg.id}
-                    className={`p-3 rounded-lg ${msg.role === 'user' ? 'bg-blue-50 ml-4' : 'bg-gray-50 mr-4'}`}
-                  >
-                    <span className="text-xs font-bold text-gray-500 uppercase">{msg.role}</span>
-                    <div className="prose prose-sm dark:prose-invert">
-                      <Markdown remarkPlugins={[remarkGfm]}>{msg.content}</Markdown>
-                    </div>
-                  </div>
-                ),
-              )}
-            </div>
-          )}
-          {useWorkspaceStore((state) => state.aiLoading) &&
-          !useWorkspaceStore((state) => state.aiFeedback) ? (
-            <div className="flex flex-col items-center justify-center text-gray-500 h-full space-y-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              <p>AI Mentor is analyzing your code...</p>
-            </div>
-          ) : (
-            <div className="prose prose-sm dark:prose-invert">
-              {useWorkspaceStore((state) => state.aiFeedback) ? (
-                <div className="bg-gray-50 p-3 rounded-lg mr-4">
-                  <span className="text-xs font-bold text-gray-500 uppercase">
-                    assistant (streaming)
-                  </span>
-                  <Markdown remarkPlugins={[remarkGfm]}>
-                    {useWorkspaceStore((state) => state.aiFeedback)}
-                  </Markdown>
-                </div>
-              ) : (
-                useWorkspaceStore((state) => state.aiHistory).length === 0 && (
-                  <div className="flex flex-col h-full items-center justify-center text-gray-500 pt-20">
-                    <p>Run your code to get AI Mentor feedback!</p>
-                  </div>
-                )
-              )}
-            </div>
-          )}
+        <div className="h-full">
+          {taskId && <VersionsPanel taskId={taskId} />}
         </div>
       ),
+    },
+    {
+      key: 'submissions',
+      label: '提交记录',
+      children: (
+        <div className="h-full">
+          {taskId && <SubmissionsPanel taskId={taskId} setExecutionState={setExecutionState} />}
+        </div>
+      ),
+    },
+    {
+      key: 'knowledge',
+      label: '知识库',
+      children: <KnowledgePanel />,
+    },
+    {
+      key: 'mentor-human',
+      label: '导师讨论',
+      children: taskId ? <MentorPanel taskId={taskId} /> : <div>No Task</div>,
     },
   ];
 
   return (
-    <div className="h-full bg-white flex flex-col">
+    <div className="h-full bg-white flex flex-col" role="region" aria-label="Workspace left panel">
       <Tabs
         activeKey={leftPanelTab}
         onChange={(key) => {
-          setLeftPanelTab(key as 'objective' | 'mentor');
+          setLeftPanelTab(key as any);
         }}
         items={items}
         className="h-full px-2"
+        tabBarGutter={8}
       />
     </div>
   );
-};
+});

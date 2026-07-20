@@ -26,3 +26,10 @@ export interface ConversationDTO {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface QuickActionDTO {
+  id: string;
+  label: string;
+  action: ConversationType;
+  prompt: string;
+}

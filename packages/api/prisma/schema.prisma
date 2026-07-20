@@ -39,81 +39,97 @@ model Organization {
 }
 
 model User {
-  id             String       @id @default(uuid()) @db.Uuid
-  organizationId String       @map("organization_id") @db.Uuid
-  username       String       @unique @db.VarChar
-  password       String       @db.VarChar
-  nickname       String?      @db.VarChar
-  email          String?      @db.VarChar
-  role           Role         @default(TRAINEE)
-  status         Int          @default(1) @db.SmallInt
-  createdAt      DateTime     @default(now()) @map("created_at")
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  username       String   @unique @db.VarChar
+  password       String   @db.VarChar
+  nickname       String?  @db.VarChar
+  email          String?  @db.VarChar
+  role           Role     @default(TRAINEE)
+  status         Int      @default(1) @db.SmallInt
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 
-  coursesCreated Course[]       @relation("CourseCreator")
-  submissions    Submission[]
-  llmRequestLogs LlmRequestLog[]
-  conversations  Conversation[]
-  workspaces     Workspace[]
+  coursesCreated          Course[]                 @relation("CourseCreator")
+  submissions             Submission[]
+  llmRequestLogs          LlmRequestLog[]
+  conversations           Conversation[]
+  clientLogs              ClientLog[]
+  clientMetrics           ClientMetric[]
+  auditEvents             AuditEvent[]
+  totalPoints             Int                      @default(0) @map("total_points")
+  workspaces              Workspace[]
+  courseEnrollments       CourseEnrollment[]
+  userBadges              UserBadge[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference[]
+  userPreferences         UserPreference[]
+  discussions             Discussion[]
+  discussionComments      DiscussionComment[]
 
   @@map("users")
 }
 
 model Course {
-  id             String       @id @default(uuid()) @db.Uuid
-  organizationId String       @map("organization_id") @db.Uuid
-  title          String       @db.VarChar
-  description    String?      @db.Text
-  version        String       @db.VarChar
-  status         Int          @default(0) @db.SmallInt // 0: 草稿, 1: 已发布
-  createdById    String       @map("created_by") @db.Uuid
-  createdAt      DateTime     @default(now()) @map("created_at")
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  title          String   @db.VarChar
+  description    String?  @db.Text
+  version        String   @db.VarChar
+  status         Int      @default(0) @db.SmallInt // 0: 草稿, 1: 已发布
+  createdById    String   @map("created_by") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  createdBy      User         @relation("CourseCreator", fields: [createdById], references: [id])
-  tasks          Task[]
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  createdBy         User               @relation("CourseCreator", fields: [createdById], references: [id])
+  requiredPoints    Int                @default(0) @map("required_points")
+  tasks             Task[]
+  courseEnrollments CourseEnrollment[]
 
   @@map("courses")
 }
 
 model Task {
-  id             String       @id @default(uuid()) @db.Uuid
-  courseId       String       @map("course_id") @db.Uuid
-  title          String         @db.VarChar
-  summary        String?        @db.VarChar // 任务摘要（列表展示）
-  description    String?        @db.Text    // Markdown 任务内容
-  stage          Int            @db.Integer
-  taskType       TaskType       @default(MANDATORY) @map("task_type")
-  difficulty     TaskDifficulty @default(BEGINNER)
-  version        Int            @default(1) @db.Integer
-  envConfig      Json           @map("env_config") @db.JsonB
-  sandboxConfig  Json           @map("sandbox_config") @db.JsonB
-  testConfig     Json           @map("test_config") @db.JsonB
-  promptConfig   Json           @map("prompt_config") @db.JsonB
-  config         Json?          @db.JsonB
-  metadata       Json?          @db.JsonB
+  id            String         @id @default(uuid()) @db.Uuid
+  courseId      String         @map("course_id") @db.Uuid
+  title         String         @db.VarChar
+  summary       String?        @db.VarChar // 任务摘要（列表展示）
+  description   String?        @db.Text // Markdown 任务内容
+  stage         Int            @db.Integer
+  taskType      TaskType       @default(MANDATORY) @map("task_type")
+  difficulty    TaskDifficulty @default(BEGINNER)
+  version       Int            @default(1) @db.Integer
+  envConfig     Json           @map("env_config") @db.JsonB
+  sandboxConfig Json           @map("sandbox_config") @db.JsonB
+  testConfig    Json           @map("test_config") @db.JsonB
+  promptConfig  Json           @map("prompt_config") @db.JsonB
+  config        Json?          @db.JsonB
+  metadata      Json?          @db.JsonB
 
-  course         Course         @relation(fields: [courseId], references: [id])
-  submissions    Submission[]
-  conversations  Conversation[]
-  workspaces     Workspace[]
+  course        Course         @relation(fields: [courseId], references: [id])
+  submissions   Submission[]
+  conversations Conversation[]
+  workspaces    Workspace[]
+  discussions   Discussion[]
 
   @@map("tasks")
 }
 
 model Submission {
-  id             String       @id @default(uuid()) @db.Uuid
-  taskId         String       @map("task_id") @db.Uuid
-  userId         String       @map("user_id") @db.Uuid
-  status         String       @default("PENDING") @db.VarChar // PENDING, RUNNING, PASSED, FAILED
-  score          Int          @default(0) @db.SmallInt
-  logs           String?      @db.Text
-  report         Json?        @db.JsonB
-  createdAt      DateTime     @default(now()) @map("created_at")
+  id        String   @id @default(uuid()) @db.Uuid
+  taskId    String   @map("task_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  status    String   @default("PENDING") @db.VarChar // PENDING, RUNNING, PASSED, FAILED
+  score     Int      @default(0) @db.SmallInt
+  logs      String?  @db.Text
+  report    Json?    @db.JsonB
+  aiReview  Json?    @map("ai_review") @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
 
-  task           Task         @relation(fields: [taskId], references: [id])
-  user           User         @relation(fields: [userId], references: [id])
+  task        Task         @relation(fields: [taskId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+  discussions Discussion[]
 
   @@map("submissions")
 }
@@ -135,102 +151,272 @@ model LlmRequestLog {
   status           String   @db.VarChar
   createdAt        DateTime @default(now()) @map("created_at")
 
-  user             User?    @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
 
   @@map("llm_request_logs")
 }
 
 model LlmAuditLog {
-  id             String   @id @default(uuid()) @db.Uuid
-  requestId      String   @map("request_id") @db.VarChar
-  eventType      String   @map("event_type") @db.VarChar
-  severity       String   @db.VarChar
-  action         String   @db.VarChar
-  message        String   @db.Text
-  metadata       Json?    @db.JsonB
-  createdAt      DateTime @default(now()) @map("created_at")
+  id        String   @id @default(uuid()) @db.Uuid
+  requestId String   @map("request_id") @db.VarChar
+  eventType String   @map("event_type") @db.VarChar
+  severity  String   @db.VarChar
+  action    String   @db.VarChar
+  message   String   @db.Text
+  metadata  Json?    @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("llm_audit_logs")
 }
 
 model Conversation {
-  id             String                @id @default(uuid()) @db.Uuid
-  organizationId String                @map("organization_id") @db.Uuid
-  userId         String                @map("user_id") @db.Uuid
-  taskId         String                @map("task_id") @db.Uuid
-  status         String                @default("ACTIVE") @db.VarChar
-  createdAt      DateTime              @default(now()) @map("created_at")
-  updatedAt      DateTime              @updatedAt @map("updated_at")
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  taskId         String   @map("task_id") @db.Uuid
+  status         String   @default("ACTIVE") @db.VarChar
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
-  organization   Organization          @relation(fields: [organizationId], references: [id])
-  user           User                  @relation(fields: [userId], references: [id])
-  task           Task                  @relation(fields: [taskId], references: [id])
-  messages       ConversationMessage[]
+  organization Organization          @relation(fields: [organizationId], references: [id])
+  user         User                  @relation(fields: [userId], references: [id])
+  task         Task                  @relation(fields: [taskId], references: [id])
+  messages     ConversationMessage[]
 
   @@map("conversations")
 }
 
 model ConversationMessage {
-  id             String       @id @default(uuid()) @db.Uuid
-  conversationId String       @map("conversation_id") @db.Uuid
-  role           String       @db.VarChar // USER, ASSISTANT, SYSTEM
-  content        String       @db.Text
-  model          String?      @db.VarChar
-  tokenUsage     Int?         @map("token_usage") @db.Integer
-  metadata       Json?        @db.JsonB
-  createdAt      DateTime     @default(now()) @map("created_at")
+  id             String   @id @default(uuid()) @db.Uuid
+  conversationId String   @map("conversation_id") @db.Uuid
+  role           String   @db.VarChar // USER, ASSISTANT, SYSTEM
+  content        String   @db.Text
+  model          String?  @db.VarChar
+  tokenUsage     Int?     @map("token_usage") @db.Integer
+  metadata       Json?    @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id])
 
   @@map("conversation_messages")
 }
 
 model Workspace {
-  id        String             @id @default(uuid()) @db.Uuid
-  userId    String             @map("user_id") @db.Uuid
-  taskId    String             @map("task_id") @db.Uuid
-  status    String             @default("DRAFT") @db.VarChar // DRAFT, ACTIVE, ARCHIVED
-  createdAt DateTime           @default(now()) @map("created_at")
-  updatedAt DateTime           @updatedAt @map("updated_at")
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  taskId    String   @map("task_id") @db.Uuid
+  status    String   @default("DRAFT") @db.VarChar // DRAFT, ACTIVE, ARCHIVED
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  user      User               @relation(fields: [userId], references: [id])
-  task      Task               @relation(fields: [taskId], references: [id])
-  files     WorkspaceFile[]
-  versions  WorkspaceVersion[]
+  user        User               @relation(fields: [userId], references: [id])
+  task        Task               @relation(fields: [taskId], references: [id])
+  files       WorkspaceFile[]
+  versions    WorkspaceVersion[]
+  discussions Discussion[]
 
   @@unique([userId, taskId])
   @@map("workspaces")
 }
 
 model WorkspaceFile {
-  id          String    @id @default(uuid()) @db.Uuid
-  workspaceId String    @map("workspace_id") @db.Uuid
-  path        String    @db.VarChar
-  content     String    @db.Text
-  language    String?   @db.VarChar
-  encoding    String?   @db.VarChar
-  readonly    Boolean   @default(false)
-  hidden      Boolean   @default(false)
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @map("workspace_id") @db.Uuid
+  path        String   @db.VarChar
+  content     String   @db.Text
+  language    String?  @db.VarChar
+  encoding    String?  @db.VarChar
+  readonly    Boolean  @default(false)
+  hidden      Boolean  @default(false)
+  locked      Boolean  @default(false)
+  visibility  String?  @db.VarChar
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, path])
   @@map("workspace_files")
 }
 
 model WorkspaceVersion {
-  id          String    @id @default(uuid()) @db.Uuid
-  workspaceId String    @map("workspace_id") @db.Uuid
-  version     Int       @db.Integer
-  trigger     String    @db.VarChar // RUN, SUBMIT, MANUAL
-  snapshot    Json      @db.JsonB // Stores the file snapshot
-  createdAt   DateTime  @default(now()) @map("created_at")
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @map("workspace_id") @db.Uuid
+  version     Int      @db.Integer
+  trigger     String   @db.VarChar // RUN, SUBMIT, MANUAL
+  snapshot    Json     @db.JsonB // Stores the file snapshot
+  createdAt   DateTime @default(now()) @map("created_at")
 
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@map("workspace_versions")
 }
 
+model CourseEnrollment {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  courseId       String    @map("course_id") @db.Uuid
+  status         String    @default("IN_PROGRESS") @db.VarChar // IN_PROGRESS, COMPLETED, DROPPED
+  progress       Int       @default(0) @db.SmallInt // Percentage 0-100
+  currentStage   Int       @default(1) @map("current_stage") @db.Integer // Which stage the user is on
+  lastAccessedAt DateTime  @default(now()) @map("last_accessed_at")
+  completedAt    DateTime? @map("completed_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
 
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+  @@map("course_enrollments")
+}
+
+model UserBadge {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  badgeCode String   @map("badge_code") @db.VarChar
+  awardedAt DateTime @default(now()) @map("awarded_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, badgeCode])
+  @@map("user_badges")
+}
+
+model Notification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  type      String    @db.VarChar
+  priority  String    @default("NORMAL") @db.VarChar
+  status    String    @default("UNREAD") @db.VarChar
+  title     String    @db.VarChar
+  message   String    @db.Text
+  payload   Json?     @db.JsonB
+  expiresAt DateTime? @map("expires_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, status])
+  @@index([expiresAt])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String   @db.VarChar
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, type])
+  @@map("notification_preferences")
+}
+
+model UserPreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  key       String   @db.VarChar
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, key])
+  @@map("user_preferences")
+}
+
+model Discussion {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid // Trainee who started
+  taskId       String    @map("task_id") @db.Uuid
+  submissionId String?   @map("submission_id") @db.Uuid
+  workspaceId  String?   @map("workspace_id") @db.Uuid
+  contextType  String    @map("context_type") @db.VarChar // WORKSPACE, SUBMISSION, TASK
+  title        String    @db.VarChar
+  status       String    @default("OPEN") @db.VarChar // OPEN, IN_PROGRESS, WAITING_FOR_TRAINEE, RESOLVED, CLOSED
+  priority     String    @default("NORMAL") @db.VarChar // LOW, NORMAL, HIGH, URGENT
+  assignedToId String?   @map("assigned_to_id") @db.Uuid
+  assignedAt   DateTime? @map("assigned_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user       User                @relation(fields: [userId], references: [id])
+  task       Task                @relation(fields: [taskId], references: [id])
+  submission Submission?         @relation(fields: [submissionId], references: [id])
+  workspace  Workspace?          @relation(fields: [workspaceId], references: [id])
+  comments   DiscussionComment[]
+
+  @@map("discussions")
+}
+
+model DiscussionComment {
+  id           String   @id @default(uuid()) @db.Uuid
+  discussionId String   @map("discussion_id") @db.Uuid
+  authorId     String   @map("author_id") @db.Uuid
+  content      String   @db.Text
+  codeSnippet  Json?    @map("code_snippet") @db.JsonB
+  filePath     String?  @map("file_path") @db.VarChar
+  startLine    Int?     @map("start_line") @db.Integer
+  endLine      Int?     @map("end_line") @db.Integer
+  isInternal   Boolean  @default(false) @map("is_internal")
+  mentions     Json?    @db.JsonB
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  discussion Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  author     User       @relation(fields: [authorId], references: [id])
+
+  @@map("discussion_comments")
+}
+
+model ClientLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  level     String   @db.VarChar // ERROR, WARN, INFO
+  message   String   @db.Text
+  stack     String?  @db.Text
+  path      String?  @db.VarChar
+  userAgent String?  @map("user_agent") @db.VarChar
+  metadata  Json?    @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("client_logs")
+}
+
+model ClientMetric {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  name      String   @db.VarChar // LCP, FID, CLS, TTFB, API_LATENCY, WORKSPACE_LOAD
+  value     Float
+  rating    String?  @db.VarChar // good, needs-improvement, poor
+  path      String?  @db.VarChar
+  userAgent String?  @map("user_agent") @db.VarChar
+  metadata  Json?    @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("client_metrics")
+}
+
+model AuditEvent {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action      String   @db.VarChar
+  actorId     String?  @map("actor_id") @db.Uuid
+  resourceId  String?  @map("resource_id") @db.VarChar
+  metadata    Json?
+  traceId     String?  @map("trace_id") @db.Uuid
+  ipAddress   String?  @map("ip_address") @db.VarChar
+  userAgent   String?  @map("user_agent") @db.VarChar
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  actor       User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_events")
+}

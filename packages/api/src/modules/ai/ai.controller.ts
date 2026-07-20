@@ -17,6 +17,9 @@ import { ModelRegistryService } from './model-registry.service';
 import { ModelInfoDTO } from '@lg-agent/contracts';
 import { Ai2TaskService, GenerateTaskRequest } from './ai2task.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { QuickActionRegistry } from './tutor/quick-actions/quick-action.registry';
+
+import { AiReviewService } from './tutor/ai-review.service';
 
 @Controller('ai')
 @UseGuards(JwtAuthGuard)
@@ -25,7 +28,19 @@ export class AiController {
     private readonly aiConversationService: AiConversationService,
     private readonly modelRegistry: ModelRegistryService,
     private readonly ai2taskService: Ai2TaskService,
+    private readonly quickActionRegistry: QuickActionRegistry,
+    private readonly aiReviewService: AiReviewService,
   ) {}
+
+  @Get('tutor/quick-actions/:action')
+  async getQuickActions(@Param('action') action: string) {
+    return this.quickActionRegistry.getActions(action);
+  }
+
+  @Get('tutor/review/:submissionId')
+  async getAiReview(@Param('submissionId') submissionId: string) {
+    return this.aiReviewService.generateReview(submissionId);
+  }
 
   @Post('generate-task')
   async generateTask(@Body() request: GenerateTaskRequest) {

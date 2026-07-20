@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env['VITE_API_URL'] as string,
+  baseURL: import.meta.env['VITE_API_URL'] || '/api/v1',
   timeout: 10000,
 });
 
@@ -12,5 +12,18 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => {
+    const res = response.data as { code?: number; message?: string; data?: unknown };
+    if (res.code !== undefined && res.code !== 200 && res.code !== 201) {
+      return Promise.reject(new Error(res.message ?? 'Request failed'));
+    }
+    if (res.data !== undefined) {
+      response.data = res.data;
+    }
+    return response;
+  }
+);
 
 export default api;

@@ -3,7 +3,7 @@ import { SubmissionsService } from './submissions.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { Response } from 'express';
 
-@Controller('v1/submissions')
+@Controller('submissions')
 @UseGuards(JwtAuthGuard)
 export class SubmissionsController {
   constructor(private readonly submissionsService: SubmissionsService) {}
@@ -33,24 +33,37 @@ export class SubmissionsController {
       res.status(401).send('Unauthorized');
       return;
     }
-    const stream = this.submissionsService.runAndStream(userId, body.taskId);
+    const result = await this.submissionsService.submitTask(userId, body.taskId);
+    res.json(result);
+  }
+
+  @Get(':id/logs')
+  async streamLogs(@Param('id') id: string, @Req() req: any, @Res() res: Response) {
+    const stream = this.submissionsService.streamSubmissionLogs(id);
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    try {
-      for await (const event of stream) {
+    const subscription = stream.subscribe({
+      next: (event) => {
         res.write(`data: ${JSON.stringify(event)}\n\n`);
+      },
+      error: (err: unknown) => {
+        res.write(
+          `data: ${JSON.stringify({ type: 'ERROR', message: (err as Error).message, timestamp: new Date().toISOString() })}\n\n`
+        );
+        res.write('data: [DONE]\n\n');
+        res.end();
+      },
+      complete: () => {
+        res.write('data: [DONE]\n\n');
+        res.end();
       }
-      res.write('data: [DONE]\n\n');
-      res.end();
-    } catch (err: unknown) {
-      res.write(
-        `data: ${JSON.stringify({ type: 'ERROR', message: (err as Error).message, timestamp: new Date().toISOString() })}\n\n`,
-      );
-      res.write('data: [DONE]\n\n');
-      res.end();
-    }
+    });
+
+    req.on('close', () => {
+      subscription.unsubscribe();
+    });
   }
 }
