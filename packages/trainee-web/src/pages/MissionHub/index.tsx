@@ -2,7 +2,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/restrict-template-expressions, @typescript-eslint/prefer-nullish-coalescing */
 import React, { useState, useEffect, useMemo } from 'react';
 import { Tabs, Input, Select, Button, Typography, Progress, Result, Skeleton, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined, PlayCircleOutlined, BookOutlined } from '@ant-design/icons';
+import {
+  SearchOutlined,
+  FilterOutlined,
+  PlayCircleOutlined,
+  BookOutlined,
+} from '@ant-design/icons';
 import { TaskCard } from '../../components/TaskCard';
 import { TaskDetailDrawer } from '../../components/TaskDetailDrawer';
 import { TaskDTO, TaskType, TaskDifficulty } from '@lg-agent/contracts';
@@ -21,22 +26,22 @@ const { Option } = Select;
 const MissionHub: React.FC = () => {
   const navigate = useNavigate();
   const { courseId } = useParams<{ courseId: string }>();
-  
+
   // Data states
   const [course, setCourse] = useState<CourseDTO | null>(null);
   const [tasks, setTasks] = useState<TaskDTO[]>([]);
   const [progress, setProgress] = useState<CourseProgressDTO | null>(null);
   const [recent, setRecent] = useState<RecentLearning | null>(null);
   const [achievements, setAchievements] = useState<AchievementDTO | null>(null);
-  
+
   // UI states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Filter & Search states
   const [searchText, setSearchText] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('ALL');
-  
+
   // Drawer states
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TaskDTO | null>(null);
@@ -53,7 +58,7 @@ const MissionHub: React.FC = () => {
           trainingService.getRecentLearning(),
           achievementService.getMyAchievements(),
         ]);
-        
+
         setCourse(courseData);
         setProgress(progressData);
         setRecent(recentData);
@@ -63,7 +68,6 @@ const MissionHub: React.FC = () => {
         const response = await request.get<TaskDTO[]>(`/tasks?courseId=${courseId}`);
         const tasksData = (response as unknown as { data?: TaskDTO[] })?.data ?? response;
         setTasks(Array.isArray(tasksData) ? tasksData : []);
-        
       } catch (err) {
         (window as any).__LAST_ERROR = err instanceof Error ? err.stack : JSON.stringify(err);
         setError('Failed to load mission hub data. Please try again later.');
@@ -92,7 +96,9 @@ const MissionHub: React.FC = () => {
       const matchSearch =
         t.title.toLowerCase().includes(searchText.toLowerCase()) ||
         (t.summary?.toLowerCase() ?? '').includes(searchText.toLowerCase());
-      const matchDifficulty = difficultyFilter === 'ALL' || t.difficulty === (difficultyFilter as unknown as TaskDifficulty);
+      const matchDifficulty =
+        difficultyFilter === 'ALL' ||
+        t.difficulty === (difficultyFilter as unknown as TaskDifficulty);
       return matchSearch && matchDifficulty;
     });
   }, [tasks, searchText, difficultyFilter]);
@@ -147,11 +153,22 @@ const MissionHub: React.FC = () => {
             <div>
               <p>{error}</p>
               <pre className="text-left mt-4 text-xs text-red-500 max-w-2xl overflow-auto p-4 bg-gray-50 border rounded">
-                {(window as any).__LAST_ERROR ? String((window as any).__LAST_ERROR) : 'No error details'}
+                {(window as any).__LAST_ERROR
+                  ? String((window as any).__LAST_ERROR)
+                  : 'No error details'}
               </pre>
             </div>
           }
-          extra={<Button type="primary" onClick={() => { window.location.reload(); }}>Try Again</Button>}
+          extra={
+            <Button
+              type="primary"
+              onClick={() => {
+                window.location.reload();
+              }}
+            >
+              Try Again
+            </Button>
+          }
         />
       </div>
     );
@@ -163,14 +180,15 @@ const MissionHub: React.FC = () => {
       <div className="mb-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
         {/* Decorative background element */}
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
-        
+
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex-1">
             <Title level={2} className="!mb-2 !text-gray-800">
               {course?.title ?? 'Mission Hub'}
             </Title>
             <Paragraph className="text-gray-500 mb-0 max-w-2xl text-base">
-              {course?.description ?? 'Welcome! Continue your training journey by selecting a mission below.'}
+              {course?.description ??
+                'Welcome! Continue your training journey by selecting a mission below.'}
             </Paragraph>
           </div>
 
@@ -182,8 +200,8 @@ const MissionHub: React.FC = () => {
                   {progress.completedTasks} / {progress.totalTasks} Missions
                 </Text>
               </div>
-              <Progress 
-                percent={progress.progressPercentage} 
+              <Progress
+                percent={progress.progressPercentage}
                 strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }}
                 status={progress.progressPercentage === 100 ? 'success' : 'active'}
                 className="mb-3"
@@ -191,17 +209,21 @@ const MissionHub: React.FC = () => {
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="bg-white p-2 rounded shadow-sm border border-gray-100 flex flex-col items-center">
                   <Text className="text-gray-400">Success Rate</Text>
-                  <Text className="font-bold text-blue-600">{progress.statistics?.successRate ?? 0}%</Text>
+                  <Text className="font-bold text-blue-600">
+                    {progress.statistics?.successRate ?? 0}%
+                  </Text>
                 </div>
                 <div className="bg-white p-2 rounded shadow-sm border border-gray-100 flex flex-col items-center">
                   <Text className="text-gray-400">Total Points</Text>
-                  <Text className="font-bold text-yellow-600">{achievements?.totalPoints ?? 0}</Text>
+                  <Text className="font-bold text-yellow-600">
+                    {achievements?.totalPoints ?? 0}
+                  </Text>
                 </div>
               </div>
-              
-              {achievements && achievements.badges.length > 0 && (
+
+              {achievements && achievements.badges?.length > 0 && (
                 <div className="mt-3 flex gap-2 overflow-x-auto">
-                  {achievements.badges.map(badge => (
+                  {(achievements.badges || []).map((badge) => (
                     <Tag color="gold" key={badge.badgeCode} className="m-0">
                       🏅 {badge.badgeCode.replace('_', ' ')}
                     </Tag>
@@ -233,7 +255,9 @@ const MissionHub: React.FC = () => {
               type="primary"
               size="large"
               icon={<PlayCircleOutlined />}
-              onClick={() => { handleEnterWorkspace(recent.taskId); }}
+              onClick={() => {
+                handleEnterWorkspace(recent.taskId);
+              }}
               className="bg-white text-blue-700 hover:bg-gray-50 border-none font-bold shadow-sm whitespace-nowrap"
             >
               Resume Learning
@@ -248,7 +272,9 @@ const MissionHub: React.FC = () => {
           placeholder="Search missions by title or summary..."
           prefix={<SearchOutlined className="text-gray-400" />}
           value={searchText}
-          onChange={(e) => { setSearchText(e.target.value); }}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+          }}
           className="max-w-md h-10 rounded-lg shadow-sm"
           allowClear
         />
@@ -277,7 +303,9 @@ const MissionHub: React.FC = () => {
           {
             key: '0',
             label: <span className="px-4">Learning Journey</span>,
-            children: <LearningTimeline courseId={courseId || ''} onEnterTask={handleEnterWorkspace} />,
+            children: (
+              <LearningTimeline courseId={courseId || ''} onEnterTask={handleEnterWorkspace} />
+            ),
           },
           {
             key: '1',
@@ -295,7 +323,9 @@ const MissionHub: React.FC = () => {
       <TaskDetailDrawer
         task={selectedTask}
         open={drawerOpen}
-        onClose={() => { setDrawerOpen(false); }}
+        onClose={() => {
+          setDrawerOpen(false);
+        }}
         onEnter={handleEnterWorkspace}
       />
     </div>
