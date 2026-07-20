@@ -1,10 +1,21 @@
-import { Controller, Post, Get, Body, Param, UseGuards, Req, Res, HttpCode, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  UseGuards,
+  Req,
+  Res,
+  HttpCode,
+  NotFoundException,
+  Logger,
+} from '@nestjs/common';
 import { SandboxService } from './sandbox.service';
 import { ExecutionManager } from './execution.manager';
 import { WorkspaceService } from '../workspace/workspace.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ExecutionResponseDTO } from '@lg-agent/contracts';
-import type { ExecuteSandboxDTO } from '@lg-agent/contracts';
+import type { ExecutionResponseDTO, ExecuteSandboxDTO } from '@lg-agent/contracts';
 import type { Response } from 'express';
 import { randomUUID } from 'crypto';
 
@@ -30,7 +41,9 @@ export class SandboxController {
     }
 
     const executionId = randomUUID();
-    this.logger.log(`Generated executionId ${executionId} for task ${body.taskId} action ${body.action}`);
+    this.logger.log(
+      `Generated executionId ${executionId} for task ${body.taskId} action ${body.action}`,
+    );
     return { executionId };
   }
 
@@ -56,7 +69,10 @@ export class SandboxController {
     }
 
     const workspaceDto = await this.workspaceService.getWorkspace(taskId, userId);
-    const stream = this.sandboxService.runTask(taskId, userId, workspaceDto, { action, executionId });
+    const stream = this.sandboxService.runTask(taskId, userId, workspaceDto, {
+      action,
+      executionId,
+    });
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');

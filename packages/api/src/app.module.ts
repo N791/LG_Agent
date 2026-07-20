@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing */
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
@@ -26,7 +25,8 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AchievementModule } from './modules/achievements/achievement.module';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { ObservabilityModule } from './modules/observability/observability.module';
-import { ClsModule } from 'nestjs-cls';
+import { ClsModule, ClsService } from 'nestjs-cls';
+import type { Request } from 'express';
 import { randomUUID as uuidv4 } from 'crypto';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DiscussionsModule } from './modules/discussions/discussions.module';
@@ -38,14 +38,14 @@ import { DiscussionsModule } from './modules/discussions/discussions.module';
       global: true,
       middleware: {
         mount: true,
-        setup: (cls, req) => {
-          const traceId = req.headers['x-trace-id'] || uuidv4();
-          const correlationId = req.headers['x-correlation-id'] || uuidv4();
-          const reqId = req.headers['x-request-id'] || uuidv4();
+        setup: (cls: ClsService, req: Request) => {
+          const traceId = (req.headers['x-trace-id'] as string) || uuidv4();
+          const correlationId = (req.headers['x-correlation-id'] as string) || uuidv4();
+          const reqId = (req.headers['x-request-id'] as string) || uuidv4();
           cls.set('traceId', traceId);
           cls.set('correlationId', correlationId);
           cls.set('reqId', reqId);
-          
+
           // User and Org will be set by the AuthGuard later in the request lifecycle,
           // but we initialize them here if needed.
         },

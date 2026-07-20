@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../common/prisma.service';
-import { TelemetryProvider, TelemetryLog, TelemetryMetric } from '../interfaces/telemetry-provider.interface';
+import { Prisma } from '@prisma/client';
+import {
+  TelemetryProvider,
+  TelemetryLog,
+  TelemetryMetric,
+} from '../interfaces/telemetry-provider.interface';
 
 @Injectable()
 export class NativeTelemetryProvider implements TelemetryProvider {
@@ -18,7 +23,7 @@ export class NativeTelemetryProvider implements TelemetryProvider {
           path: log.path,
           userAgent: log.userAgent,
           userId: log.userId,
-          metadata: log.metadata ?? {},
+          metadata: (log.metadata ?? {}) as Prisma.InputJsonValue,
           createdAt: log.timestamp ?? new Date(),
         },
       });
@@ -37,7 +42,7 @@ export class NativeTelemetryProvider implements TelemetryProvider {
           path: metric.path,
           userAgent: metric.userAgent,
           userId: metric.userId,
-          metadata: metric.metadata ?? {},
+          metadata: (metric.metadata ?? {}) as Prisma.InputJsonValue,
           createdAt: metric.timestamp ?? new Date(),
         },
       });
@@ -50,14 +55,14 @@ export class NativeTelemetryProvider implements TelemetryProvider {
     try {
       if (logs.length > 0) {
         await this.prisma.clientLog.createMany({
-          data: logs.map(log => ({
+          data: logs.map((log) => ({
             level: log.level,
             message: log.message,
             stack: log.stack,
             path: log.path,
             userAgent: log.userAgent,
             userId: log.userId,
-            metadata: log.metadata ?? {},
+            metadata: (log.metadata ?? {}) as Prisma.InputJsonValue,
             createdAt: log.timestamp ?? new Date(),
           })),
           skipDuplicates: true,
@@ -66,14 +71,14 @@ export class NativeTelemetryProvider implements TelemetryProvider {
 
       if (metrics.length > 0) {
         await this.prisma.clientMetric.createMany({
-          data: metrics.map(metric => ({
+          data: metrics.map((metric) => ({
             name: metric.name,
             value: metric.value,
             rating: metric.rating,
             path: metric.path,
             userAgent: metric.userAgent,
             userId: metric.userId,
-            metadata: metric.metadata ?? {},
+            metadata: (metric.metadata ?? {}) as Prisma.InputJsonValue,
             createdAt: metric.timestamp ?? new Date(),
           })),
           skipDuplicates: true,
