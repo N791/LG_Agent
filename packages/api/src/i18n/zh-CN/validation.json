@@ -1,0 +1,13 @@
+{
+  "NOT_EMPTY": "{{property}} 不能为空",
+  "IS_STRING": "{{property}} 必须是字符串",
+  "IS_EMAIL": "{{property}} 必须是有效的邮箱地址",
+  "MIN_LENGTH": "{{property}} 至少包含 {{constraint1}} 个字符",
+  "MAX_LENGTH": "{{property}} 最多包含 {{constraint1}} 个字符",
+  "IS_IN": "{{property}} 的值必须在允许的范围内",
+  "IS_NUMBER": "{{property}} 必须是数字",
+  "IS_BOOLEAN": "{{property}} 必须是布尔值",
+  "IS_ARRAY": "{{property}} 必须是数组",
+  "IS_DATE": "{{property}} 必须是有效的日期",
+  "IS_UUID": "{{property}} 必须是有效的UUID"
+}

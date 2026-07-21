@@ -1,0 +1,22 @@
+{
+  "title": "System Monitoring",
+  "description": "Monitor client telemetry, web vitals, and errors in real-time.",
+  "tabs": {
+    "metrics": "Client Metrics",
+    "logs": "Client Logs",
+    "audit": "Audit Logs"
+  },
+  "columns": {
+    "level": "Level",
+    "message": "Message",
+    "path": "Path",
+    "time": "Time",
+    "name": "Name",
+    "value": "Value",
+    "rating": "Rating",
+    "action": "Action",
+    "actorId": "Actor ID",
+    "resourceId": "Resource ID",
+    "traceId": "Trace ID"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "title": "管理控制台",
+  "stats": {
+    "totalUsers": "总用户数",
+    "activeTrainees": "活跃学员数",
+    "totalTasks": "总任务数",
+    "totalSubmissions": "总提交数",
+    "overallPassRate": "总体通过率"
+  },
+  "charts": {
+    "funnelTitle": "员工通关进度",
+    "passedUsers": "通关数",
+    "dropOffs": "失败数",
+    "aiUsageTitle": "各模型 AI 使用量 (Tokens)",
+    "learningTrendsTitle": "学习趋势 (提交数)",
+    "passed": "通过",
+    "failed": "失败",
+    "tokens": "Tokens"
+  },
+  "tables": {
+    "bottlenecksTitle": "主要任务分析 (最高失败率)",
+    "taskName": "任务名称",
+    "totalSubmissions": "总提交数",
+    "failedSubmissions": "失败提交数",
+    "failRate": "失败率"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "NOT_EMPTY": "{{property}} should not be empty",
+  "IS_STRING": "{{property}} must be a string",
+  "IS_EMAIL": "{{property}} must be an email",
+  "MIN_LENGTH": "{{property}} must be longer than or equal to {{constraint1}} characters",
+  "MAX_LENGTH": "{{property}} must be shorter than or equal to {{constraint1}} characters",
+  "IS_IN": "{{property}} must be one of the following values",
+  "IS_NUMBER": "{{property}} must be a number",
+  "IS_BOOLEAN": "{{property}} must be a boolean",
+  "IS_ARRAY": "{{property}} must be an array",
+  "IS_DATE": "{{property}} must be a valid date",
+  "IS_UUID": "{{property}} must be a UUID"
+}

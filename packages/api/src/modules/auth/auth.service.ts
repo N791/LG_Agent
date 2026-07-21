@@ -53,7 +53,7 @@ export class AuthService {
         refresh_token: this.jwtService.sign(newPayload, { expiresIn: '7d' }),
       };
     } catch (_e) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('errors.auth.invalidToken');
     }
   }
 }

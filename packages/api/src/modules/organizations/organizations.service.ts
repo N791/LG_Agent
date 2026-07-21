@@ -15,7 +15,7 @@ export class OrganizationsService {
   async findOne(id: string): Promise<Organization> {
     const org = await this.prisma.organization.findUnique({ where: { id } });
     if (!org) {
-      throw new NotFoundException(`Organization with ID ${id} not found`);
+      throw new NotFoundException({ message: 'errors.organization.notFound', args: { id } });
     }
     return org;
   }

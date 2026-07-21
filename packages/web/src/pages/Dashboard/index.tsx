@@ -20,10 +20,12 @@ import {
 } from '../../services/analytics';
 import { statisticsService, OverviewStats } from '../../services/statistics';
 import { ChartAdapter } from './adapters/chart.adapter';
+import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation('dashboard');
   const [overview, setOverview] = useState<OverviewStats | null>(null);
   const [trendsData, setTrendsData] = useState<Record<string, unknown>[]>([]);
   const [aiUsageData, setAiUsageData] = useState<Record<string, unknown>[]>([]);
@@ -66,27 +68,35 @@ const Dashboard: React.FC = () => {
   }, []);
 
   const bottleneckColumns = [
-    { title: 'Task Name', dataIndex: 'taskName', key: 'taskName' },
-    { title: 'Total Submissions', dataIndex: 'totalSubmissions', key: 'totalSubmissions' },
-    { title: 'Failed Submissions', dataIndex: 'failedSubmissions', key: 'failedSubmissions' },
-    { title: 'Failure Rate', dataIndex: 'failRate', key: 'failRate' },
+    { title: t('tables.taskName'), dataIndex: 'taskName', key: 'taskName' },
+    { title: t('tables.totalSubmissions'), dataIndex: 'totalSubmissions', key: 'totalSubmissions' },
+    {
+      title: t('tables.failedSubmissions'),
+      dataIndex: 'failedSubmissions',
+      key: 'failedSubmissions',
+    },
+    { title: t('tables.failRate'), dataIndex: 'failRate', key: 'failRate' },
   ];
 
   return (
     <div style={{ padding: 24 }}>
-      <Title level={2}>Admin Dashboard</Title>
+      <Title level={2}>{t('title')}</Title>
 
       {/* Overview Stats */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={4}>
           <Card>
-            <Statistic title="Total Users" value={overview?.totalUsers} loading={loading} />
+            <Statistic
+              title={t('stats.totalUsers')}
+              value={overview?.totalUsers}
+              loading={loading}
+            />
           </Card>
         </Col>
         <Col span={4}>
           <Card>
             <Statistic
-              title="Active Trainees"
+              title={t('stats.activeTrainees')}
               value={performance?.activeTrainees ?? 0}
               loading={loading}
             />
@@ -94,13 +104,17 @@ const Dashboard: React.FC = () => {
         </Col>
         <Col span={4}>
           <Card>
-            <Statistic title="Total Tasks" value={overview?.totalTasks} loading={loading} />
+            <Statistic
+              title={t('stats.totalTasks')}
+              value={overview?.totalTasks}
+              loading={loading}
+            />
           </Card>
         </Col>
         <Col span={4}>
           <Card>
             <Statistic
-              title="Total Submissions"
+              title={t('stats.totalSubmissions')}
               value={overview?.totalSubmissions}
               loading={loading}
             />
@@ -109,7 +123,7 @@ const Dashboard: React.FC = () => {
         <Col span={8}>
           <Card>
             <Statistic
-              title="Overall Pass Rate"
+              title={t('stats.overallPassRate')}
               value={performance?.overallPassRate ?? overview?.overallPassRate}
               loading={loading}
             />
@@ -120,7 +134,7 @@ const Dashboard: React.FC = () => {
       <Row gutter={[16, 16]}>
         {/* Ramp-up Funnel */}
         <Col span={12}>
-          <Card title="Ramp-up Funnel (Conversion)" loading={loading}>
+          <Card title={t('charts.funnelTitle')} loading={loading}>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={funnelData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
@@ -128,8 +142,8 @@ const Dashboard: React.FC = () => {
                 <YAxis dataKey="taskName" type="category" width={100} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="passedCount" fill="#8884d8" name="Passed Users" />
-                <Bar dataKey="dropOff" fill="#ff4d4f" name="Drop-offs" />
+                <Bar dataKey="passedCount" fill="#8884d8" name={t('charts.passedUsers')} />
+                <Bar dataKey="dropOff" fill="#ff4d4f" name={t('charts.dropOffs')} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -137,7 +151,7 @@ const Dashboard: React.FC = () => {
 
         {/* AI Usage */}
         <Col span={12}>
-          <Card title="AI Usage by Model (Tokens)" loading={loading}>
+          <Card title={t('charts.aiUsageTitle')} loading={loading}>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={aiUsageData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -145,7 +159,7 @@ const Dashboard: React.FC = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="Tokens" fill="#1890ff" />
+                <Bar dataKey="Tokens" fill="#1890ff" name={t('charts.tokens')} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -155,7 +169,7 @@ const Dashboard: React.FC = () => {
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         {/* Blocker Analysis */}
         <Col span={12}>
-          <Card title="Top Bottlenecks (Highest Failure Rates)" loading={loading}>
+          <Card title={t('tables.bottlenecksTitle')} loading={loading}>
             <Table
               dataSource={bottlenecks}
               columns={bottleneckColumns}
@@ -168,7 +182,7 @@ const Dashboard: React.FC = () => {
 
         {/* Learning Trends */}
         <Col span={12}>
-          <Card title="Learning Trends (Submissions)" loading={loading}>
+          <Card title={t('charts.learningTrendsTitle')} loading={loading}>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={trendsData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -176,8 +190,8 @@ const Dashboard: React.FC = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="Passed" stroke="#52c41a" />
-                <Line type="monotone" dataKey="Failed" stroke="#ff4d4f" />
+                <Line type="monotone" dataKey="Passed" stroke="#52c41a" name={t('charts.passed')} />
+                <Line type="monotone" dataKey="Failed" stroke="#ff4d4f" name={t('charts.failed')} />
               </LineChart>
             </ResponsiveContainer>
           </Card>

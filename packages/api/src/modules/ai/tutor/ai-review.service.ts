@@ -13,17 +13,22 @@ export class AiReviewService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly llmGateway: LLMGatewayService,
-    @Optional() @Inject(NOTIFICATION_PUBLISHER) private readonly notificationPublisher?: INotificationPublisher,
+    @Optional()
+    @Inject(NOTIFICATION_PUBLISHER)
+    private readonly notificationPublisher?: INotificationPublisher,
   ) {}
 
   async generateReview(submissionId: string): Promise<AiReviewDTO> {
     const submission = await this.prisma.submission.findUnique({
       where: { id: submissionId },
-      include: { task: true }
+      include: { task: true },
     });
 
     if (!submission) {
-      throw new NotFoundException(`Submission ${submissionId} not found`);
+      throw new NotFoundException({
+        message: 'errors.ai.submissionNotFound',
+        args: { id: submissionId },
+      });
     }
 
     if (submission.aiReview) {
@@ -32,7 +37,9 @@ export class AiReviewService {
 
     // Prepare content for LLM
     const logs = submission.logs ?? 'No logs available.';
-    const report = submission.report ? JSON.stringify(submission.report, null, 2) : 'No report available.';
+    const report = submission.report
+      ? JSON.stringify(submission.report, null, 2)
+      : 'No report available.';
 
     const systemPrompt = `
 You are an expert software engineering mentor evaluating a trainee's failed submission.
@@ -84,8 +91,8 @@ ${report.substring(0, 5000)}
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        model: 'deepseek-chat', 
-        temperature: 0.1, 
+        model: 'deepseek-chat',
+        temperature: 0.1,
       });
 
       let jsonStr = llmResponse.content.trim();

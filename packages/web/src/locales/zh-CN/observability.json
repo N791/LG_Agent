@@ -1,0 +1,22 @@
+{
+  "title": "系统监控",
+  "description": "实时监控客户端遥测数据、核心 Web 指标与错误日志。",
+  "tabs": {
+    "metrics": "客户端指标",
+    "logs": "客户端日志",
+    "audit": "审计日志"
+  },
+  "columns": {
+    "level": "级别",
+    "message": "消息",
+    "path": "路径",
+    "time": "时间",
+    "name": "指标名称",
+    "value": "值",
+    "rating": "评级",
+    "action": "操作",
+    "actorId": "操作者 ID",
+    "resourceId": "资源 ID",
+    "traceId": "追踪 ID"
+  }
+}

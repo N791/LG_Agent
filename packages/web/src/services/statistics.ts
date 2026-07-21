@@ -38,27 +38,27 @@ export interface AiAuditStat {
 
 export const statisticsService = {
   getOverview: async () => {
-    const { data } = await request.get<OverviewStats>('/statistics/overview');
-    return data;
+    const res = await request.get<unknown, OverviewStats>('/statistics/overview');
+    return res;
   },
 
   getLearningTrends: async () => {
-    const { data } = await request.get<LearningTrend[]>('/statistics/trends');
-    return data;
+    const res = await request.get<unknown, LearningTrend[]>('/statistics/trends');
+    return res;
   },
 
   getBlockers: async () => {
-    const { data } = await request.get<BlockerStat[]>('/statistics/blockers');
-    return data;
+    const res = await request.get<unknown, BlockerStat[]>('/statistics/blockers');
+    return res;
   },
 
   getAiUsage: async () => {
-    const { data } = await request.get<AiUsageStat[]>('/statistics/ai-usage');
-    return data;
+    const res = await request.get<unknown, AiUsageStat[]>('/statistics/ai-usage');
+    return res;
   },
 
   getAiAudit: async () => {
-    const { data } = await request.get<AiAuditStat[]>('/statistics/ai-audit');
-    return data;
-  }
+    const res = await request.get<unknown, AiAuditStat[]>('/statistics/ai-audit');
+    return res;
+  },
 };

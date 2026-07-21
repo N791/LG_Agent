@@ -3,7 +3,9 @@ import * as path from 'path';
 import * as os from 'os';
 
 export interface AgentConfig {
+  apiUrl?: string;
   token?: string;
+  locale?: string;
   baseUrl: string;
 }
 

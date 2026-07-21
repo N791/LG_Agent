@@ -24,21 +24,23 @@ export interface PerformanceStat {
 
 export const analyticsServiceApi = {
   getFunnel: async (courseId?: string) => {
-    const { data } = await request.get<FunnelStat[]>('/analytics/funnel', { params: { courseId } });
-    return data;
+    const res = await request.get<unknown, FunnelStat[]>('/analytics/funnel', {
+      params: { courseId },
+    });
+    return res;
   },
 
   getBottlenecks: async (courseId?: string) => {
-    const { data } = await request.get<BottleneckStat[]>('/analytics/bottlenecks', {
+    const res = await request.get<unknown, BottleneckStat[]>('/analytics/bottlenecks', {
       params: { courseId },
     });
-    return data;
+    return res;
   },
 
   getPerformance: async (courseId?: string) => {
-    const { data } = await request.get<PerformanceStat>('/analytics/performance', {
+    const res = await request.get<unknown, PerformanceStat>('/analytics/performance', {
       params: { courseId },
     });
-    return data;
+    return res;
   },
 };

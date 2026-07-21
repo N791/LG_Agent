@@ -22,7 +22,9 @@ function saveEditorPreferences(prefs: EditorPreferences): void {
   localStorage.setItem(EDITOR_PREFS_KEY, JSON.stringify(prefs));
 }
 
-function loadCursorPositions(taskId: string): Record<string, { lineNumber: number; column: number }> {
+function loadCursorPositions(
+  taskId: string,
+): Record<string, { lineNumber: number; column: number }> {
   try {
     const raw = localStorage.getItem(`lg_cursor_positions_${taskId}`);
     if (raw) return JSON.parse(raw) as Record<string, { lineNumber: number; column: number }>;
@@ -32,7 +34,10 @@ function loadCursorPositions(taskId: string): Record<string, { lineNumber: numbe
   return {};
 }
 
-function saveCursorPositions(taskId: string, positions: Record<string, { lineNumber: number; column: number }>): void {
+function saveCursorPositions(
+  taskId: string,
+  positions: Record<string, { lineNumber: number; column: number }>,
+): void {
   localStorage.setItem(`lg_cursor_positions_${taskId}`, JSON.stringify(positions));
 }
 
@@ -53,8 +58,18 @@ interface WorkspaceState {
   closeFile: (path: string) => void;
   updateFileContent: (path: string, content: string) => void;
   markFileSaved: (path: string) => void;
-  leftPanelTab: 'objective' | 'mentor' | 'versions' | 'submissions' | 'knowledge' | 'mentor-human';
-  setLeftPanelTab: (tab: 'objective' | 'mentor' | 'versions' | 'submissions' | 'knowledge' | 'mentor-human') => void;
+  leftPanelTab:
+    'explorer' | 'objective' | 'mentor' | 'versions' | 'submissions' | 'knowledge' | 'mentor-human';
+  setLeftPanelTab: (
+    tab:
+      | 'explorer'
+      | 'objective'
+      | 'mentor'
+      | 'versions'
+      | 'submissions'
+      | 'knowledge'
+      | 'mentor-human',
+  ) => void;
   aiFeedback: string;
   aiLoading: boolean;
   aiHistory: ConversationMessageDTO[];
@@ -69,7 +84,9 @@ interface WorkspaceState {
   cursorPositions: Record<string, { lineNumber: number; column: number }>;
   setCursorPosition: (path: string, position: { lineNumber: number; column: number }) => void;
   editorLayoutSizes: { leftPanel: number; fileTree: number; editor: number; logs: number };
-  setEditorLayoutSizes: (sizes: Partial<{ leftPanel: number; fileTree: number; editor: number; logs: number }>) => void;
+  setEditorLayoutSizes: (
+    sizes: Partial<{ leftPanel: number; fileTree: number; editor: number; logs: number }>,
+  ) => void;
   reorderOpenFiles: (fromIndex: number, toIndex: number) => void;
 
   clearWorkspace: () => void;
@@ -89,7 +106,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   recentFiles: [],
   fileContents: {},
   unsavedChanges: {},
-  leftPanelTab: 'objective',
+  leftPanelTab: 'explorer',
   aiFeedback: '',
   aiLoading: false,
   aiHistory: [],
@@ -97,7 +114,12 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   // Epic 43: Editor state
   editorTheme: savedPrefs.editorTheme ?? 'vs-dark',
   cursorPositions: {},
-  editorLayoutSizes: savedPrefs.editorLayoutSizes ?? { leftPanel: 25, fileTree: 15, editor: 70, logs: 30 },
+  editorLayoutSizes: savedPrefs.editorLayoutSizes ?? {
+    leftPanel: 20,
+    fileTree: 15,
+    editor: 65,
+    logs: 25,
+  },
 
   setEditorTheme: (theme) => {
     set({ editorTheme: theme });
@@ -159,7 +181,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
   openFile: (path, content) => {
     set((state) => {
-      const newRecent = [path, ...state.recentFiles.filter(p => p !== path)].slice(0, 5);
+      const newRecent = [path, ...state.recentFiles.filter((p) => p !== path)].slice(0, 5);
 
       if (state.openFiles.includes(path)) {
         return { activeFile: path, recentFiles: newRecent };
@@ -197,10 +219,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       const newUnsaved = { ...state.unsavedChanges, [path]: true };
 
       if (state.taskId) {
-        localStorage.setItem(
-          `lg_workspace_recovery_${state.taskId}`,
-          JSON.stringify(newContents)
-        );
+        localStorage.setItem(`lg_workspace_recovery_${state.taskId}`, JSON.stringify(newContents));
         void offlineWorkspaceService.saveSnapshot(state.taskId, {
           activeFile: state.activeFile,
           openFiles: state.openFiles,
@@ -239,7 +258,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       fileContents: {},
       unsavedChanges: {},
       cursorPositions: {},
-      leftPanelTab: 'objective',
+      leftPanelTab: 'explorer',
       aiFeedback: '',
       aiLoading: false,
       aiHistory: [],

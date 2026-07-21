@@ -11,6 +11,7 @@ import { TaskEditorPage } from '../pages/Tasks/TaskEditorPage';
 import { GenerateTaskPage } from '../pages/Tasks/GenerateTaskPage';
 import Submissions from '../pages/Submissions';
 import Observability from '../pages/Observability';
+import AiSettings from '../pages/AiSettings';
 import NotFound from '../pages/NotFound';
 
 /*
@@ -76,6 +77,11 @@ export const router: any = createBrowserRouter([
           {
             path: 'observability',
             element: <Observability />,
+            handle: { roles: ['ADMIN'] },
+          },
+          {
+            path: 'ai-settings',
+            element: <AiSettings />,
             handle: { roles: ['ADMIN'] },
           },
           {

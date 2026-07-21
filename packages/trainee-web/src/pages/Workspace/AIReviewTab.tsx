@@ -4,6 +4,7 @@ import { CodeOutlined, SyncOutlined } from '@ant-design/icons';
 import { AiReviewDTO } from '@lg-agent/contracts';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { store } from '../../store';
+import { useTranslation } from 'react-i18next';
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -13,12 +14,19 @@ export interface AIReviewTabProps {
   status: string;
 }
 
-export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialReview, status }) => {
+export const AIReviewTab: React.FC<AIReviewTabProps> = ({
+  submissionId,
+  initialReview,
+  status,
+}) => {
+  const { t } = useTranslation('workspace');
   const [review, setReview] = useState<AiReviewDTO | null>(initialReview ?? null);
-  const [loading, setLoading] = useState(!initialReview && (status === 'FAILED' || status === 'ERROR'));
+  const [loading, setLoading] = useState(
+    !initialReview && (status === 'FAILED' || status === 'ERROR'),
+  );
   const [error, setError] = useState<string | null>(null);
-  
-  const updateFileContent = useWorkspaceStore(state => state.updateFileContent);
+
+  const updateFileContent = useWorkspaceStore((state) => state.updateFileContent);
 
   useEffect(() => {
     if (initialReview) {
@@ -36,9 +44,9 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
       try {
         const token = store.getState().auth.token;
         const res = await fetch(`/api/v1/ai/tutor/review/${submissionId}`, {
-          headers: { 'Authorization': `Bearer ${token ?? ''}` }
+          headers: { Authorization: `Bearer ${token ?? ''}` },
         });
-        
+
         if (res.ok) {
           const data = (await res.json()) as AiReviewDTO;
           if (mounted) {
@@ -50,19 +58,19 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
           // If auto-generation is still processing, it might not be ready yet
           // Keep polling every 2s for MVP if it's FAILED/ERROR
           if (status !== 'FAILED' && status !== 'ERROR') {
-             if (mounted) setLoading(false);
-             if (pollInterval) clearInterval(pollInterval);
+            if (mounted) setLoading(false);
+            if (pollInterval) clearInterval(pollInterval);
           }
         } else {
           if (mounted) {
-             setError('Failed to fetch AI Review.');
-             setLoading(false);
-             if (pollInterval) clearInterval(pollInterval);
+            setError(t('aiReview.fetchFailed'));
+            setLoading(false);
+            if (pollInterval) clearInterval(pollInterval);
           }
         }
       } catch (_err) {
         if (mounted) {
-          setError('Network error fetching AI Review.');
+          setError(t('aiReview.networkError'));
           setLoading(false);
           if (pollInterval) clearInterval(pollInterval);
         }
@@ -71,7 +79,9 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
 
     if (loading) {
       void fetchReview();
-      pollInterval = setInterval(() => { void fetchReview(); }, 2000);
+      pollInterval = setInterval(() => {
+        void fetchReview();
+      }, 2000);
     }
 
     return () => {
@@ -88,34 +98,48 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
     return (
       <div className="flex items-center justify-center h-full p-8 text-gray-400 flex-col gap-4">
         <Spin indicator={<SyncOutlined spin />} size="large" />
-        <div>Generating AI Review...</div>
+        <div>{t('aiReview.generating')}</div>
       </div>
     );
   }
 
   if (error) {
-    return <div className="p-4"><Alert type="error" message={error} /></div>;
+    return (
+      <div className="p-4">
+        <Alert type="error" message={error} />
+      </div>
+    );
   }
 
   if (!review) {
     return (
       <div className="flex items-center justify-center h-full p-8 text-gray-500">
-        No AI Review available for this submission.
+        {t('aiReview.noReview')}
       </div>
     );
   }
 
   return (
-    <div className="p-4 overflow-auto bg-[#1e1e1e] text-gray-300 h-full">
-      <Card size="small" className="mb-4 bg-[#2d2d2d] border-gray-600" title={<span className="text-white">AI Summary</span>}>
+    <div className="flex-1 p-4 overflow-y-auto bg-[#1e1e1e] text-gray-300">
+      <Card
+        size="small"
+        className="mb-4 bg-[#2d2d2d] border-gray-600"
+        title={<span className="text-white">{t('aiReview.summary')}</span>}
+      >
         <Paragraph className="text-gray-300 m-0">{review.summary}</Paragraph>
       </Card>
 
       {review.suggestions.length > 0 && (
-        <Card size="small" className="mb-4 bg-[#2d2d2d] border-gray-600" title={<span className="text-white">Suggestions</span>}>
+        <Card
+          size="small"
+          className="mb-4 bg-[#2d2d2d] border-gray-600"
+          title={<span className="text-white">{t('aiReview.suggestions')}</span>}
+        >
           <ul className="list-disc pl-5 m-0 text-gray-300">
             {review.suggestions.map((sug, i) => (
-              <li key={i} className="mb-1">{sug}</li>
+              <li key={i} className="mb-1">
+                {sug}
+              </li>
             ))}
           </ul>
         </Card>
@@ -123,28 +147,42 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
 
       {review.errors.length > 0 && (
         <div className="mt-4">
-          <Title level={5} className="text-gray-300 mb-2 mt-0">Identified Issues</Title>
+          <Title level={5} className="text-gray-300 mb-2 mt-0">
+            {t('aiReview.issues')}
+          </Title>
           <div className="flex flex-col gap-4">
             {review.errors.map((err, i) => {
-               const fixFile = err.fix?.strategy === 'FULL_FILE' && err.fix.files.length > 0 ? err.fix.files[0] : null;
-               
-               return (
-                <Card key={i} size="small" className="bg-[#2a2626] border-red-900 border" title={
-                  <div className="flex justify-between items-center text-red-400">
-                    <span className="font-mono text-sm">{err.file} {err.line ? `:${String(err.line)}` : ''}</span>
-                    {fixFile && (
-                      <Button 
-                        size="small" 
-                        type="primary" 
-                        danger 
-                        icon={<CodeOutlined />}
-                        onClick={() => { handleApplyFix(fixFile.path, fixFile.content); }}
-                      >
-                        Apply Fix
-                      </Button>
-                    )}
-                  </div>
-                }>
+              const fixFile =
+                err.fix?.strategy === 'FULL_FILE' && err.fix.files.length > 0
+                  ? err.fix.files[0]
+                  : null;
+
+              return (
+                <Card
+                  key={i}
+                  size="small"
+                  className="bg-[#2a2626] border-red-900 border"
+                  title={
+                    <div className="flex justify-between items-center text-red-400">
+                      <span className="font-mono text-sm">
+                        {err.file} {err.line ? `:${String(err.line)}` : ''}
+                      </span>
+                      {fixFile && (
+                        <Button
+                          size="small"
+                          type="primary"
+                          danger
+                          icon={<CodeOutlined />}
+                          onClick={() => {
+                            handleApplyFix(fixFile.path, fixFile.content);
+                          }}
+                        >
+                          {t('aiReview.applyFix')}
+                        </Button>
+                      )}
+                    </div>
+                  }
+                >
                   <Text className="text-gray-300">{err.message}</Text>
                   {fixFile && (
                     <div className="mt-3 p-2 bg-[#1a1a1a] rounded font-mono text-xs overflow-auto max-h-[300px]">
@@ -152,7 +190,7 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({ submissionId, initialR
                     </div>
                   )}
                 </Card>
-               );
+              );
             })}
           </div>
         </div>

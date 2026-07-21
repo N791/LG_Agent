@@ -3,6 +3,7 @@ import { MarkdownChunker } from './markdown-chunker';
 import { MemoryVectorStore } from './memory-vector.store';
 import { SearchResult } from './interfaces';
 import { LLMGatewayService } from '../gateway/llm-gateway.service';
+import { AiConfigService } from '../ai-config.service';
 
 @Injectable()
 export class RagService {
@@ -12,13 +13,15 @@ export class RagService {
     private readonly chunker: MarkdownChunker,
     private readonly vectorStore: MemoryVectorStore,
     private readonly gateway: LLMGatewayService,
+    private readonly aiConfig: AiConfigService,
   ) {}
 
   async importDocument(text: string, source: string): Promise<number> {
     this.logger.log(`Importing document from source: ${source}`);
 
     // 1. Chunk text
-    const chunks = this.chunker.chunkText(text, { source });
+    const config = await this.aiConfig.getRagConfig();
+    const chunks = this.chunker.chunkText(text, { source }, { chunkSize: config.chunkSize });
     if (chunks.length === 0) return 0;
 
     // 2. Generate Embeddings via Gateway
@@ -32,7 +35,14 @@ export class RagService {
     return chunks.length;
   }
 
-  async search(query: string, topK = 3): Promise<SearchResult[]> {
+  async search(query: string, topK?: number): Promise<SearchResult[]> {
+    const config = await this.aiConfig.getRagConfig();
+    if (!config.enabled) {
+      return [];
+    }
+
+    const effectiveTopK = topK ?? config.topK;
+
     // 1. Embed query
     const queryVectors = await this.gateway.embed([query]);
     if (queryVectors.length === 0) {
@@ -43,6 +53,6 @@ export class RagService {
     if (!firstQueryVector) return [];
 
     // 2. Search Vector Database
-    return this.vectorStore.search(firstQueryVector, topK);
+    return this.vectorStore.search(firstQueryVector, effectiveTopK);
   }
 }

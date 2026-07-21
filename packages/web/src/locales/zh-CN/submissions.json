@@ -1,0 +1,22 @@
+{
+  "title": "学习分析",
+  "exportCsv": "导出 CSV",
+  "exportSuccess": "导出成功",
+  "exportFailed": "导出报告失败",
+  "loadFailed": "加载提交记录失败",
+  "aiReviewReport": "AI 评审报告",
+  "columns": {
+    "id": "ID",
+    "trainee": "学员",
+    "task": "任务",
+    "status": "状态",
+    "score": "分数",
+    "date": "日期",
+    "action": "操作",
+    "aiReview": "AI 评审"
+  },
+  "buttons": {
+    "close": "关闭"
+  },
+  "noReport": "此提交没有 AI 评审报告。"
+}

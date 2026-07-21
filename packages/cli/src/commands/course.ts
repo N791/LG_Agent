@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { api } from '../api';
 import chalk from 'chalk';
+import { t } from '../i18n';
 
 export const courseCommands = new Command('course').description('Course and Task discovery');
 
@@ -19,28 +20,28 @@ interface Task {
 
 courseCommands
   .command('list')
-  .description('List all available courses')
+  .description(t('course.list'))
   .action(async () => {
     try {
       const courses = await api.get<Course[]>('/courses');
       if (courses.length === 0) {
-        console.log(chalk.yellow('No courses found.'));
+        console.log(chalk.yellow(t('course.noCourses')));
         return;
       }
-      console.log(chalk.blue.bold('\nAvailable Courses:'));
+      console.log(chalk.blue.bold(t('course.availableCourses')));
       courses.forEach((c) => {
         console.log(`  - [${c.id}] ${c.title} (v${c.version})`);
       });
       console.log('');
     } catch (_e) {
       const e = _e as Error;
-      console.log(chalk.red(`Failed to fetch courses: ${e.message}`));
+      console.log(chalk.red(t('course.fetchCoursesFailed', { message: e.message })));
     }
   });
 
 courseCommands
   .command('tasks <courseId>')
-  .description('List tasks for a specific course')
+  .description(t('course.tasks'))
   .action(async (courseId: string) => {
     try {
       // Assuming tasks are nested or can be filtered. For MVP, we'll fetch course details
@@ -50,17 +51,17 @@ courseCommands
       const courseTasks = tasks.filter((t) => t.courseId === courseId);
 
       if (courseTasks.length === 0) {
-        console.log(chalk.yellow('No tasks found for this course.'));
+        console.log(chalk.yellow(t('course.noTasks')));
         return;
       }
 
-      console.log(chalk.blue.bold(`\nTasks for Course [${courseId}]:`));
+      console.log(chalk.blue.bold(t('course.tasksForCourse', { courseId })));
       courseTasks.forEach((t) => {
         console.log(`  - [${t.id}] Stage ${String(t.stage)}: ${t.title}`);
       });
       console.log('');
     } catch (_e) {
       const e = _e as Error;
-      console.log(chalk.red(`Failed to fetch tasks: ${e.message}`));
+      console.log(chalk.red(t('course.fetchTasksFailed', { message: e.message })));
     }
   });

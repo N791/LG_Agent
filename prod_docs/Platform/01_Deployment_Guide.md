@@ -35,6 +35,9 @@
 api:
   env:
     DATABASE_URL: 'postgresql://...'
+    OPENAI_API_KEY: 'sk-...'
+    DEEPSEEK_API_KEY: 'sk-...'
+    RAG_ENABLED: 'true'
 ```
 
 ### 安装命令

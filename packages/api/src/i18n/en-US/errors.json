@@ -1,0 +1,55 @@
+{
+  "auth": {
+    "userNotFound": "User not found",
+    "invalidCredentials": "Invalid credentials",
+    "invalidToken": "Invalid refresh token",
+    "passwordIncorrect": "Current password is incorrect"
+  },
+  "workspace": {
+    "notFound": "Workspace for task {{taskId}} not found",
+    "initRequired": "Workspace for task {{taskId}} not found. Please initialize it first.",
+    "workspaceNotFound": "Workspace not found",
+    "fileNotFound": "File not found: {{path}}",
+    "deleteReadonly": "Cannot delete readonly or locked file: {{path}}",
+    "versionNotFound": "Version not found"
+  },
+  "task": {
+    "courseIdRequired": "courseId is required",
+    "notFound": "Task with ID {{id}} not found"
+  },
+  "submission": {
+    "notFound": "Submission {{id}} not found"
+  },
+  "schema": {
+    "notFound": "Schema '{{name}}' not found",
+    "validationFailed": "Validation failed for schema '{{schemaName}}'"
+  },
+  "report": {
+    "unsupportedType": "Report type '{{type}}' is not supported yet.",
+    "unsupportedFormat": "Export format '{{format}}' is not supported yet."
+  },
+  "organization": {
+    "notFound": "Organization with ID {{id}} not found"
+  },
+  "discussion": {
+    "notFound": "Discussion not found"
+  },
+  "course": {
+    "notFound": "Course with ID {{id}} not found",
+    "notAvailable": "No courses available"
+  },
+  "ai": {
+    "submissionNotFound": "Submission {{id}} not found",
+    "promptNotFound": "Prompt template {{id}} not found",
+    "providerNotFound": "LLM Provider '{{name}}' not found.",
+    "knowledgeNotFound": "Knowledge document {{id}} not found",
+    "blockedByRule": "Request blocked by safety rule: {{rule}}",
+    "contentRequired": "Document content is required.",
+    "parseFailed": "Failed to parse LLM response into a valid Task draft.",
+    "unsupportedAction": "Unsupported action: {{action}}",
+    "actionRequired": "action and content are required"
+  },
+  "sandbox": {
+    "executionNotFound": "Execution {{id}} not found or already completed."
+  }
+}

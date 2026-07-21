@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ILLMProvider, LLMRequest, LLMResponse } from '../interfaces/llm-provider.interface';
+import {
+  ILLMProvider,
+  LLMRequest,
+  LLMResponse,
+  StreamEvent,
+} from '../interfaces/llm-provider.interface';
 import { ModelInfoDTO } from '@lg-agent/contracts';
 
 @Injectable()
@@ -25,10 +30,24 @@ export class MockLLMProvider implements ILLMProvider {
     });
   }
 
-  async *stream(_request: LLMRequest): AsyncGenerator<string, void, unknown> {
-    yield '[MOCK ';
-    yield 'STREAM ';
-    yield 'RESPONSE]';
+  async *stream(request: LLMRequest): AsyncGenerator<StreamEvent, void, unknown> {
+    yield { content: '[MOCK ' };
+    yield { content: 'STREAM ' };
+
+    // Calculate fixed simulated tokens or based on request
+    const promptTokens =
+      request.messages.reduce((acc, m) => acc + Math.ceil(m.content.length / 4), 0) || 10;
+    const completionTokens = 20; // Fixed completion tokens
+
+    yield {
+      content: 'RESPONSE]',
+      usage: {
+        promptTokens,
+        completionTokens,
+        totalTokens: promptTokens + completionTokens,
+      },
+      model: request.model ?? 'mock-model-v1',
+    };
     await Promise.resolve();
   }
 
@@ -66,7 +85,7 @@ export class MockLLMProvider implements ILLMProvider {
         default: false,
         capabilities: ['embedding'],
         status: 'active',
-      }
+      },
     ]);
   }
 

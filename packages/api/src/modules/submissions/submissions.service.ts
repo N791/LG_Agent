@@ -22,7 +22,9 @@ export class SubmissionsService {
     @Inject('IAIReviewPolicy') private readonly aiReviewPolicy: IAIReviewPolicy,
     private readonly aiReviewService: AiReviewService,
     private readonly achievementService: AchievementService,
-    @Optional() @Inject(NOTIFICATION_PUBLISHER) private readonly notificationPublisher?: INotificationPublisher,
+    @Optional()
+    @Inject(NOTIFICATION_PUBLISHER)
+    private readonly notificationPublisher?: INotificationPublisher,
   ) {}
 
   async findAll(query: { userId?: string; courseId?: string; taskId?: string }) {
@@ -51,7 +53,7 @@ export class SubmissionsService {
     });
 
     if (!submission) {
-      throw new NotFoundException(`Submission ${id} not found`);
+      throw new NotFoundException({ message: 'errors.submission.notFound', args: { id } });
     }
 
     return submission;
@@ -79,7 +81,7 @@ export class SubmissionsService {
         where: { id: submissionId },
         data: { status: 'RUNNING' },
       });
-      
+
       const workspaceDto = await this.workspaceService.getWorkspace(taskId, userId);
       await this.workspaceService.createVersion(taskId, userId, 'SUBMIT');
 
@@ -91,7 +93,7 @@ export class SubmissionsService {
 
       for await (const event of stream) {
         this.eventBus.publish(submissionId, event);
-        
+
         if (event.type === ExecutionEventType.LOG) {
           const data = event.data as { text?: string };
           if (data.text) {
@@ -99,7 +101,11 @@ export class SubmissionsService {
           }
         }
         if (event.type === ExecutionEventType.SUCCESS || event.type === ExecutionEventType.FAILED) {
-          const data = event.data as { passed?: boolean; score?: number; report?: Record<string, unknown> };
+          const data = event.data as {
+            passed?: boolean;
+            score?: number;
+            report?: Record<string, unknown>;
+          };
           passed = data.passed ?? false;
           score = data.score ?? 0;
           report = data.report ?? null;
@@ -118,7 +124,7 @@ export class SubmissionsService {
       });
 
       const finalStatus = passed ? 'PASSED' : 'FAILED';
-      
+
       if (passed) {
         this.achievementService.checkAndAward(userId, taskId).catch((err: unknown) => {
           console.error(`Failed to process achievements for submission ${submissionId}`, err);
@@ -127,14 +133,17 @@ export class SubmissionsService {
 
       // Publish TASK_COMPLETED or TASK_FAILED notification
       if (this.notificationPublisher) {
-        const task = await this.prisma.task.findUnique({ where: { id: taskId }, select: { title: true, courseId: true } });
+        const task = await this.prisma.task.findUnique({
+          where: { id: taskId },
+          select: { title: true, courseId: true },
+        });
         if (task) {
           await this.notificationPublisher.publish({
             userId,
             type: passed ? NotificationType.TASK_COMPLETED : NotificationType.TASK_FAILED,
             priority: NotificationPriority.NORMAL,
             title: passed ? 'Task Passed' : 'Task Failed',
-            message: passed 
+            message: passed
               ? `Your submission for "${task.title}" passed successfully!`
               : `Your submission for "${task.title}" failed. Review the logs and try again.`,
             payload: { submissionId, taskId, courseId: task.courseId },
@@ -148,17 +157,16 @@ export class SubmissionsService {
           console.error(`Failed to auto-generate AI review for submission ${submissionId}`, err);
         });
       }
-      
     } catch (e: unknown) {
       console.error(`Execution error for submission ${submissionId}`, e);
       const errorMessage = (e as Error).message;
-      
+
       this.eventBus.publish(submissionId, {
         type: ExecutionEventType.ERROR,
         message: errorMessage,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       await this.prisma.submission.update({
         where: { id: submissionId },
         data: {

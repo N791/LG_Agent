@@ -8,7 +8,14 @@
 
 LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化环境装配、六阶段闯关训练流程、沙盒代码执行与 AI 导师评审，将新人业务上手周期缩短 50%，资深工程师带教内耗降低 80%。
 
-目前 **v1.0.0** 已经正式发布！我们完成了涵盖底层基础设施、认证、课程管理、集成 Monaco Editor 的 Trainee Web 工作区、沙盒代码执行引擎、AI 导师实时指导、和 DevOps 观测监控等核心 Epic 的建设。
+## 📸 界面预览 ([Screenshots](prod_docs/screenshot))
+
+![Web 管理后台 - 仪表盘](prod_docs/screenshot/dashboard.png)
+![Trainee Web 工作区 - 任务闯关](prod_docs/screenshot/mission.png)
+![Web 管理后台 - 任务管理](prod_docs/screenshot/mission_manager.png)
+![Web 管理后台 - 系统设置](prod_docs/screenshot/settings.png)
+
+目前 **v1.0.0** 已经正式发布！我们完成了涵盖底层基础设施、认证、课程管理、集成 Monaco Editor 的 Trainee Web 工作区、沙盒代码执行引擎、AI 导师实时指导、RAG 知识库增强和 DevOps 观测监控等核心 Epic 的建设。
 
 ---
 
@@ -20,9 +27,6 @@ LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化�
 
 - [部署与使用文档 (prod_docs/)](prod_docs/index.md) - 面向运维与终端用户。
 - [开发与内部设计文档 (dev_docs/)](dev_docs/index.md) - 面向核心研发与架构师。
-
-- [Release Notes (v1.0.0)](prod_docs/Release_Notes.md)
-- [发布门禁验收清单 (MVP Sign-Off)](dev_docs/MVP_Sign_Off.md)
 - [产品发布文档总览](prod_docs/index.md)
 
 👩‍💻 **用户手册**：
@@ -67,31 +71,55 @@ LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化�
 - Node.js ≥ 20.0.0
 - pnpm ≥ 9.0.0
 - Docker & Docker Compose
-- PostgreSQL 16+, Redis 7+, MinIO
+- 推荐使用 Linux 或 macOS 环境进行本地开发。
 
 ### 2. 依赖安装与配置
 
-```bash
-# 安装 Monorepo 依赖
-pnpm install
+首先，克隆项目并安装 Monorepo 依赖：
 
-# 配置环境变量 (根据自身环境修改)
+```bash
+pnpm install
+```
+
+然后，配置项目所需的环境变量。建议直接复制示例文件并根据本地环境修改：
+
+```bash
 cp .env.example .env
 ```
 
-### 3. 本地构建与启动
+_注意：请在 `.env` 中正确配置相关的 PostgreSQL 和 Redis 连接信息，以及必要的 AI Provider（OpenAI/DeepSeek）秘钥，也可以在系统的后台配置。_
+
+### 3. 启动本地基础设施环境
+
+启动本地依赖的中间件（PostgreSQL, Redis 等）：
 
 ```bash
-# 生成 Prisma 客户端并初始化数据表
+docker-compose up -d
+```
+
+### 4. 数据库初始化
+
+生成 Prisma 客户端并同步数据表结构：
+
+```bash
 pnpm --filter @lg-agent/api exec prisma generate
 pnpm --filter @lg-agent/api exec prisma db push
+```
 
-# 启动全部服务 (API + Web)
+### 5. 本地构建与启动
+
+启动全部服务 (API + Web 管理端 + Trainee Web 学员端)：
+
+```bash
 pnpm run dev
 ```
 
-- **Web 管理后台**: `http://localhost:5173`
+- **Web 管理后台**: `http://localhost:8081/dashboard` （请以实际控制台输出端口为准）
+- **Trainee Web 闯关工作区**: `http://localhost:8080/`
 - **API 接口文档 (Swagger)**: `http://localhost:3000/api/docs`
+
+> [!TIP]
+> 系统的各项功能配置，包含大语言模型配置、RAG 设置以及 Sandbox 状态，均可以在 Web 管理后台的对应页面进行动态调整。
 
 ---
 
@@ -109,3 +137,7 @@ pnpm run dev
 您可以免费下载、修改并在企业内部使用本作构建。但**严禁将本软件或其衍生品用于商业出售、转售，或将其包装为付费服务（SaaS）提供给第三方**。
 
 更多详细条款与定义，请参阅完整的 [LICENSE](LICENSE) 文件。
+
+---
+
+> 🤖 **声明**：本项目代码与文档由 AI Agent 辅助生成，并经过人工严格审计。

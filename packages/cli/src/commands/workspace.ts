@@ -5,6 +5,7 @@ import { saveWorkspaceConfig, getWorkspaceConfig } from '../config';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
+import { t } from '../i18n';
 
 export const workspaceCommands = new Command('workspace').description('Workspace and execution');
 
@@ -24,11 +25,11 @@ interface SandboxResult {
 
 workspaceCommands
   .command('pull <taskId>')
-  .description('Pull a task and create a local workspace')
+  .description(t('workspace.pull'))
   .option('-d, --dir <dir>', 'Directory to create workspace in (default: current directory)')
   .action(async (taskId: string, options: { dir?: string }) => {
     try {
-      console.log(chalk.cyan(`Fetching task [${taskId}]...`));
+      console.log(chalk.cyan(t('workspace.pulling', { taskId })));
       const task = await api.get<Task>(`/tasks/${taskId}`);
 
       const targetDir = options.dir ? path.resolve(process.cwd(), options.dir) : process.cwd();
@@ -45,54 +46,52 @@ workspaceCommands
         targetDir,
       );
 
-      console.log(chalk.green(`\nSuccess! Workspace ready at ${targetDir}`));
-      console.log(chalk.gray(`Next steps:`));
-      console.log(chalk.gray(`  1. Write your code in index.js`));
-      console.log(chalk.gray(`  2. Run 'lg-agent workspace submit' to test it in the sandbox`));
+      console.log(chalk.green(t('workspace.successPull', { targetDir })));
+      console.log(chalk.gray(t('workspace.nextSteps')));
+      console.log(chalk.gray(t('workspace.step1')));
+      console.log(chalk.gray(t('workspace.step2')));
     } catch (_e) {
       const e = _e as Error;
-      console.log(chalk.red(`Failed to pull task: ${e.message}`));
+      console.log(chalk.red(t('workspace.pullFailed', { message: e.message })));
     }
   });
 
 workspaceCommands
   .command('submit')
-  .description('Submit current workspace code to Sandbox for testing')
+  .description(t('workspace.submit'))
   .action(async () => {
     try {
       const config = getWorkspaceConfig();
       if (!config) {
-        console.log(
-          chalk.red('Error: Not in a valid LG_Agent workspace. Missing .lg-agent-workspace.json'),
-        );
+        console.log(chalk.red(t('workspace.notInWorkspace')));
         return;
       }
 
       const indexJsPath = path.join(process.cwd(), 'index.js');
       if (!fs.existsSync(indexJsPath)) {
-        console.log(chalk.red('Error: index.js not found in current directory.'));
+        console.log(chalk.red(t('workspace.indexNotFound')));
         return;
       }
 
       const code = fs.readFileSync(indexJsPath, 'utf8');
 
-      console.log(chalk.cyan(`Submitting task [${config.taskId}] to Sandbox Engine...`));
+      console.log(chalk.cyan(t('workspace.submitting', { taskId: config.taskId })));
 
       const result = await api.post<SandboxResult>('/training/submit', {
         taskId: config.taskId,
         code,
       });
 
-      console.log(chalk.blue.bold('\n--- Sandbox Execution Result ---'));
+      console.log(chalk.blue.bold(t('workspace.sandboxResult')));
       console.log(
-        `Status: ${result.status === 'PASSED' ? chalk.green('PASSED') : chalk.red(result.status)}`,
+        `${t('workspace.status')}${result.status === 'PASSED' ? chalk.green(t('workspace.passed')) : chalk.red(result.status)}`,
       );
-      console.log(`Score: ${String(result.score)}`);
-      console.log('\nLogs:');
+      console.log(`${t('workspace.score')}${String(result.score)}`);
+      console.log(t('workspace.logs'));
       console.log(chalk.gray(result.logs));
-      console.log(chalk.blue.bold('--------------------------------\n'));
+      console.log(chalk.blue.bold(t('workspace.separator')));
     } catch (_e) {
       const e = _e as Error;
-      console.log(chalk.red(`Failed to submit code: ${e.message}`));
+      console.log(chalk.red(t('workspace.submitFailed', { message: e.message })));
     }
   });

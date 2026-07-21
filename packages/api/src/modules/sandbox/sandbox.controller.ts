@@ -37,7 +37,7 @@ export class SandboxController {
   ): ExecutionResponseDTO {
     const userId = req.user?.id ?? req.user?.sub;
     if (!userId) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('errors.auth.userNotFound');
     }
 
     const executionId = randomUUID();

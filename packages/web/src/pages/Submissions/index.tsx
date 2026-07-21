@@ -4,10 +4,12 @@ import { submissionsService, Submission } from '../../services/submissions';
 import { reportsService } from '../../services/reports';
 import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import ReactJson from 'react-json-view';
+import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 
 const Submissions: React.FC = () => {
+  const { t } = useTranslation('submissions');
   const [data, setData] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -21,7 +23,7 @@ const Submissions: React.FC = () => {
       const res = await submissionsService.findAll({});
       setData((res as unknown as { data?: Submission[] }).data ?? (res as unknown as Submission[]));
     } catch (_error) {
-      void message.error('Failed to load submissions');
+      void message.error(t('loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -43,35 +45,33 @@ const Submissions: React.FC = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      void message.success('Export downloaded successfully');
+      void message.success(t('exportSuccess'));
     } catch (_error) {
-      void message.error('Failed to export report');
+      void message.error(t('exportFailed'));
     } finally {
       setExporting(false);
     }
   };
 
   const showReport = (record: Submission) => {
-    setSelectedReport(
-      record.report ?? { message: 'No AI review report available for this submission.' },
-    );
+    setSelectedReport(record.report ?? { message: t('noReport') });
     setIsModalVisible(true);
   };
 
   const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id', ellipsis: true },
+    { title: t('columns.id'), dataIndex: 'id', key: 'id', ellipsis: true },
     {
-      title: 'Trainee',
+      title: t('columns.trainee'),
       key: 'trainee',
       render: (_: unknown, record: Submission) => record.user?.username ?? 'Unknown',
     },
     {
-      title: 'Task',
+      title: t('columns.task'),
       key: 'task',
       render: (_: unknown, record: Submission) => record.task?.title ?? 'Unknown',
     },
     {
-      title: 'Status',
+      title: t('columns.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
@@ -82,15 +82,15 @@ const Submissions: React.FC = () => {
         return <Tag color={color}>{status}</Tag>;
       },
     },
-    { title: 'Score', dataIndex: 'score', key: 'score' },
+    { title: t('columns.score'), dataIndex: 'score', key: 'score' },
     {
-      title: 'Date',
+      title: t('columns.date'),
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: string) => new Date(date).toLocaleString(),
     },
     {
-      title: 'Action',
+      title: t('columns.action'),
       key: 'action',
       render: (_: unknown, record: Submission) => (
         <Space size="middle">
@@ -101,7 +101,7 @@ const Submissions: React.FC = () => {
               showReport(record);
             }}
           >
-            AI Review
+            {t('columns.aiReview')}
           </Button>
         </Space>
       ),
@@ -119,7 +119,7 @@ const Submissions: React.FC = () => {
         }}
       >
         <Title level={3} style={{ margin: 0 }}>
-          Learning Analytics
+          {t('title')}
         </Title>
         <Button
           type="primary"
@@ -127,7 +127,7 @@ const Submissions: React.FC = () => {
           onClick={() => void handleExport()}
           loading={exporting}
         >
-          Export CSV
+          {t('exportCsv')}
         </Button>
       </div>
 
@@ -140,7 +140,7 @@ const Submissions: React.FC = () => {
       />
 
       <Modal
-        title="AI Review Report"
+        title={t('aiReviewReport')}
         open={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false);
@@ -152,7 +152,7 @@ const Submissions: React.FC = () => {
               setIsModalVisible(false);
             }}
           >
-            Close
+            {t('buttons.close')}
           </Button>,
         ]}
         width={800}

@@ -6,6 +6,7 @@ import { setAuth } from '../../store/slices/authSlice';
 import { useNavigate, useLocation } from 'react-router-dom';
 import request from '../../utils/request';
 import { Role } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 interface JwtPayload {
   sub: string;
@@ -30,6 +31,7 @@ const Login: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation('auth');
 
   const state = location.state as { from?: { pathname?: string } } | null;
   const from = state?.from?.pathname ?? '/';
@@ -58,7 +60,7 @@ const Login: React.FC = () => {
         );
       }
 
-      void message.success('登录成功');
+      void message.success(t('loginSuccess'));
       navigate(from, { replace: true });
     } catch (_error) {
       // Error handled by interceptor
@@ -71,7 +73,7 @@ const Login: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">LG Agent</h2>
-        <p className="mt-2 text-center text-sm text-gray-600">人工智能辅助学习平台</p>
+        <p className="mt-2 text-center text-sm text-gray-600">{t('subtitle')}</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -82,20 +84,23 @@ const Login: React.FC = () => {
             layout="vertical"
             size="large"
           >
-            <Form.Item name="username" rules={[{ required: true, message: '请输入用户名！' }]}>
-              <Input prefix={<UserOutlined className="text-gray-400" />} placeholder="用户名" />
+            <Form.Item name="username" rules={[{ required: true, message: t('usernameRequired') }]}>
+              <Input
+                prefix={<UserOutlined className="text-gray-400" />}
+                placeholder={t('usernamePlaceholder')}
+              />
             </Form.Item>
 
-            <Form.Item name="password" rules={[{ required: true, message: '请输入密码！' }]}>
+            <Form.Item name="password" rules={[{ required: true, message: t('passwordRequired') }]}>
               <Input.Password
                 prefix={<LockOutlined className="text-gray-400" />}
-                placeholder="密码"
+                placeholder={t('passwordPlaceholder')}
               />
             </Form.Item>
 
             <Form.Item>
               <Button type="primary" htmlType="submit" className="w-full" loading={loading}>
-                登录
+                {t('loginButton')}
               </Button>
             </Form.Item>
           </Form>

@@ -22,6 +22,12 @@ export interface LLMResponse {
   metadata?: Record<string, unknown>;
 }
 
+export interface StreamEvent {
+  content: string;
+  usage?: LLMUsage;
+  model?: string;
+}
+
 export interface ILLMProvider {
   /**
    * Provider identifier (e.g., 'openai', 'deepseek', 'mock')
@@ -36,7 +42,7 @@ export interface ILLMProvider {
   /**
    * Streaming chat completion (returns AsyncIterable)
    */
-  stream(request: LLMRequest): AsyncGenerator<string, void, unknown>;
+  stream(request: LLMRequest): AsyncGenerator<StreamEvent, void, unknown>;
 
   /**
    * Get embeddings for text chunks

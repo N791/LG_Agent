@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ITutorStrategy, ChatRequestDto } from '../interfaces';
-import { LLMResponse } from '../../interfaces/llm-provider.interface';
+import { LLMResponse, StreamEvent } from '../../interfaces/llm-provider.interface';
 import { LLMGatewayService } from '../../gateway/llm-gateway.service';
 import { PromptBuilderService } from '../../prompt-builder.service';
 import { RagService } from '../../rag/rag.service';
@@ -17,9 +17,9 @@ export class AskStrategy implements ITutorStrategy {
 
   async execute(
     request: ChatRequestDto,
-  ): Promise<LLMResponse | AsyncGenerator<string, void, unknown>> {
+  ): Promise<LLMResponse | AsyncGenerator<StreamEvent, void, unknown>> {
     // Retrieve context from RAG
-    const results = await this.ragService.search(request.content, 3);
+    const results = await this.ragService.search(request.content);
     const contextStr = results.map((r) => r.chunk.content).join('\n\n');
 
     // Assemble messages

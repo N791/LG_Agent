@@ -19,7 +19,10 @@ export class ExecutionManager {
   stop(executionId: string): void {
     const process = this.processes.get(executionId);
     if (!process) {
-      throw new NotFoundException(`Execution ${executionId} not found or already completed.`);
+      throw new NotFoundException({
+        message: 'errors.sandbox.executionNotFound',
+        args: { id: executionId },
+      });
     }
 
     this.logger.log(`Stopping execution ${executionId}...`);

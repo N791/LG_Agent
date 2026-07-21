@@ -13,10 +13,10 @@ LG-Agent 作为一个 AI 辅助平台，集成了多种大语言模型，并实�
 
 ```typescript
 export interface ILLMProvider {
-  /** 模型名称，例如 gpt-4, deepseek-coder */
+  /** 模型名称，例如 mock, openai, deepseek */
   name: string;
-  /** 流式返回文本，兼容 OpenAI 的 SSE 格式 */
-  stream(prompt: string, context: Record<string, any>): AsyncGenerator<string, void, unknown>;
+  /** 流式返回文本，兼容 OpenAI 的 SSE 格式，包含 tokens 使用量和模型名称 */
+  stream(request: LLMRequest, providerName?: string): AsyncGenerator<StreamEvent, void, unknown>;
 }
 ```
 
@@ -40,10 +40,10 @@ export interface ILLMProvider {
 - **LlmRequestLog**: 每一次请求都会往 PostgreSQL 的 `llm_request_logs` 表插入一条记录，包含使用的模型、消耗的 `promptTokens`、`completionTokens` 以及基于费率表估算的 `estimated_cost`（以美元计）。
 - **Prometheus Metrics**: Token 消耗也会实时增加到 Prometheus 的 `ai_token_usage_total` 计数器中，以便运维人员通过 Grafana 监控大盘。
 
-## 4. RAG 与上下文构建
+## 4. RAG (检索增强生成) 与上下文构建
 
-在学员请求帮助时，系统并不只发送用户的输入，而是构建一个增强的上下文：
+在学员请求帮助（Ask）时，系统并不只发送用户的输入，而是构建一个增强的上下文：
 
-- 提取当前学员拉取任务的**本地代码快照**。
-- 从 MinIO 下载导师上传的**任务知识库文档**。
-- 将知识库文档的文本截取并追加到 System Prompt 中，以引导模型给出更符合当前任务上下文的提示（Hints）。
+- **内容分块提取**: 将长文本或文档内容使用 `MarkdownChunker` 进行分块。
+- **动态配置提取**: 从后台加载 `RAG_ENABLED`、`RAG_TOP_K` 和 `RAG_CHUNK_SIZE` 等系统配置，这些配置可以在 Web 管理后台 `/ai-settings` 页面中实时更改。
+- **向量检索与混合**: 通过内存向量存储 (`MemoryVectorStore`) 进行语义检索，检索最相关的文档内容并追加到 Prompt 中，以引导模型给出更符合当前任务上下文的提示（Hints）。

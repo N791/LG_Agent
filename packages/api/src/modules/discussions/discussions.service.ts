@@ -4,7 +4,13 @@ import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { NOTIFICATION_PUBLISHER } from '../notifications/notification-publisher.interface';
 import type { INotificationPublisher } from '../notifications/notification-publisher.interface';
-import { CreateDiscussionDTO, AddCommentDTO, DiscussionDTO, NotificationType, DiscussionAnalyticsDTO } from '@lg-agent/contracts';
+import {
+  CreateDiscussionDTO,
+  AddCommentDTO,
+  DiscussionDTO,
+  NotificationType,
+  DiscussionAnalyticsDTO,
+} from '@lg-agent/contracts';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -12,7 +18,7 @@ export class DiscussionsService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(NOTIFICATION_PUBLISHER) private readonly notificationPublisher: INotificationPublisher,
-  ) { }
+  ) {}
 
   async createDiscussion(user: User, dto: CreateDiscussionDTO): Promise<DiscussionDTO> {
     const discussion = await this.prisma.discussion.create({
@@ -57,7 +63,11 @@ export class DiscussionsService {
     return this.mapDiscussion(discussion);
   }
 
-  async getDiscussions(userId: string, taskId?: string, workspaceId?: string): Promise<DiscussionDTO[]> {
+  async getDiscussions(
+    userId: string,
+    taskId?: string,
+    workspaceId?: string,
+  ): Promise<DiscussionDTO[]> {
     const where: any = { userId };
     if (taskId) where.taskId = taskId;
     if (workspaceId) where.workspaceId = workspaceId;
@@ -103,14 +113,14 @@ export class DiscussionsService {
       },
     });
 
-    if (!discussion) throw new NotFoundException('Discussion not found');
+    if (!discussion) throw new NotFoundException('errors.discussion.notFound');
 
     return this.mapDiscussion(discussion);
   }
 
   async addComment(id: string, author: User, dto: AddCommentDTO): Promise<DiscussionDTO> {
     const discussion = await this.prisma.discussion.findUnique({ where: { id } });
-    if (!discussion) throw new NotFoundException('Discussion not found');
+    if (!discussion) throw new NotFoundException('errors.discussion.notFound');
 
     await this.prisma.discussionComment.create({
       data: {
@@ -170,18 +180,33 @@ export class DiscussionsService {
       include: { comments: { orderBy: { createdAt: 'asc' } } },
     });
 
-    const activeDiscussions = discussions.filter((item: any) => ['OPEN', 'IN_PROGRESS', 'WAITING_FOR_TRAINEE'].includes(item.status)).length;
+    const activeDiscussions = discussions.filter((item: any) =>
+      ['OPEN', 'IN_PROGRESS', 'WAITING_FOR_TRAINEE'].includes(item.status),
+    ).length;
     const overdueCount = discussions.filter((item: any) => {
       const ageMinutes = (Date.now() - new Date(item.updatedAt).getTime()) / 60000;
       return item.status !== 'RESOLVED' && item.status !== 'CLOSED' && ageMinutes > 30;
     }).length;
-    const waitingForTraineeCount = discussions.filter((item: any) => item.status === 'WAITING_FOR_TRAINEE').length;
-    const avgResponseMinutes = discussions.length > 0
-      ? Math.round(discussions.reduce((sum: number, item: any) => {
-          const responseMinutes = item.comments?.length ? Math.max(1, Math.round((new Date(item.updatedAt).getTime() - new Date(item.createdAt).getTime()) / 60000)) : 0;
-          return sum + responseMinutes;
-        }, 0) / discussions.length)
-      : 0;
+    const waitingForTraineeCount = discussions.filter(
+      (item: any) => item.status === 'WAITING_FOR_TRAINEE',
+    ).length;
+    const avgResponseMinutes =
+      discussions.length > 0
+        ? Math.round(
+            discussions.reduce((sum: number, item: any) => {
+              const responseMinutes = item.comments?.length
+                ? Math.max(
+                    1,
+                    Math.round(
+                      (new Date(item.updatedAt).getTime() - new Date(item.createdAt).getTime()) /
+                        60000,
+                    ),
+                  )
+                : 0;
+              return sum + responseMinutes;
+            }, 0) / discussions.length,
+          )
+        : 0;
 
     return {
       totalDiscussions: discussions.length,
@@ -194,7 +219,7 @@ export class DiscussionsService {
 
   async assignDiscussion(id: string, assignedToId: string): Promise<DiscussionDTO> {
     const discussion = await this.prisma.discussion.findUnique({ where: { id } });
-    if (!discussion) throw new NotFoundException('Discussion not found');
+    if (!discussion) throw new NotFoundException('errors.discussion.notFound');
 
     const nextStatus = discussion.status === 'OPEN' ? 'IN_PROGRESS' : discussion.status;
     await this.prisma.discussion.update({
@@ -212,8 +237,12 @@ export class DiscussionsService {
   private mapDiscussion(d: any): DiscussionDTO {
     const comments = d.comments || [];
     const internalNoteCount = comments.filter((c: any) => c.isInternal).length;
-    const mentionCount = comments.reduce((count: number, c: any) => count + (c.mentions?.length || 0), 0);
-    const lastActivityAt = comments.length > 0 ? comments[comments.length - 1].createdAt : d.updatedAt;
+    const mentionCount = comments.reduce(
+      (count: number, c: any) => count + (c.mentions?.length || 0),
+      0,
+    );
+    const lastActivityAt =
+      comments.length > 0 ? comments[comments.length - 1].createdAt : d.updatedAt;
 
     return {
       id: d.id,
@@ -232,9 +261,17 @@ export class DiscussionsService {
       lastActivityAt: lastActivityAt.toISOString ? lastActivityAt.toISOString() : lastActivityAt,
       internalNoteCount,
       mentionCount,
-      slaStatus: d.status === 'WAITING_FOR_TRAINEE' ? 'WAITING_FOR_TRAINEE' : (d.status === 'IN_PROGRESS' ? 'IN_PROGRESS' : 'NORMAL'),
+      slaStatus:
+        d.status === 'WAITING_FOR_TRAINEE'
+          ? 'WAITING_FOR_TRAINEE'
+          : d.status === 'IN_PROGRESS'
+            ? 'IN_PROGRESS'
+            : 'NORMAL',
       waitingForTrainee: d.status === 'WAITING_FOR_TRAINEE',
-      isOverdue: d.status !== 'RESOLVED' && d.status !== 'CLOSED' && (Date.now() - new Date(d.updatedAt).getTime()) / 60000 > 30,
+      isOverdue:
+        d.status !== 'RESOLVED' &&
+        d.status !== 'CLOSED' &&
+        (Date.now() - new Date(d.updatedAt).getTime()) / 60000 > 30,
       createdAt: d.createdAt.toISOString(),
       updatedAt: d.updatedAt.toISOString(),
       comments: comments.map((c: any) => ({

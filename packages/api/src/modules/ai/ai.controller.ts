@@ -59,7 +59,7 @@ export class AiController {
     @Res() res: Response,
   ) {
     if (!request.action || !request.content) {
-      throw new BadRequestException('action and content are required');
+      throw new BadRequestException('errors.ai.actionRequired');
     }
 
     try {

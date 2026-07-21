@@ -7,10 +7,12 @@ import { useWorkspaceStore } from '../../store/workspaceStore';
 import { useParams } from 'react-router-dom';
 import { WorkspaceFileDTO } from '@lg-agent/contracts';
 import { RecentFiles } from './RecentFiles';
+import { useTranslation } from 'react-i18next';
 
 const { Search } = Input;
 
 export const FileTree: React.FC = React.memo(() => {
+  const { t } = useTranslation('workspace');
   const { taskId } = useParams<{ taskId: string }>();
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const [searchValue, setSearchValue] = useState('');
@@ -93,7 +95,7 @@ export const FileTree: React.FC = React.memo(() => {
       await workspaceService.loadWorkspace(taskId);
       fetchTree();
     } catch (_err) {
-      message.error(`Failed to ${modalAction ?? 'action'}`);
+      message.error(t('fileTree.messages.actionFailed', { action: modalAction ?? 'action' }));
     }
     setIsModalOpen(false);
     setInputValue('');
@@ -101,9 +103,9 @@ export const FileTree: React.FC = React.memo(() => {
 
   const confirmDelete = (path: string) => {
     Modal.confirm({
-      title: 'Delete File',
-      content: `Are you sure you want to delete ${path}?`,
-      okText: 'Delete',
+      title: t('fileTree.deleteConfirm.title'),
+      content: t('fileTree.deleteConfirm.content', { path }),
+      okText: t('fileTree.deleteConfirm.ok'),
       okType: 'danger',
       onOk: async () => {
         if (!taskId) return;
@@ -112,9 +114,9 @@ export const FileTree: React.FC = React.memo(() => {
           closeFile(path);
           await workspaceService.loadWorkspace(taskId);
           fetchTree();
-          message.success('Deleted');
+          message.success(t('fileTree.messages.deleteSuccess'));
         } catch (_err) {
-          message.error('Failed to delete');
+          message.error(t('fileTree.messages.deleteFailed'));
         }
       },
     });
@@ -127,12 +129,12 @@ export const FileTree: React.FC = React.memo(() => {
 
     const items: MenuProps['items'] = [];
     if (!isLeaf) {
-      items.push({ key: 'new_file', label: 'New File' });
-      items.push({ key: 'new_folder', label: 'New Folder' });
+      items.push({ key: 'new_file', label: t('fileTree.contextMenu.newFile') });
+      items.push({ key: 'new_folder', label: t('fileTree.contextMenu.newFolder') });
     }
     if (!isReadonly) {
-      items.push({ key: 'rename', label: 'Rename' });
-      items.push({ key: 'delete', label: 'Delete', danger: true });
+      items.push({ key: 'rename', label: t('fileTree.contextMenu.rename') });
+      items.push({ key: 'delete', label: t('fileTree.contextMenu.delete'), danger: true });
     }
 
     const titleStr = node.title as string;
@@ -220,15 +222,20 @@ export const FileTree: React.FC = React.memo(() => {
   };
 
   return (
-    <div className="h-full bg-gray-50 flex flex-col border-r border-gray-200" role="region" aria-label="Workspace file explorer">
-      <div className="px-4 py-2 font-bold text-sm text-gray-600 bg-gray-100 border-b border-gray-200 flex justify-between items-center">
-        <span>EXPLORER</span>
+    <div
+      className="h-full bg-white flex flex-col"
+      role="region"
+      aria-label="Workspace file explorer"
+    >
+      <div className="flex-shrink-0 p-4 border-b border-gray-100 bg-gray-50/50">
+        <h2 className="text-sm font-semibold text-gray-800 m-0">{t('fileTree.title')}</h2>
+        <p className="text-[11px] text-gray-500 m-0 mt-1">{t('fileTree.desc')}</p>
       </div>
       <RecentFiles />
       <div className="p-2 border-b border-gray-200">
         <Search
           style={{ marginBottom: 8 }}
-          placeholder="Search files"
+          placeholder={t('fileTree.searchPlaceholder')}
           onChange={onChange}
           aria-label="Search workspace files"
         />
@@ -249,35 +256,49 @@ export const FileTree: React.FC = React.memo(() => {
             selectedKeys={activeFile ? [activeFile] : []}
           />
         ) : (
-          <div className="text-gray-400 text-center mt-4">No files</div>
+          <div className="text-gray-400 text-center mt-4">{t('fileTree.noFiles')}</div>
         )}
       </div>
 
       <Modal
         title={
           modalAction === 'new_file'
-            ? 'Create File'
+            ? t('fileTree.modal.newFile')
             : modalAction === 'new_folder'
-              ? 'Create Folder'
-              : 'Rename'
+              ? t('fileTree.modal.newFolder')
+              : t('fileTree.modal.rename')
         }
         open={isModalOpen}
-        onOk={() => { void handleModalSubmit(); }}
-        onCancel={() => { setIsModalOpen(false); }}
-        okText="Confirm"
+        onOk={() => {
+          void handleModalSubmit();
+        }}
+        onCancel={() => {
+          setIsModalOpen(false);
+        }}
+        okText={t('fileTree.modal.confirm')}
       >
         <Input
           autoFocus
           value={inputValue}
-          aria-label={modalAction === 'rename' ? 'Rename item' : modalAction === 'new_folder' ? 'New folder name' : 'New file name'}
-          onChange={(e) => { setInputValue(e.target.value); }}
-          onPressEnter={() => { void handleModalSubmit(); }}
+          aria-label={
+            modalAction === 'rename'
+              ? 'Rename item'
+              : modalAction === 'new_folder'
+                ? 'New folder name'
+                : 'New file name'
+          }
+          onChange={(e) => {
+            setInputValue(e.target.value);
+          }}
+          onPressEnter={() => {
+            void handleModalSubmit();
+          }}
           placeholder={
             modalAction === 'rename'
-              ? 'Enter new name'
+              ? t('fileTree.modal.newName')
               : modalAction === 'new_folder'
-                ? 'Enter folder name'
-                : 'Enter file name'
+                ? t('fileTree.modal.nameFolder')
+                : t('fileTree.modal.nameFile')
           }
         />
       </Modal>

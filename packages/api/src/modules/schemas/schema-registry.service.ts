@@ -11,7 +11,7 @@ export class SchemaRegistryService {
   getSchema(name: string): Record<string, unknown> {
     const schema = this.schemas.get(name);
     if (!schema) {
-      throw new NotFoundException(`Schema '${name}' not found`);
+      throw new NotFoundException({ message: 'errors.schema.notFound', args: { name } });
     }
     return schema;
   }

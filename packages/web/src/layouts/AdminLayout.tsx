@@ -6,12 +6,14 @@ import {
   LineChartOutlined,
   MonitorOutlined,
   LogoutOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearAuth } from '../store/slices/authSlice';
 import { RootState } from '../store';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const { Header, Sider, Content } = Layout;
 
@@ -21,6 +23,7 @@ const AdminLayout: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
+  const { t } = useTranslation('navigation');
 
   const handleLogout = () => {
     dispatch(clearAuth());
@@ -31,43 +34,43 @@ const AdminLayout: React.FC = () => {
     {
       key: '/',
       icon: <DashboardOutlined />,
-      label: '控制台',
+      label: t('dashboard'),
       roles: ['ADMIN', 'MENTOR'],
     },
     {
       key: '/organizations',
       icon: <BookOutlined />,
-      label: '组织管理',
+      label: t('organizations'),
       roles: ['ADMIN'],
     },
     {
       key: '/users',
       icon: <UserOutlined />,
-      label: '用户管理',
+      label: t('users'),
       roles: ['ADMIN', 'MENTOR'],
     },
     {
       key: '/courses',
       icon: <BookOutlined />,
-      label: '课程管理',
+      label: t('courses'),
       roles: ['ADMIN', 'MENTOR'],
     },
     {
       key: '/submissions',
       icon: <LineChartOutlined />,
-      label: 'Learning Analytics',
+      label: t('learningAnalytics'),
       roles: ['ADMIN', 'MENTOR'],
     },
     {
       key: '/observability',
       icon: <MonitorOutlined />,
-      label: 'Observability',
+      label: t('observability'),
       roles: ['ADMIN'],
     },
     {
-      key: '/admin/ai-settings',
+      key: '/ai-settings',
       icon: <SettingOutlined />,
-      label: 'AI Settings',
+      label: t('aiSettings'),
       roles: ['ADMIN'],
     },
   ];
@@ -79,7 +82,7 @@ const AdminLayout: React.FC = () => {
       {
         key: 'logout',
         icon: <LogoutOutlined />,
-        label: '退出登录',
+        label: t('logout'),
         onClick: handleLogout,
       },
     ],

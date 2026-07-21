@@ -17,7 +17,7 @@ export class CourseProgressService {
         courseId = enrollment.courseId;
       } else {
         const course = await this.prisma.course.findFirst();
-        if (!course) throw new Error('No courses available');
+        if (!course) throw new Error('errors.course.notAvailable');
         courseId = course.id;
       }
     }
@@ -47,7 +47,7 @@ export class CourseProgressService {
       this.prisma.submission.findMany({
         where: { userId, task: { courseId } },
         select: { status: true, score: true, aiReview: true, createdAt: true },
-      })
+      }),
     ]);
 
     const totalTasks = tasks.length;
@@ -58,8 +58,8 @@ export class CourseProgressService {
 
     let currentStage = 1;
     if (completedTasks > 0) {
-      const completedTaskRecords = tasks.filter(t => passedTaskIds.has(t.id));
-      const maxStage = Math.max(...completedTaskRecords.map(t => t.stage));
+      const completedTaskRecords = tasks.filter((t) => passedTaskIds.has(t.id));
+      const maxStage = Math.max(...completedTaskRecords.map((t) => t.stage));
       currentStage = maxStage + 1;
     }
 
@@ -71,10 +71,19 @@ export class CourseProgressService {
     }
 
     const totalSubmissions = allSubmissionsForStats.length;
-    const successRate = totalSubmissions > 0 ? Math.round((allSubmissionsForStats.filter(s => s.status === 'PASSED').length / totalSubmissions) * 100) : 0;
-    const aiUsage = allSubmissionsForStats.filter(s => s.aiReview !== null).length;
-    
-    const distinctDays = new Set(allSubmissionsForStats.map(s => s.createdAt.toISOString().split('T')[0]));
+    const successRate =
+      totalSubmissions > 0
+        ? Math.round(
+            (allSubmissionsForStats.filter((s) => s.status === 'PASSED').length /
+              totalSubmissions) *
+              100,
+          )
+        : 0;
+    const aiUsage = allSubmissionsForStats.filter((s) => s.aiReview !== null).length;
+
+    const distinctDays = new Set(
+      allSubmissionsForStats.map((s) => s.createdAt.toISOString().split('T')[0]),
+    );
     const activeDays = distinctDays.size;
 
     return {
@@ -90,7 +99,7 @@ export class CourseProgressService {
         totalSubmissions,
         aiUsage,
         activeDays,
-      }
+      },
     };
   }
 }

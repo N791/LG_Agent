@@ -12,6 +12,8 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { telemetry } from './utils/telemetry';
 import { onLCP, onCLS, onINP, onFCP, onTTFB, type Metric } from 'web-vitals';
 import './index.css';
+import i18n from './i18n';
+import { I18nextProvider } from 'react-i18next';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,16 +26,27 @@ const queryClient = new QueryClient({
 // Set up global error handlers
 window.addEventListener('error', (event) => {
   const err = event.error as Error | undefined;
-  telemetry.logError(event.message, err?.stack, { type: 'uncaughtException', filename: event.filename, lineno: event.lineno, colno: event.colno });
+  telemetry.logError(event.message, err?.stack, {
+    type: 'uncaughtException',
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno,
+  });
 });
 window.addEventListener('unhandledrejection', (event) => {
   const reason = event.reason as Error | undefined;
-  telemetry.logError(reason?.message ?? 'Unhandled Promise Rejection', reason?.stack, { type: 'unhandledRejection' });
+  telemetry.logError(reason?.message ?? 'Unhandled Promise Rejection', reason?.stack, {
+    type: 'unhandledRejection',
+  });
 });
 
 // Set up web-vitals reporting
 const reportVital = (metric: Metric) => {
-  telemetry.recordMetric(metric.name, metric.value, metric.rating, { id: metric.id, delta: metric.delta, navigationType: metric.navigationType });
+  telemetry.recordMetric(metric.name, metric.value, metric.rating, {
+    id: metric.id,
+    delta: metric.delta,
+    navigationType: metric.navigationType,
+  });
 };
 onLCP(reportVital);
 onCLS(reportVital);
@@ -51,13 +64,15 @@ ReactDOM.createRoot(rootElement).render(
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={{ token: { colorPrimary: '#1677ff' } }}>
-          <ErrorBoundary>
-            <SessionProvider>
-              <NotificationProvider>
-                <RouterProvider router={router} />
-              </NotificationProvider>
-            </SessionProvider>
-          </ErrorBoundary>
+          <I18nextProvider i18n={i18n}>
+            <ErrorBoundary>
+              <SessionProvider>
+                <NotificationProvider>
+                  <RouterProvider router={router} />
+                </NotificationProvider>
+              </SessionProvider>
+            </ErrorBoundary>
+          </I18nextProvider>
         </ConfigProvider>
       </QueryClientProvider>
     </Provider>

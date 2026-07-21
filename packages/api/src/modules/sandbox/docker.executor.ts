@@ -2,7 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { IExecutor } from './interfaces/executor.interface';
 import { WorkspaceService } from './workspace.service';
 import { spawn } from 'child_process';
-import { ExecutionEventDTO, ExecutionEventType, WorkspaceDTO, SandboxAction } from '@lg-agent/contracts';
+import {
+  ExecutionEventDTO,
+  ExecutionEventType,
+  WorkspaceDTO,
+  SandboxAction,
+} from '@lg-agent/contracts';
 import { NodeRuntimeProfile } from './node-runtime.profile';
 import { ExecutionManager } from './execution.manager';
 
@@ -20,7 +25,12 @@ export class DockerExecutor implements IExecutor {
     taskId: string,
     userId: string,
     workspaceDto: WorkspaceDTO,
-    config: { testScript?: string | null; env?: { node?: boolean } | null; action?: SandboxAction; executionId?: string },
+    config: {
+      testScript?: string | null;
+      env?: { node?: boolean } | null;
+      action?: SandboxAction;
+      executionId?: string;
+    },
   ): AsyncGenerator<ExecutionEventDTO, void, unknown> {
     const workspace = this.workspaceService.createWorkspace(userId, taskId);
     const executionId = config.executionId ?? Date.now().toString();
@@ -37,7 +47,7 @@ export class DockerExecutor implements IExecutor {
       const image = config.env?.node ? 'node:20-alpine' : 'node:20-alpine';
       const executionTimeoutMs = 30000;
       const hostPath = workspace.path;
-      
+
       let containerCmd = '';
       switch (config.action) {
         case 'build':
@@ -51,7 +61,13 @@ export class DockerExecutor implements IExecutor {
           break;
         case 'run':
         default: {
-          const targetScript = config.testScript ? 'test.js' : (workspaceDto.workspace.entry ?? 'index.js');
+          let targetScript = config.testScript ? 'test.js' : workspaceDto.workspace.entry;
+          if (!targetScript) {
+            const hasTs = workspaceDto.workspace.files.some(
+              (f) => f.path === 'index.ts' || f.path.endsWith('.ts'),
+            );
+            targetScript = hasTs ? 'index.ts' : 'index.js';
+          }
           containerCmd = this.profile.getRunCmd(targetScript);
           break;
         }

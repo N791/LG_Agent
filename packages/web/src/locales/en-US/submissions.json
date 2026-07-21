@@ -1,0 +1,22 @@
+{
+  "title": "Learning Analytics",
+  "exportCsv": "Export CSV",
+  "exportSuccess": "Export downloaded successfully",
+  "exportFailed": "Failed to export report",
+  "loadFailed": "Failed to load submissions",
+  "aiReviewReport": "AI Review Report",
+  "columns": {
+    "id": "ID",
+    "trainee": "Trainee",
+    "task": "Task",
+    "status": "Status",
+    "score": "Score",
+    "date": "Date",
+    "action": "Action",
+    "aiReview": "AI Review"
+  },
+  "buttons": {
+    "close": "Close"
+  },
+  "noReport": "No AI review report available for this submission."
+}

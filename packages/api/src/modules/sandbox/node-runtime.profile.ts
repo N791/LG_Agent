@@ -14,6 +14,9 @@ export class NodeRuntimeProfile implements IRuntimeProfile {
   }
 
   getRunCmd(entryPoint = 'index.js'): string {
+    if (entryPoint.endsWith('.ts')) {
+      return `npm install --no-audit --no-fund && npx -y tsx ${entryPoint}`;
+    }
     return `npm install --no-audit --no-fund && node ${entryPoint}`;
   }
 }

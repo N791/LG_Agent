@@ -1,0 +1,47 @@
+{
+  "auth": {
+    "login": "登录到 LG_Agent",
+    "logout": "注销并清除令牌",
+    "whoami": "检查当前登录的用户",
+    "usernamePrompt": "用户名:",
+    "passwordPrompt": "密码:",
+    "loginCancelled": "登录已取消。",
+    "loginSuccess": "登录成功！",
+    "loginFailed": "登录失败: {{message}}",
+    "logoutSuccess": "注销成功。",
+    "notLoggedIn": "未登录。",
+    "invalidTokenFormat": "令牌格式无效。",
+    "loggedInAs": "登录为: {{username}} ({{role}})",
+    "invalidOrMissingToken": "无效或丢失令牌。请重新登录。"
+  },
+  "course": {
+    "list": "列出所有可用课程",
+    "tasks": "列出特定课程的任务",
+    "noCourses": "没有找到课程。",
+    "availableCourses": "\n可用课程:",
+    "fetchCoursesFailed": "获取课程失败: {{message}}",
+    "noTasks": "该课程没有任务。",
+    "tasksForCourse": "\n课程 [{{courseId}}] 的任务:",
+    "fetchTasksFailed": "获取任务失败: {{message}}"
+  },
+  "workspace": {
+    "pull": "拉取任务并创建本地工作区",
+    "submit": "将当前工作区代码提交到沙箱进行测试",
+    "pulling": "正在获取任务 [{{taskId}}]...",
+    "successPull": "\n成功！工作区已在 {{targetDir}} 准备就绪",
+    "nextSteps": "下一步:",
+    "step1": "  1. 在 index.js 中编写你的代码",
+    "step2": "  2. 运行 'lg-agent workspace submit' 在沙箱中测试它",
+    "pullFailed": "拉取任务失败: {{message}}",
+    "notInWorkspace": "错误：不在有效的 LG_Agent 工作区中。缺少 .lg-agent-workspace.json",
+    "indexNotFound": "错误：当前目录中未找到 index.js。",
+    "submitting": "正在提交任务 [{{taskId}}] 到沙箱引擎...",
+    "sandboxResult": "\n--- 沙箱执行结果 ---",
+    "status": "状态: ",
+    "passed": "通过",
+    "score": "分数: ",
+    "logs": "\n日志:",
+    "separator": "--------------------------------\n",
+    "submitFailed": "提交代码失败: {{message}}"
+  }
+}

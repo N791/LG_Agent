@@ -2,6 +2,7 @@ import React from 'react';
 import { Drawer, Button, Tag, Typography, Divider } from 'antd';
 import { PlayCircleOutlined, BookOutlined } from '@ant-design/icons';
 import { TaskDTO, TaskType, TaskDifficulty } from '@lg-agent/contracts';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -18,11 +19,13 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({
   onClose,
   onEnter,
 }) => {
+  const { t } = useTranslation('missionHub');
+  const { t: tCommon } = useTranslation('common');
   if (!task) return null;
 
   return (
     <Drawer
-      title="Mission Detail"
+      title={t('drawer.title')}
       placement="right"
       width={480}
       onClose={onClose}
@@ -30,16 +33,18 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({
       footer={
         <div className="flex justify-end p-2">
           <Button onClick={onClose} className="mr-4">
-            Cancel
+            {tCommon('cancel')}
           </Button>
           <Button
             type="primary"
             icon={<PlayCircleOutlined />}
-            onClick={() => { onEnter(task.id); }}
+            onClick={() => {
+              onEnter(task.id);
+            }}
             size="large"
             className="bg-blue-600 hover:bg-blue-500 border-none shadow-md rounded-lg"
           >
-            Enter Workspace
+            {t('drawer.enterWorkspace')}
           </Button>
         </div>
       }
@@ -50,10 +55,10 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({
             {task.title}
           </Title>
           <div className="flex items-center space-x-2 mt-2">
-            <Tag color={task.taskType === TaskType.MANDATORY ? 'red' : 'blue'}>
-              {task.taskType}
+            <Tag color={task.taskType === TaskType.MANDATORY ? 'red' : 'blue'}>{task.taskType}</Tag>
+            <Tag color="purple">
+              {t('drawer.stage')} {task.stage}
             </Tag>
-            <Tag color="purple">Stage: {task.stage}</Tag>
             <Tag
               color={
                 task.difficulty === TaskDifficulty.ADVANCED
@@ -72,20 +77,18 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({
 
         <div>
           <Title level={5} className="flex items-center text-gray-700 !mb-2">
-            <BookOutlined className="mr-2" /> Summary
+            <BookOutlined className="mr-2" /> {t('drawer.summary')}
           </Title>
-          <Text className="text-gray-600 text-sm">
-            {task.summary ?? 'No summary available for this mission.'}
-          </Text>
+          <Text className="text-gray-600 text-sm">{task.summary ?? t('drawer.noSummary')}</Text>
         </div>
 
         <div>
           <Title level={5} className="flex items-center text-gray-700 !mb-2">
-            Description
+            {t('drawer.description')}
           </Title>
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
             <Paragraph className="text-sm text-gray-700 whitespace-pre-wrap m-0">
-              {task.description ?? 'No detailed description provided.'}
+              {task.description ?? t('drawer.noDescription')}
             </Paragraph>
           </div>
         </div>

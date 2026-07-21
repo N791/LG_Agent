@@ -1,66 +1,33 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
-import { ILLMProvider, LLMRequest, LLMResponse } from '../interfaces/llm-provider.interface';
+import {
+  ILLMProvider,
+  LLMRequest,
+  LLMResponse,
+  StreamEvent,
+} from '../interfaces/llm-provider.interface';
 import { ModelInfoDTO } from '@lg-agent/contracts';
+import { AiConfigService } from '../ai-config.service';
 
 @Injectable()
 export class OpenAIProvider implements ILLMProvider {
   public readonly name = 'openai';
-  private readonly logger = new Logger(OpenAIProvider.name);
-  private embedModel!: OpenAIEmbeddings;
-  private isConfigured = false;
 
-  constructor(private readonly configService: ConfigService) {
-    this.init();
-  }
-
-  private init() {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    const baseURL = this.configService.get<string>('OPENAI_BASE_URL');
-    const timeout = this.configService.get<number>('OPENAI_TIMEOUT_MS');
-    const maxRetries = this.configService.get<number>('OPENAI_MAX_RETRIES');
-
-    if (!apiKey) {
-      this.logger.warn('OPENAI_API_KEY is not set. OpenAI Provider will be unavailable.');
-      return;
-    }
-
-    const config: {
-      openAIApiKey: string;
-      timeout?: number;
-      maxRetries?: number;
-      configuration?: { baseURL: string };
-    } = {
-      openAIApiKey: apiKey,
-      timeout,
-      maxRetries,
-    };
-    if (baseURL) {
-      config.configuration = { baseURL };
-    }
-
-    this.embedModel = new OpenAIEmbeddings(config);
-    this.isConfigured = true;
-    this.logger.log('OpenAI Provider initialized');
-  }
-
-  private ensureConfigured() {
-    if (!this.isConfigured) {
-      throw new Error('OpenAI Provider is not properly configured (missing API Key)');
-    }
-  }
+  constructor(private readonly config: AiConfigService) {}
 
   async chat(request: LLMRequest): Promise<LLMResponse> {
-    this.ensureConfigured();
+    const aiConfig = await this.config.getOpenAIConfig();
+
+    if (!aiConfig.apiKey) {
+      throw new Error('OpenAI Provider is not properly configured (missing API Key)');
+    }
 
     const messages = request.messages.map((m) =>
       m.role === 'system' ? new SystemMessage(m.content) : new HumanMessage(m.content),
     );
 
-    const modelName =
-      request.model ?? this.configService.get<string>('OPENAI_DEFAULT_MODEL') ?? 'gpt-3.5-turbo';
+    const modelName = request.model ?? aiConfig.defaultModel;
 
     const config: {
       openAIApiKey: string;
@@ -70,14 +37,14 @@ export class OpenAIProvider implements ILLMProvider {
       modelName: string;
       temperature?: number;
     } = {
-      openAIApiKey: this.configService.get<string>('OPENAI_API_KEY') ?? '',
-      timeout: this.configService.get<number>('OPENAI_TIMEOUT_MS'),
-      maxRetries: this.configService.get<number>('OPENAI_MAX_RETRIES'),
+      openAIApiKey: aiConfig.apiKey,
+      timeout: aiConfig.timeoutMs,
+      maxRetries: aiConfig.maxRetries,
       modelName,
       temperature: request.temperature,
     };
-    const baseURL = this.configService.get<string>('OPENAI_BASE_URL');
-    if (baseURL) config.configuration = { baseURL };
+
+    if (aiConfig.baseURL) config.configuration = { baseURL: aiConfig.baseURL };
 
     const chatInstance = new ChatOpenAI(config);
 
@@ -107,15 +74,18 @@ export class OpenAIProvider implements ILLMProvider {
     };
   }
 
-  async *stream(request: LLMRequest): AsyncGenerator<string, void, unknown> {
-    this.ensureConfigured();
+  async *stream(request: LLMRequest): AsyncGenerator<StreamEvent, void, unknown> {
+    const aiConfig = await this.config.getOpenAIConfig();
+
+    if (!aiConfig.apiKey) {
+      throw new Error('OpenAI Provider is not properly configured (missing API Key)');
+    }
 
     const messages = request.messages.map((m) =>
       m.role === 'system' ? new SystemMessage(m.content) : new HumanMessage(m.content),
     );
 
-    const modelName =
-      request.model ?? this.configService.get<string>('OPENAI_DEFAULT_MODEL') ?? 'gpt-3.5-turbo';
+    const modelName = request.model ?? aiConfig.defaultModel;
 
     const config: {
       openAIApiKey: string;
@@ -125,30 +95,65 @@ export class OpenAIProvider implements ILLMProvider {
       modelName: string;
       temperature?: number;
     } = {
-      openAIApiKey: this.configService.get<string>('OPENAI_API_KEY') ?? '',
-      timeout: this.configService.get<number>('OPENAI_TIMEOUT_MS'),
-      maxRetries: this.configService.get<number>('OPENAI_MAX_RETRIES'),
+      openAIApiKey: aiConfig.apiKey,
+      timeout: aiConfig.timeoutMs,
+      maxRetries: aiConfig.maxRetries,
       modelName,
       temperature: request.temperature,
     };
-    const baseURL = this.configService.get<string>('OPENAI_BASE_URL');
-    if (baseURL) config.configuration = { baseURL };
+
+    if (aiConfig.baseURL) config.configuration = { baseURL: aiConfig.baseURL };
 
     const chatInstance = new ChatOpenAI(config);
 
     const stream = await chatInstance.stream(messages);
     for await (const chunk of stream) {
-      yield typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+      const content =
+        typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+
+      // Attempt to extract usage if present in chunk metadata (varies by langchain version/config)
+      const chunkMetadata = (chunk.response_metadata as Record<string, unknown> | undefined) ?? {};
+      const tokenUsage = chunkMetadata['tokenUsage'] as Record<string, number> | undefined;
+
+      if (tokenUsage && typeof tokenUsage['totalTokens'] === 'number') {
+        yield {
+          content,
+          usage: {
+            promptTokens: tokenUsage['promptTokens'] ?? 0,
+            completionTokens: tokenUsage['completionTokens'] ?? 0,
+            totalTokens: tokenUsage['totalTokens'] ?? 0,
+          },
+          model: modelName,
+        };
+      } else {
+        yield { content, model: modelName };
+      }
     }
   }
 
   async embed(texts: string[]): Promise<number[][]> {
-    this.ensureConfigured();
-    return this.embedModel.embedDocuments(texts);
+    const aiConfig = await this.config.getOpenAIConfig();
+    if (!aiConfig.apiKey) {
+      throw new Error('OpenAI Provider is not properly configured (missing API Key)');
+    }
+
+    const config: {
+      openAIApiKey: string;
+      timeout?: number;
+      maxRetries?: number;
+      configuration?: { baseURL: string };
+    } = {
+      openAIApiKey: aiConfig.apiKey,
+      timeout: aiConfig.timeoutMs,
+      maxRetries: aiConfig.maxRetries,
+    };
+    if (aiConfig.baseURL) config.configuration = { baseURL: aiConfig.baseURL };
+
+    const embedModel = new OpenAIEmbeddings(config);
+    return embedModel.embedDocuments(texts);
   }
 
   listModels(): Promise<ModelInfoDTO[]> {
-    this.ensureConfigured();
     return Promise.resolve([
       {
         id: 'openai:gpt-4o',
@@ -189,11 +194,12 @@ export class OpenAIProvider implements ILLMProvider {
         default: false,
         capabilities: ['embedding'],
         status: 'active',
-      }
+      },
     ]);
   }
 
-  healthCheck(): Promise<boolean> {
-    return Promise.resolve(this.isConfigured);
+  async healthCheck(): Promise<boolean> {
+    const aiConfig = await this.config.getOpenAIConfig();
+    return !!aiConfig.apiKey;
   }
 }

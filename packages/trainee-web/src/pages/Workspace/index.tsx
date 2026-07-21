@@ -3,7 +3,6 @@ import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
 import { LeftPanel } from './LeftPanel';
 import { aiService } from '../../services/aiService';
-import { FileTree } from './FileTree';
 import { EditorPanel } from './EditorPanel';
 import { BottomPanel } from './BottomPanel';
 import { ExecutionState } from './ExecutionCenterPanel';
@@ -11,18 +10,29 @@ import { TopNavbar } from '../../components/TopNavbar';
 import { useParams } from 'react-router-dom';
 import { workspaceService } from '../../services/workspace/WorkspaceService';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-import { Button, Modal, Spin } from 'antd';
-import { PlayCircleOutlined } from '@ant-design/icons';
+import { Button, Modal, Spin, Switch } from 'antd';
+import {
+  PlayCircleOutlined,
+  ToolOutlined,
+  CheckSquareOutlined,
+  ExperimentOutlined,
+  SaveOutlined,
+  CloudUploadOutlined,
+} from '@ant-design/icons';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { offlineWorkspaceService } from '../../services/offlineWorkspaceService';
 import { useViewport } from '../../hooks/useViewport';
+import { useTranslation } from 'react-i18next';
 
 const WorkspacePage: React.FC = () => {
+  const { t } = useTranslation('workspace');
+  const { t: tCommon } = useTranslation('common');
   const { taskId } = useParams<{ courseId: string; taskId: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
-  const [executionId, setExecutionId] = useState<string | null>(null);
+  const [, setExecutionId] = useState<string | null>(null);
+  const [isSandboxEnabled, setIsSandboxEnabled] = useState(true);
 
   const [executionState, setExecutionState] = useState<ExecutionState>({
     mode: 'LIVE',
@@ -73,17 +83,21 @@ const WorkspacePage: React.FC = () => {
 
           const recoveryPromise = taskId
             ? offlineWorkspaceService.loadSnapshot(taskId).then((offlineSnapshot) => {
-                return offlineSnapshot && (!recoveredContents || Object.keys(recoveredContents).length === 0)
+                return offlineSnapshot &&
+                  (!recoveredContents || Object.keys(recoveredContents).length === 0)
                   ? offlineSnapshot.fileContents
                   : recoveredContents;
               })
             : Promise.resolve(recoveredContents);
 
           return recoveryPromise.then(async (recoverySource) => {
-            const remoteFiles = workspace.workspace.files.reduce<Record<string, string>>((acc, file) => {
-              acc[file.path] = file.content;
-              return acc;
-            }, {});
+            const remoteFiles = workspace.workspace.files.reduce<Record<string, string>>(
+              (acc, file) => {
+                acc[file.path] = file.content;
+                return acc;
+              },
+              {},
+            );
             const syncComparison = taskId
               ? await offlineWorkspaceService.compareWithRemote(taskId, remoteFiles)
               : { hasConflict: false, conflictingFiles: [], localFiles: {}, remoteFiles };
@@ -91,12 +105,18 @@ const WorkspacePage: React.FC = () => {
             const hasRecoveryData = recoverySource && Object.keys(recoverySource).length > 0;
             if (hasRecoveryData || syncComparison.hasConflict) {
               Modal.confirm({
-                title: syncComparison.hasConflict ? 'Offline changes conflict with the server' : 'Unsaved Changes Found',
+                title: syncComparison.hasConflict
+                  ? t('recovery.conflictTitle')
+                  : t('recovery.unsavedTitle'),
                 content: syncComparison.hasConflict
-                  ? 'Your local draft differs from the latest workspace on the server. Choose whether to keep the local draft or use the server version.'
-                  : 'You have unsaved changes from a previous session. Do you want to recover them?',
-                okText: syncComparison.hasConflict ? 'Use server version' : 'Recover',
-                cancelText: syncComparison.hasConflict ? 'Keep local draft' : 'Discard',
+                  ? t('recovery.conflictContent')
+                  : t('recovery.unsavedContent'),
+                okText: syncComparison.hasConflict
+                  ? t('recovery.useServer')
+                  : t('recovery.recover'),
+                cancelText: syncComparison.hasConflict
+                  ? t('recovery.keepLocal')
+                  : t('recovery.discard'),
                 onOk: () => {
                   workspace.workspace.files.forEach((f) => {
                     const remoteContent = remoteFiles[f.path];
@@ -133,7 +153,7 @@ const WorkspacePage: React.FC = () => {
                   if (taskId) {
                     void offlineWorkspaceService.clearSnapshot(taskId);
                   }
-                }
+                },
               });
             } else {
               workspace.workspace.files.forEach((f) => {
@@ -143,7 +163,9 @@ const WorkspacePage: React.FC = () => {
           });
         })
         .catch(console.error)
-        .finally(() => { setIsInitializing(false); });
+        .finally(() => {
+          setIsInitializing(false);
+        });
     }
   }, [taskId]);
 
@@ -195,13 +217,13 @@ const WorkspacePage: React.FC = () => {
         throw new Error('Failed to start submission');
       }
 
-      const { submissionId } = await res.json() as { submissionId: string };
+      const { submissionId } = (await res.json()) as { submissionId: string };
       setExecutionId(submissionId);
 
-      setExecutionState(prev => ({
+      setExecutionState((prev) => ({
         ...prev,
         submissionId,
-        metrics: prev.metrics ? { ...prev.metrics, executionId: submissionId } : null
+        metrics: prev.metrics ? { ...prev.metrics, executionId: submissionId } : null,
       }));
 
       await fetchEventSource(`/api/v1/submissions/${submissionId}/logs`, {
@@ -216,14 +238,17 @@ const WorkspacePage: React.FC = () => {
           if (msg.data === '[DONE]') {
             setIsSubmitting(false);
             setExecutionId(null);
-            setExecutionState(prev => ({
+            setExecutionState((prev) => ({
               ...prev,
-              metrics: prev.metrics ? {
-                ...prev.metrics,
-                endTime: Date.now(),
-                durationMs: Date.now() - (prev.metrics.startTime ?? Date.now()),
-                status: prev.status as 'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'ERROR' | 'STOPPED',
-              } : null
+              metrics: prev.metrics
+                ? {
+                    ...prev.metrics,
+                    endTime: Date.now(),
+                    durationMs: Date.now() - (prev.metrics.startTime ?? Date.now()),
+                    status: prev.status as
+                      'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'ERROR' | 'STOPPED',
+                  }
+                : null,
             }));
             return;
           }
@@ -235,7 +260,7 @@ const WorkspacePage: React.FC = () => {
               data?: { text?: string; score?: number; report?: unknown; exitCode?: number };
             };
 
-            setExecutionState(prev => {
+            setExecutionState((prev) => {
               const newState = { ...prev };
               const metrics = newState.metrics ? { ...newState.metrics } : null;
 
@@ -265,7 +290,7 @@ const WorkspacePage: React.FC = () => {
                     taskId,
                     'code-review',
                     `Please review my code and the failure report:\n\n${JSON.stringify(event.data?.report ?? {})}`,
-                    activeFile ?? undefined
+                    activeFile ?? undefined,
                   );
                 }
               }
@@ -282,16 +307,18 @@ const WorkspacePage: React.FC = () => {
         },
         onerror(err: unknown) {
           console.error('SSE Error:', err);
-          setExecutionState(prev => ({
+          setExecutionState((prev) => ({
             ...prev,
             status: 'ERROR',
             error: (err as Error).message,
-            metrics: prev.metrics ? {
-              ...prev.metrics,
-              status: 'ERROR',
-              endTime: Date.now(),
-              durationMs: Date.now() - (prev.metrics.startTime ?? Date.now())
-            } : null
+            metrics: prev.metrics
+              ? {
+                  ...prev.metrics,
+                  status: 'ERROR',
+                  endTime: Date.now(),
+                  durationMs: Date.now() - (prev.metrics.startTime ?? Date.now()),
+                }
+              : null,
           }));
           setIsSubmitting(false);
           setExecutionId(null);
@@ -304,7 +331,6 @@ const WorkspacePage: React.FC = () => {
       setExecutionId(null);
     }
   };
-
 
   const handleSandboxAction = async (action: import('@lg-agent/contracts').SandboxAction) => {
     if (!taskId) return;
@@ -338,13 +364,14 @@ const WorkspacePage: React.FC = () => {
     });
 
     try {
-      const { executeSandboxAction, streamExecutionLogs } = await import('../../services/sandboxService');
+      const { executeSandboxAction, streamExecutionLogs } =
+        await import('../../services/sandboxService');
       const response = await executeSandboxAction(taskId, action);
       setExecutionId(response.executionId);
 
-      setExecutionState(prev => ({
+      setExecutionState((prev) => ({
         ...prev,
-        metrics: prev.metrics ? { ...prev.metrics, executionId: response.executionId } : null
+        metrics: prev.metrics ? { ...prev.metrics, executionId: response.executionId } : null,
       }));
 
       const stream = streamExecutionLogs(response.executionId, taskId, action);
@@ -355,8 +382,8 @@ const WorkspacePage: React.FC = () => {
           message?: string;
           data?: { text?: string; score?: number; report?: unknown; exitCode?: number };
         };
-        
-        setExecutionState(prev => {
+
+        setExecutionState((prev) => {
           const newState = { ...prev };
           const metrics = newState.metrics ? { ...newState.metrics } : null;
 
@@ -385,28 +412,32 @@ const WorkspacePage: React.FC = () => {
       }
 
       // Update end time
-      setExecutionState(prev => ({
+      setExecutionState((prev) => ({
         ...prev,
-        metrics: prev.metrics ? {
-          ...prev.metrics,
-          endTime: Date.now(),
-          durationMs: Date.now() - (prev.metrics.startTime ?? Date.now()),
-          status: prev.status as 'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'ERROR' | 'STOPPED',
-        } : null
+        metrics: prev.metrics
+          ? {
+              ...prev.metrics,
+              endTime: Date.now(),
+              durationMs: Date.now() - (prev.metrics.startTime ?? Date.now()),
+              status: prev.status as
+                'PENDING' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'ERROR' | 'STOPPED',
+            }
+          : null,
       }));
-
     } catch (error: unknown) {
       console.error(error);
-      setExecutionState(prev => ({
+      setExecutionState((prev) => ({
         ...prev,
         status: 'ERROR',
         error: (error as Error).message,
-        metrics: prev.metrics ? {
-          ...prev.metrics,
-          status: 'ERROR',
-          endTime: Date.now(),
-          durationMs: Date.now() - (prev.metrics.startTime ?? Date.now())
-        } : null
+        metrics: prev.metrics
+          ? {
+              ...prev.metrics,
+              status: 'ERROR',
+              endTime: Date.now(),
+              durationMs: Date.now() - (prev.metrics.startTime ?? Date.now()),
+            }
+          : null,
       }));
     } finally {
       setIsSubmitting(false);
@@ -414,141 +445,194 @@ const WorkspacePage: React.FC = () => {
     }
   };
 
-  const handleStop = async () => {
-    if (executionId) {
-      const { stopExecution } = await import('../../services/sandboxService');
-      await stopExecution(executionId).catch(console.error);
-      setExecutionState(prev => ({
-        ...prev,
-        status: 'STOPPED',
-        metrics: prev.metrics ? {
-          ...prev.metrics,
-          status: 'STOPPED',
-          endTime: Date.now(),
-          durationMs: Date.now() - (prev.metrics.startTime ?? Date.now())
-        } : null
-      }));
-    }
-  };
-
   const ActionToolbar = (
-    <div className="flex gap-2">
-      {isSubmitting ? (
-        <Button
-          type="primary"
-          danger
-          onClick={() => { void handleStop(); }}
-          className="font-medium"
-        >
-          Stop Execution
-        </Button>
-      ) : (
-        <>
-          <Button onClick={() => { void handleSandboxAction('build'); }} disabled={isSubmitting}>Build</Button>
-          <Button onClick={() => { void handleSandboxAction('lint'); }} disabled={isSubmitting}>Lint</Button>
-          <Button onClick={() => { void handleSandboxAction('test'); }} disabled={isSubmitting}>Test</Button>
-          <Button
-            icon={<PlayCircleOutlined />}
-            onClick={() => { void handleSandboxAction('run'); }}
-            disabled={isSubmitting}
-            className="font-medium"
-          >
-            Run Code
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => { void handleSubmit(); }}
-            disabled={isSubmitting}
-            className="font-medium"
-          >
-            Submit
-          </Button>
-        </>
-      )}
+    <div className="flex gap-2 items-center">
+      <Button
+        ghost
+        icon={<SaveOutlined />}
+        onClick={() => {
+          void saveNow();
+        }}
+        disabled={isSubmitting}
+      >
+        {tCommon('save')}
+      </Button>
+      <Button
+        ghost
+        icon={<PlayCircleOutlined />}
+        onClick={() => {
+          void handleSandboxAction('run');
+        }}
+        disabled={isSubmitting || !isSandboxEnabled}
+      >
+        {tCommon('run')}
+      </Button>
+      <Button
+        ghost
+        icon={<ToolOutlined />}
+        onClick={() => {
+          void handleSandboxAction('build');
+        }}
+        disabled={isSubmitting || !isSandboxEnabled}
+      >
+        {t('actions.build')}
+      </Button>
+      <Button
+        ghost
+        icon={<CheckSquareOutlined />}
+        onClick={() => {
+          void handleSandboxAction('lint');
+        }}
+        disabled={isSubmitting || !isSandboxEnabled}
+      >
+        {t('actions.lint')}
+      </Button>
+      <Button
+        ghost
+        icon={<ExperimentOutlined />}
+        onClick={() => {
+          void handleSandboxAction('test');
+        }}
+        disabled={isSubmitting || !isSandboxEnabled}
+      >
+        {t('actions.test')}
+      </Button>
+
+      <div className="flex items-center gap-2 mx-2">
+        <span className="text-sm text-gray-500 font-medium">{t('actions.sandbox')}</span>
+        <Switch
+          checked={isSandboxEnabled}
+          onChange={setIsSandboxEnabled}
+          disabled={isSubmitting}
+          size="small"
+        />
+      </div>
+
+      <Button
+        type="primary"
+        icon={<CloudUploadOutlined />}
+        onClick={() => {
+          void handleSubmit();
+        }}
+        disabled={isSubmitting || !isSandboxEnabled}
+        loading={isSubmitting}
+        className="font-medium"
+      >
+        {tCommon('submit')}
+      </Button>
     </div>
   );
 
   const hasUnsaved = Object.values(unsavedChanges).some(Boolean);
-  const status = isSaving ? 'Saving...' : hasUnsaved ? 'Unsaved' : 'Saved';
+  const status = isSaving
+    ? t('status.saving')
+    : hasUnsaved
+      ? t('status.unsaved')
+      : t('status.saved');
 
-  const handleHorizontalResize = useCallback((sizes: number[]) => {
-    const s0 = sizes[0] ?? 0;
-    const s1 = sizes[1] ?? 0;
-    const s2 = sizes[2] ?? 0;
-    if (sizes.length === 3) {
-      const total = s0 + s1 + s2;
-      if (total > 0) {
-        setEditorLayoutSizes({
-          leftPanel: Math.round((s0 / total) * 100),
-          fileTree: Math.round((s1 / total) * 100),
-          editor: Math.round((s2 / total) * 100),
-        });
+  const handleHorizontalResize = useCallback(
+    (sizes: number[]) => {
+      const s0 = sizes[0] ?? 0;
+      const s1 = sizes[1] ?? 0;
+      if (sizes.length === 2) {
+        const total = s0 + s1;
+        if (total > 0) {
+          setEditorLayoutSizes({
+            leftPanel: Math.round((s0 / total) * 100),
+            editor: Math.round((s1 / total) * 100),
+          });
+        }
       }
-    }
-  }, [setEditorLayoutSizes]);
+    },
+    [setEditorLayoutSizes],
+  );
 
-  const handleVerticalResize = useCallback((sizes: number[]) => {
-    const s0 = sizes[0] ?? 0;
-    const s1 = sizes[1] ?? 0;
-    if (sizes.length === 2) {
-      const total = s0 + s1;
-      if (total > 0) {
-        setEditorLayoutSizes({
-          logs: Math.round((s1 / total) * 100),
-        });
+  const handleVerticalResize = useCallback(
+    (sizes: number[]) => {
+      const s0 = sizes[0] ?? 0;
+      const s1 = sizes[1] ?? 0;
+      if (sizes.length === 2) {
+        const total = s0 + s1;
+        if (total > 0) {
+          setEditorLayoutSizes({
+            logs: Math.round((s1 / total) * 100),
+          });
+        }
       }
-    }
-  }, [setEditorLayoutSizes]);
+    },
+    [setEditorLayoutSizes],
+  );
 
   if (isInitializing) {
     return (
       <div className="h-screen flex flex-col bg-gray-50 items-center justify-center">
         <Spin size="large" />
-        <div className="mt-4 text-gray-500 font-medium">Initializing Workspace...</div>
+        <div className="mt-4 text-gray-500 font-medium">{t('initializing')}</div>
       </div>
     );
   }
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
-      <TopNavbar title={`Workspace - ${taskId ?? ''}`} status={status} actions={ActionToolbar} />
+      <TopNavbar
+        title={t('title', { taskId: taskId ?? '' })}
+        status={status}
+        actions={ActionToolbar}
+      />
       <div className="flex-1 min-h-0 overflow-hidden">
         {isNarrow ? (
-          <div className="h-full flex flex-col overflow-auto" role="region" aria-label="Workspace layout">
+          <div
+            className="h-full flex flex-col overflow-auto"
+            role="region"
+            aria-label="Workspace layout"
+          >
             <div className="flex-1 min-h-[220px] border-b bg-white">
               <LeftPanel setExecutionState={setExecutionState} />
             </div>
-            <div className="flex-1 min-h-[220px] border-b bg-white">
-              <FileTree />
-            </div>
             <div className="flex-1 min-h-[320px]">
-              <Allotment vertical onChange={handleVerticalResize}>
-                <Allotment.Pane minSize={180} preferredSize={`${(100 - editorLayoutSizes.logs).toString()}%`}>
-                  <EditorPanel />
-                </Allotment.Pane>
-                <Allotment.Pane minSize={100} preferredSize={`${editorLayoutSizes.logs.toString()}%`}>
-                  <BottomPanel executionState={executionState} />
-                </Allotment.Pane>
-              </Allotment>
+              <div className="h-full w-full flex flex-col">
+                <Allotment vertical onChange={handleVerticalResize}>
+                  <Allotment.Pane
+                    minSize={180}
+                    preferredSize={`${(100 - editorLayoutSizes.logs).toString()}%`}
+                  >
+                    <EditorPanel />
+                  </Allotment.Pane>
+                  <Allotment.Pane
+                    minSize={100}
+                    preferredSize={`${editorLayoutSizes.logs.toString()}%`}
+                  >
+                    <BottomPanel executionState={executionState} />
+                  </Allotment.Pane>
+                </Allotment>
+              </div>
             </div>
           </div>
         ) : (
           <Allotment onChange={handleHorizontalResize}>
-            <Allotment.Pane minSize={250} preferredSize={`${editorLayoutSizes.leftPanel.toString()}%`}>
+            <Allotment.Pane
+              minSize={250}
+              preferredSize={`${editorLayoutSizes.leftPanel.toString()}%`}
+            >
               <LeftPanel setExecutionState={setExecutionState} />
             </Allotment.Pane>
-            <Allotment.Pane minSize={150} preferredSize={`${editorLayoutSizes.fileTree.toString()}%`}>
-              <FileTree />
-            </Allotment.Pane>
             <Allotment.Pane minSize={400} preferredSize={`${editorLayoutSizes.editor.toString()}%`}>
-              <Allotment vertical onChange={handleVerticalResize}>
-                <Allotment.Pane minSize={200} preferredSize={`${(100 - editorLayoutSizes.logs).toString()}%`}>
-                  <EditorPanel />
-                </Allotment.Pane>
-                <Allotment.Pane minSize={100} preferredSize={`${editorLayoutSizes.logs.toString()}%`}>
-                  <BottomPanel executionState={executionState} />
-                </Allotment.Pane>
-              </Allotment>
+              <div className="h-full w-full flex flex-col relative">
+                <Allotment vertical onChange={handleVerticalResize}>
+                  <Allotment.Pane
+                    minSize={200}
+                    preferredSize={`${(100 - editorLayoutSizes.logs).toString()}%`}
+                  >
+                    <EditorPanel />
+                  </Allotment.Pane>
+                  <Allotment.Pane
+                    minSize={100}
+                    preferredSize={`${editorLayoutSizes.logs.toString()}%`}
+                  >
+                    <BottomPanel executionState={executionState} />
+                  </Allotment.Pane>
+                </Allotment>
+              </div>
             </Allotment.Pane>
           </Allotment>
         )}

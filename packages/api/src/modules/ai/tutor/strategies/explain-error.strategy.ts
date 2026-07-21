@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ITutorStrategy, ChatRequestDto } from '../interfaces';
-import { LLMResponse } from '../../interfaces/llm-provider.interface';
+import { LLMResponse, StreamEvent } from '../../interfaces/llm-provider.interface';
 import { LLMGatewayService } from '../../gateway/llm-gateway.service';
 import { PromptBuilderService } from '../../prompt-builder.service';
 
@@ -15,7 +15,7 @@ export class ExplainErrorStrategy implements ITutorStrategy {
 
   async execute(
     request: ChatRequestDto,
-  ): Promise<LLMResponse | AsyncGenerator<string, void, unknown>> {
+  ): Promise<LLMResponse | AsyncGenerator<StreamEvent, void, unknown>> {
     const messages = await this.promptBuilder.assembleMessages('explain_error', {
       content: request.content,
     });

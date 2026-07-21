@@ -10,6 +10,7 @@
 
 - **学员进度 (Trainee Progress)**: 可视化图表展示各个任务的通过率，帮助您快速识别哪些概念对学员来说最困难（学习瓶颈）。
 - **AI 分析 (AI Analytics)**: 监控每个学员的 AI Token 使用情况。您可以追踪成本开销，并审查 AI 审计日志，以了解学员是仅仅在“要答案”，还是在通过引导进行有效学习。
+- **AI 接口配置**: 您可以在“AI 设置”页面动态调整 OpenAI/DeepSeek 供应商参数、选择默认模型、或者控制 RAG 知识库检索相关的启用状态、Chunk Size 和 Top K。
 
 ## 2. 课程与任务管理 (Course & Task Management)
 

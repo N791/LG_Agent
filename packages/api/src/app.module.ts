@@ -30,6 +30,9 @@ import type { Request } from 'express';
 import { randomUUID as uuidv4 } from 'crypto';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DiscussionsModule } from './modules/discussions/discussions.module';
+import { SystemConfigModule } from './modules/platform/config/config.module';
+import { I18nModule, AcceptLanguageResolver, HeaderResolver } from 'nestjs-i18n';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -51,6 +54,14 @@ import { DiscussionsModule } from './modules/discussions/discussions.module';
         },
       },
     }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'zh-CN',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      resolvers: [new HeaderResolver(['x-custom-lang', 'accept-language']), AcceptLanguageResolver],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: configValidationSchema,
@@ -61,6 +72,7 @@ import { DiscussionsModule } from './modules/discussions/discussions.module';
     CoursesModule,
     TasksModule,
     SandboxModule,
+    SystemConfigModule,
     TrainingModule,
     AuthModule,
     AiModule,

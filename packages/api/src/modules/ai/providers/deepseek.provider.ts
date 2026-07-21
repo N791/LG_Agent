@@ -1,83 +1,40 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
-import { ILLMProvider, LLMRequest, LLMResponse } from '../interfaces/llm-provider.interface';
+import {
+  ILLMProvider,
+  LLMRequest,
+  LLMResponse,
+  StreamEvent,
+} from '../interfaces/llm-provider.interface';
 import { ModelInfoDTO } from '@lg-agent/contracts';
+import { AiConfigService } from '../ai-config.service';
 
 @Injectable()
 export class DeepSeekProvider implements ILLMProvider {
   public readonly name = 'deepseek';
-  private readonly logger = new Logger(DeepSeekProvider.name);
-  private isConfigured = false;
 
-  constructor(private readonly configService: ConfigService) {
-    this.init();
-  }
-
-  private init() {
-    const apiKey = this.configService.get<string>('DEEPSEEK_API_KEY');
-    const baseURL = this.configService.get<string>('DEEPSEEK_BASE_URL');
-    const timeout = this.configService.get<number>('DEEPSEEK_TIMEOUT_MS');
-    const maxRetries = this.configService.get<number>('DEEPSEEK_MAX_RETRIES');
-
-    if (!apiKey) {
-      this.logger.warn('DEEPSEEK_API_KEY is not set. DeepSeek Provider will be unavailable.');
-      return;
-    }
-
-    const config: {
-      openAIApiKey: string;
-      timeout?: number;
-      maxRetries?: number;
-      configuration?: { baseURL: string };
-    } = {
-      openAIApiKey: apiKey,
-      timeout,
-      maxRetries,
-    };
-    if (baseURL) {
-      config.configuration = { baseURL };
-    }
-
-    this.isConfigured = true;
-    this.logger.log('DeepSeek Provider initialized');
-  }
-
-  private ensureConfigured() {
-    if (!this.isConfigured) {
-      throw new Error('DeepSeek Provider is not properly configured (missing API Key)');
-    }
-  }
+  constructor(private readonly config: AiConfigService) {}
 
   async chat(request: LLMRequest): Promise<LLMResponse> {
-    this.ensureConfigured();
+    const aiConfig = await this.config.getDeepSeekConfig();
+
+    if (!aiConfig.apiKey) {
+      throw new Error('DeepSeek Provider is not properly configured (missing API Key)');
+    }
 
     const messages = request.messages.map((m) =>
       m.role === 'system' ? new SystemMessage(m.content) : new HumanMessage(m.content),
     );
 
-    const modelName =
-      request.model ?? this.configService.get<string>('DEEPSEEK_DEFAULT_MODEL') ?? 'deepseek-chat';
+    const modelName = request.model ?? aiConfig.defaultModel;
 
-    const config: {
-      openAIApiKey: string;
-      timeout?: number;
-      maxRetries?: number;
-      configuration?: { baseURL: string };
-      modelName: string;
-      temperature?: number;
-    } = {
-      openAIApiKey: this.configService.get<string>('DEEPSEEK_API_KEY') ?? '',
-      timeout: this.configService.get<number>('DEEPSEEK_TIMEOUT_MS'),
-      maxRetries: this.configService.get<number>('DEEPSEEK_MAX_RETRIES'),
+    const chatInstance = new ChatOpenAI({
+      openAIApiKey: aiConfig.apiKey,
+      configuration: { baseURL: aiConfig.baseURL ?? 'https://api.deepseek.com/v1' },
       modelName,
       temperature: request.temperature,
-    };
-    const baseURL = this.configService.get<string>('DEEPSEEK_BASE_URL');
-    if (baseURL) config.configuration = { baseURL };
-
-    const chatInstance = new ChatOpenAI(config);
+    });
 
     const response = await chatInstance.invoke(messages);
 
@@ -103,50 +60,57 @@ export class DeepSeekProvider implements ILLMProvider {
     };
   }
 
-  async *stream(request: LLMRequest): AsyncGenerator<string, void, unknown> {
-    this.ensureConfigured();
+  async *stream(request: LLMRequest): AsyncGenerator<StreamEvent, void, unknown> {
+    const aiConfig = await this.config.getDeepSeekConfig();
+
+    if (!aiConfig.apiKey) {
+      throw new Error('DeepSeek Provider is not properly configured (missing API Key)');
+    }
 
     const messages = request.messages.map((m) =>
       m.role === 'system' ? new SystemMessage(m.content) : new HumanMessage(m.content),
     );
 
-    const modelName =
-      request.model ?? this.configService.get<string>('DEEPSEEK_DEFAULT_MODEL') ?? 'deepseek-chat';
+    const modelName = request.model ?? aiConfig.defaultModel;
 
-    const config: {
-      openAIApiKey: string;
-      timeout?: number;
-      maxRetries?: number;
-      configuration?: { baseURL: string };
-      modelName: string;
-      temperature?: number;
-    } = {
-      openAIApiKey: this.configService.get<string>('DEEPSEEK_API_KEY') ?? '',
-      timeout: this.configService.get<number>('DEEPSEEK_TIMEOUT_MS'),
-      maxRetries: this.configService.get<number>('DEEPSEEK_MAX_RETRIES'),
+    const chatInstance = new ChatOpenAI({
+      openAIApiKey: aiConfig.apiKey,
+      configuration: { baseURL: aiConfig.baseURL ?? 'https://api.deepseek.com/v1' },
       modelName,
       temperature: request.temperature,
-    };
-    const baseURL = this.configService.get<string>('DEEPSEEK_BASE_URL');
-    if (baseURL) config.configuration = { baseURL };
-
-    const chatInstance = new ChatOpenAI(config);
+    });
 
     const stream = await chatInstance.stream(messages);
     for await (const chunk of stream) {
-      yield typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+      const content =
+        typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+
+      const chunkMetadata = (chunk.response_metadata as Record<string, unknown> | undefined) ?? {};
+      const tokenUsage = chunkMetadata['tokenUsage'] as Record<string, number> | undefined;
+
+      if (tokenUsage && typeof tokenUsage['totalTokens'] === 'number') {
+        yield {
+          content,
+          usage: {
+            promptTokens: tokenUsage['promptTokens'] ?? 0,
+            completionTokens: tokenUsage['completionTokens'] ?? 0,
+            totalTokens: tokenUsage['totalTokens'] ?? 0,
+          },
+          model: modelName,
+        };
+      } else {
+        yield { content, model: modelName };
+      }
     }
   }
 
   embed(_texts: string[]): Promise<number[][]> {
-    this.ensureConfigured();
     return Promise.reject(
       new Error('DeepSeek embedding is not officially supported by this provider wrapper yet.'),
     );
   }
 
   listModels(): Promise<ModelInfoDTO[]> {
-    this.ensureConfigured();
     return Promise.resolve([
       {
         id: 'deepseek:deepseek-chat',
@@ -167,11 +131,12 @@ export class DeepSeekProvider implements ILLMProvider {
         default: false,
         capabilities: ['chat', 'stream'],
         status: 'active',
-      }
+      },
     ]);
   }
 
-  healthCheck(): Promise<boolean> {
-    return Promise.resolve(this.isConfigured);
+  async healthCheck(): Promise<boolean> {
+    const aiConfig = await this.config.getDeepSeekConfig();
+    return !!aiConfig.apiKey;
   }
 }

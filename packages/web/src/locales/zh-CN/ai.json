@@ -1,0 +1,41 @@
+{
+  "title": "AI 接口配置",
+  "saveButton": "保存配置",
+  "messages": {
+    "loadFailed": "加载 AI 配置失败",
+    "updateSuccess": "AI 配置更新成功",
+    "updateFailed": "AI 配置更新失败"
+  },
+  "tabs": {
+    "general": "通用设置",
+    "openai": "OpenAI",
+    "deepseek": "DeepSeek",
+    "mock": "Mock 设置",
+    "rag": "RAG 设置"
+  },
+  "general": {
+    "defaultProvider": "默认提供商",
+    "defaultProviderHelp": "如果任务没有指定模型提供商，将使用此默认值。",
+    "providers": {
+      "openai": "OpenAI",
+      "deepseek": "DeepSeek",
+      "mock": "Mock"
+    }
+  },
+  "fields": {
+    "apiKey": "API Key",
+    "baseUrl": "Base URL",
+    "defaultModel": "默认模型",
+    "enableMock": "启用 Mock 提供商",
+    "enableRag": "启用 RAG 知识库增强",
+    "ragTopK": "检索条数 (Top K)",
+    "ragChunkSize": "知识库分块大小 (Chunk Size)"
+  },
+  "hints": {
+    "keyConfigured": "API Key 已配置。如不修改请留空。",
+    "requiredForOpenAI": "OpenAI 必填。",
+    "requiredForDeepSeek": "DeepSeek 必填。",
+    "enterApiKey": "请输入 API Key",
+    "maskedKey": "••••••••••••••••"
+  }
+}

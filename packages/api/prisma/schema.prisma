@@ -402,6 +402,15 @@ model ClientMetric {
   @@map("client_metrics")
 }
 
+model SystemConfig {
+  key         String   @id @db.VarChar
+  value       String   @db.Text
+  isEncrypted Boolean  @default(false) @map("is_encrypted")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
+}
+
 model AuditEvent {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   action      String   @db.VarChar

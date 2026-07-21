@@ -38,6 +38,7 @@ import { workspaceService } from '../../services/workspace/WorkspaceService';
 import { Breadcrumb, Dropdown, Tooltip } from 'antd';
 import { FileOutlined, CloseOutlined, BgColorsOutlined, CodeOutlined } from '@ant-design/icons';
 import { resolveWorkspaceKeyboardShortcut } from '../../utils/workspaceKeyboardShortcuts';
+import { useTranslation } from 'react-i18next';
 
 // ---- File icon helper ----
 const getFileIcon = (filename: string): React.ReactNode => {
@@ -73,12 +74,13 @@ const getLanguage = (filename: string): string => {
 
 // ---- Theme options ----
 const THEME_OPTIONS = [
-  { key: 'vs-dark', label: 'Dark (VS Dark)' },
-  { key: 'vs', label: 'Light (VS Light)' },
-  { key: 'hc-black', label: 'High Contrast' },
+  { key: 'vs-dark', labelKey: 'editorPanel.themes.vsDark' },
+  { key: 'vs', labelKey: 'editorPanel.themes.vs' },
+  { key: 'hc-black', labelKey: 'editorPanel.themes.hcBlack' },
 ];
 
 export const EditorPanel: React.FC = React.memo(() => {
+  const { t } = useTranslation('workspace');
   const activeFile = useWorkspaceStore((state) => state.activeFile);
   const openFiles = useWorkspaceStore((state) => state.openFiles);
   const fileContents = useWorkspaceStore((state) => state.fileContents);
@@ -290,8 +292,8 @@ export const EditorPanel: React.FC = React.memo(() => {
     return (
       <div className="h-full bg-gray-100 flex items-center justify-center text-gray-400 flex-col gap-2">
         <CodeOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />
-        <p>No file is open.</p>
-        <p className="text-xs text-gray-300">Open a file from the Explorer to start editing.</p>
+        <p>{t('editorPanel.noFileOpen')}</p>
+        <p className="text-xs text-gray-300">{t('editorPanel.noFileDesc')}</p>
       </div>
     );
   }
@@ -356,7 +358,9 @@ export const EditorPanel: React.FC = React.memo(() => {
             >
               {getFileIcon(filename)}
               <span>{filename}</span>
-              <span className="sr-only">{isActive ? 'Active tab' : 'Inactive tab'}</span>
+              <span className="sr-only">
+                {isActive ? t('editorPanel.activeTab') : t('editorPanel.inactiveTab')}
+              </span>
               {isUnsaved && (
                 <span
                   style={{
@@ -385,9 +389,9 @@ export const EditorPanel: React.FC = React.memo(() => {
         {/* Theme toggle */}
         <Dropdown
           menu={{
-            items: THEME_OPTIONS.map((t) => ({
-              key: t.key,
-              label: t.label,
+            items: THEME_OPTIONS.map((th) => ({
+              key: th.key,
+              label: t(th.labelKey),
             })),
             onClick: ({ key }) => {
               setEditorTheme(key);
@@ -396,7 +400,7 @@ export const EditorPanel: React.FC = React.memo(() => {
           }}
           trigger={['click']}
         >
-          <Tooltip title="Switch Theme">
+          <Tooltip title={t('editorPanel.switchTheme')}>
             <button
               className="px-2 py-1 mr-1 rounded hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}

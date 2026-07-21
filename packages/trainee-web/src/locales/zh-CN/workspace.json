@@ -1,0 +1,239 @@
+{
+  "title": "工作区 - {{taskId}}",
+  "initializing": "正在初始化工作区...",
+  "status": {
+    "saving": "保存中...",
+    "unsaved": "未保存",
+    "saved": "已保存"
+  },
+  "actions": {
+    "build": "构建",
+    "lint": "代码检查",
+    "test": "测试",
+    "sandbox": "沙盒"
+  },
+  "recovery": {
+    "conflictTitle": "离线更改与服务器冲突",
+    "unsavedTitle": "发现未保存的更改",
+    "conflictContent": "您的本地草稿与服务器上的最新工作区不同。请选择保留本地草稿或使用服务器版本。",
+    "unsavedContent": "您有上一个会话中未保存的更改。您想恢复它们吗？",
+    "useServer": "使用服务器版本",
+    "recover": "恢复",
+    "keepLocal": "保留本地草稿",
+    "discard": "放弃"
+  },
+  "leftPanel": {
+    "explorer": {
+      "title": "资源管理器",
+      "label": "文件"
+    },
+    "objective": {
+      "title": "任务目标",
+      "label": "目标",
+      "headerTitle": "任务目标",
+      "headerDesc": "当前任务的具体要求与背景说明",
+      "loading": "正在加载任务目标...",
+      "noObjective": "暂无任务说明"
+    },
+    "mentor": {
+      "title": "AI 导师",
+      "label": "AI"
+    },
+    "versions": {
+      "title": "版本历史",
+      "label": "版本"
+    },
+    "submissions": {
+      "title": "提交记录",
+      "label": "提交"
+    },
+    "knowledge": {
+      "title": "知识库",
+      "label": "知识"
+    },
+    "mentorHuman": {
+      "title": "导师讨论",
+      "label": "讨论"
+    },
+    "noTask": "暂无任务"
+  },
+  "bottomPanel": {
+    "execution": "执行",
+    "terminal": {
+      "title": "终端",
+      "comingSoon": "终端组件将在未来的更新中提供。"
+    },
+    "problems": {
+      "title": "问题",
+      "noProblems": "工作区未检测到问题。"
+    },
+    "output": {
+      "title": "输出",
+      "comingSoon": "输出流将在未来的更新中提供。"
+    }
+  },
+  "execution": {
+    "console": "控制台",
+    "noLogs": "暂无日志。",
+    "summary": "摘要",
+    "noSummary": "暂无摘要。",
+    "metricsTitle": "执行指标",
+    "status": "状态",
+    "exitCode": "退出码",
+    "duration": "耗时 (ms)",
+    "logsCount": "日志数量",
+    "startTime": "开始时间",
+    "endTime": "结束时间",
+    "score": "得分",
+    "na": "无",
+    "report": "报告",
+    "systemError": "系统错误",
+    "aiReview": "AI 审查"
+  },
+  "chatPanel": {
+    "emptyState": "向 AI 导师提问以开始！",
+    "you": "你",
+    "aiMentor": "AI 导师",
+    "context": "上下文：",
+    "placeholder": "向 AI 导师提问... (回车发送)"
+  },
+  "aiReview": {
+    "generating": "正在生成 AI 审查...",
+    "fetchFailed": "获取 AI 审查失败。",
+    "networkError": "网络错误：获取 AI 审查失败。",
+    "noReview": "此提交暂无 AI 审查。",
+    "summary": "AI 总结",
+    "suggestions": "建议",
+    "issues": "发现的问题",
+    "applyFix": "应用修复"
+  },
+  "versionsPanel": {
+    "title": "版本历史",
+    "createVersion": "新建版本",
+    "emptyStateTitle": "暂无版本历史",
+    "emptyStateDesc": "点击右上角“新建版本”以保存当前工作区的快照。",
+    "createNow": "立即创建",
+    "version": "版本 {{version}}",
+    "restore": "恢复",
+    "confirmRestore": "确定要恢复到版本 {{version}} 吗？这将覆盖您当前的草稿。",
+    "messages": {
+      "loadFailed": "加载版本历史失败",
+      "restoreSuccess": "已恢复到版本 {{version}}",
+      "restoreFailed": "恢复版本失败",
+      "createSuccess": "版本已创建",
+      "createFailed": "创建版本失败"
+    }
+  },
+  "submissionsPanel": {
+    "title": "提交记录",
+    "emptyStateTitle": "暂无提交记录",
+    "emptyStateDesc": "在顶部导航栏点击“Submit”即可提交代码并自动运行 CI 验证。",
+    "score": "分数: {{score}}",
+    "noScore": "分数: -",
+    "viewLogs": "查看日志",
+    "noLogs": "此提交暂无日志。",
+    "messages": {
+      "loadFailed": "加载提交记录失败"
+    }
+  },
+  "mentorPanel": {
+    "title": "导师讨论",
+    "askQuestion": "发起提问",
+    "createTitle": "向导师提问",
+    "titlePlaceholder": "问题概要",
+    "descPlaceholder": "详细描述你遇到的卡点...",
+    "sendQuestion": "发送问题",
+    "stats": "统计概览:",
+    "needsAttention": "需处理: {{count}}",
+    "waiting": "等待中: {{count}}",
+    "resolved": "已解决: {{count}}",
+    "emptyStateTitle": "暂无讨论记录",
+    "emptyStateDesc": "遇到困难？随时向导师发起求助。",
+    "askNow": "立即提问",
+    "assigned": "已分配",
+    "internalNotes": "{{count}} 内部记录",
+    "mentions": "{{count}} 提及",
+    "overdue": "已逾期",
+    "internalNote": "内部记录",
+    "mentionPlaceholder": "@提及他人",
+    "replyPlaceholder": "输入你的回复...",
+    "assignToMe": "接手",
+    "waitTrainee": "等学员回复",
+    "resolve": "解决",
+    "sendReply": "发送回复",
+    "urgent": "紧急",
+    "high": "高优",
+    "lastActive": "最后活跃: {{time}}",
+    "status": {
+      "open": "待处理",
+      "inProgress": "处理中",
+      "waitingForTrainee": "等学员回复",
+      "resolved": "已解决",
+      "closed": "已关闭"
+    },
+    "messages": {
+      "loadFailed": "加载讨论记录失败",
+      "emptyTitle": "标题和问题不能为空",
+      "sentSuccess": "问题已发送给导师！",
+      "createFailed": "创建讨论失败",
+      "replyFailed": "发送回复失败",
+      "assignSuccess": "讨论已分配给你",
+      "assignFailed": "分配讨论失败",
+      "resolveSuccess": "讨论已标记为解决",
+      "resolveFailed": "解决讨论失败",
+      "waitSuccess": "已标记为等学员回复",
+      "statusFailed": "更新讨论状态失败"
+    }
+  },
+  "knowledgePanel": {
+    "title": "知识库",
+    "searchPlaceholder": "搜索知识库内容...",
+    "searchResults": "搜索结果",
+    "referenceDocs": "参考文档",
+    "emptyState": "暂无参考文档"
+  },
+  "fileTree": {
+    "title": "资源管理器",
+    "desc": "浏览并管理当前任务文件",
+    "searchPlaceholder": "搜索文件...",
+    "noFiles": "无文件",
+    "recentFiles": "最近打开的文件",
+    "contextMenu": {
+      "newFile": "新建文件",
+      "newFolder": "新建文件夹",
+      "rename": "重命名",
+      "delete": "删除"
+    },
+    "modal": {
+      "newFile": "创建文件",
+      "newFolder": "创建文件夹",
+      "rename": "重命名",
+      "confirm": "确定",
+      "nameFile": "输入文件名",
+      "nameFolder": "输入文件夹名",
+      "newName": "输入新名称"
+    },
+    "deleteConfirm": {
+      "title": "删除文件",
+      "content": "您确定要删除 {{path}} 吗？",
+      "ok": "删除"
+    },
+    "messages": {
+      "actionFailed": "操作失败: {{action}}",
+      "deleteSuccess": "已删除",
+      "deleteFailed": "删除失败"
+    }
+  },
+  "editorPanel": {
+    "noFileOpen": "未打开任何文件",
+    "noFileDesc": "从资源管理器打开一个文件开始编辑。",
+    "activeTab": "活动标签",
+    "inactiveTab": "非活动标签",
+    "switchTheme": "切换主题",
+    "themes": {
+      "vsDark": "深色 (VS Dark)",
+      "vs": "浅色 (VS Light)",
+      "hcBlack": "高对比度"
+    }
+  }
+}

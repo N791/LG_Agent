@@ -1,0 +1,47 @@
+{
+  "auth": {
+    "login": "Login to LG_Agent",
+    "logout": "Logout and clear token",
+    "whoami": "Check current logged in user",
+    "usernamePrompt": "Username:",
+    "passwordPrompt": "Password:",
+    "loginCancelled": "Login cancelled.",
+    "loginSuccess": "Successfully logged in!",
+    "loginFailed": "Login failed: {{message}}",
+    "logoutSuccess": "Logged out successfully.",
+    "notLoggedIn": "Not logged in.",
+    "invalidTokenFormat": "Invalid token format.",
+    "loggedInAs": "Logged in as: {{username}} ({{role}})",
+    "invalidOrMissingToken": "Invalid or missing token. Please login again."
+  },
+  "course": {
+    "list": "List all available courses",
+    "tasks": "List tasks for a specific course",
+    "noCourses": "No courses found.",
+    "availableCourses": "\nAvailable Courses:",
+    "fetchCoursesFailed": "Failed to fetch courses: {{message}}",
+    "noTasks": "No tasks found for this course.",
+    "tasksForCourse": "\nTasks for Course [{{courseId}}]:",
+    "fetchTasksFailed": "Failed to fetch tasks: {{message}}"
+  },
+  "workspace": {
+    "pull": "Pull a task and create a local workspace",
+    "submit": "Submit current workspace code to Sandbox for testing",
+    "pulling": "Fetching task [{{taskId}}]...",
+    "successPull": "\nSuccess! Workspace ready at {{targetDir}}",
+    "nextSteps": "Next steps:",
+    "step1": "  1. Write your code in index.js",
+    "step2": "  2. Run 'lg-agent workspace submit' to test it in the sandbox",
+    "pullFailed": "Failed to pull task: {{message}}",
+    "notInWorkspace": "Error: Not in a valid LG_Agent workspace. Missing .lg-agent-workspace.json",
+    "indexNotFound": "Error: index.js not found in current directory.",
+    "submitting": "Submitting task [{{taskId}}] to Sandbox Engine...",
+    "sandboxResult": "\n--- Sandbox Execution Result ---",
+    "status": "Status: ",
+    "passed": "PASSED",
+    "score": "Score: ",
+    "logs": "\nLogs:",
+    "separator": "--------------------------------\n",
+    "submitFailed": "Failed to submit code: {{message}}"
+  }
+}

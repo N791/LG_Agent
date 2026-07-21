@@ -1,9 +1,10 @@
 import { Module, OnModuleInit, Logger } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { PromptBuilderService } from './prompt-builder.service';
 import { FilePromptRepository } from './providers/file-prompt.repository';
 import { LLMGatewayService } from './gateway/llm-gateway.service';
 import { ProviderRegistry } from './providers/provider-registry.service';
+import { AiConfigService } from './ai-config.service';
 import { MockLLMProvider } from './providers/mock.provider';
 import { OpenAIProvider } from './providers/openai.provider';
 import { DeepSeekProvider } from './providers/deepseek.provider';
@@ -21,7 +22,11 @@ import { KeywordMatcher } from './filters/rule-engine/matchers/keyword.matcher';
 import { ContentFilterEngine } from './filters/rule-engine/rule-engine.service';
 import { AiConversationService } from './conversation/ai-conversation.service';
 import { PromptAssemblyPipeline } from './conversation/prompt-assembly.pipeline';
-import { ContextBuilder, WorkspaceContextProvider, ActiveFileProvider } from './conversation/context-builder';
+import {
+  ContextBuilder,
+  WorkspaceContextProvider,
+  ActiveFileProvider,
+} from './conversation/context-builder';
 import { AskStrategy } from './tutor/strategies/ask.strategy';
 import { CodeReviewStrategy } from './tutor/strategies/code-review.strategy';
 import { ExplainErrorStrategy } from './tutor/strategies/explain-error.strategy';
@@ -72,6 +77,7 @@ import { WorkspaceModule } from '../workspace/workspace.module';
     ActiveFileProvider,
     ContextBuilder,
     PromptAssemblyPipeline,
+    AiConfigService,
     LLMGatewayService,
     ProviderRegistry,
     MockLLMProvider,
@@ -132,7 +138,7 @@ export class AiModule implements OnModuleInit {
     private readonly mockLLMProvider: MockLLMProvider,
     private readonly openAIProvider: OpenAIProvider,
     private readonly deepSeekProvider: DeepSeekProvider,
-    private readonly configService: ConfigService,
+
     private readonly quickActionRegistry: QuickActionRegistry,
     private readonly staticFollowUpProvider: StaticFollowUpProvider,
     private readonly knowledgeIndexService: KnowledgeIndexService,
@@ -151,12 +157,8 @@ export class AiModule implements OnModuleInit {
       this.providerRegistry.register(this.deepSeekProvider);
     }
 
-    // Register Mock Provider ONLY if enabled in config
-    const enableMock = this.configService.get<boolean>('ENABLE_MOCK_PROVIDER');
-    if (enableMock) {
-      this.logger.log('Mock Provider is ENABLED via configuration.');
-      this.providerRegistry.register(this.mockLLMProvider);
-    }
+    // Always register Mock Provider so it can be selected via System Settings UI
+    this.providerRegistry.register(this.mockLLMProvider);
 
     // Set Fallback (handled inside getFallbackProvider based on config)
     // Register Quick Actions

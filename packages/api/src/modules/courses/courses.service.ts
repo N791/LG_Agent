@@ -30,7 +30,7 @@ export class CoursesService {
       },
     });
     if (!course) {
-      throw new NotFoundException(`Course with ID ${id} not found`);
+      throw new NotFoundException({ message: 'errors.course.notFound', args: { id } });
     }
     return course;
   }

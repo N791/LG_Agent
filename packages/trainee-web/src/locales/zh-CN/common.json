@@ -1,0 +1,14 @@
+{
+  "loading": "加载中...",
+  "error": "发生错误",
+  "success": "成功",
+  "save": "保存",
+  "submit": "提交",
+  "cancel": "取消",
+  "confirm": "确认",
+  "run": "运行",
+  "nav": {
+    "missionHub": "任务中心",
+    "dashboard": "控制台"
+  }
+}

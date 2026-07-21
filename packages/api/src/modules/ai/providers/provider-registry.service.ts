@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ILLMProvider } from '../interfaces/llm-provider.interface';
+import { AiConfigService } from '../ai-config.service';
 
 @Injectable()
 export class ProviderRegistry {
   private readonly logger = new Logger(ProviderRegistry.name);
   private readonly providers = new Map<string, ILLMProvider>();
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly config: AiConfigService) {}
 
   register(provider: ILLMProvider) {
     this.providers.set(provider.name, provider);
@@ -17,7 +17,7 @@ export class ProviderRegistry {
   getProvider(name: string): ILLMProvider {
     const provider = this.providers.get(name);
     if (!provider) {
-      throw new NotFoundException(`LLM Provider '${name}' not found.`);
+      throw new NotFoundException({ message: 'errors.ai.providerNotFound', args: { name } });
     }
     return provider;
   }
@@ -26,9 +26,9 @@ export class ProviderRegistry {
     return Array.from(this.providers.values());
   }
 
-  getFallbackProvider(): ILLMProvider {
+  async getFallbackProvider(): Promise<ILLMProvider> {
     // 1. If explicit default provider is configured and available
-    const defaultName = this.configService.get<string>('LLM_PROVIDER');
+    const defaultName = await this.config.getDefaultProvider();
     if (defaultName) {
       const provider = this.providers.get(defaultName);
       if (provider) return provider;

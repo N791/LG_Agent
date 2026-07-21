@@ -21,7 +21,7 @@ export class WorkspaceService {
     });
 
     if (!workspace) {
-      throw new NotFoundException(`Workspace for task ${taskId} not found`);
+      throw new NotFoundException({ message: 'errors.workspace.notFound', args: { taskId } });
     }
 
     return this.mapToDTO(workspace);
@@ -38,7 +38,7 @@ export class WorkspaceService {
     });
 
     if (!workspace) {
-      throw new NotFoundException(`Workspace not found`);
+      throw new NotFoundException('errors.workspace.workspaceNotFound');
     }
 
     await this.prisma.$transaction(async (prisma) => {
@@ -78,7 +78,7 @@ export class WorkspaceService {
     });
 
     if (!workspace) {
-      throw new NotFoundException(`Workspace not found`);
+      throw new NotFoundException('errors.workspace.workspaceNotFound');
     }
 
     const existingFile = await this.prisma.workspaceFile.findUnique({
@@ -86,11 +86,11 @@ export class WorkspaceService {
     });
 
     if (!existingFile) {
-      throw new NotFoundException(`File not found: ${path}`);
+      throw new NotFoundException({ message: 'errors.workspace.fileNotFound', args: { path } });
     }
 
     if (existingFile.readonly || existingFile.locked) {
-      throw new BadRequestException(`Cannot delete readonly or locked file: ${path}`);
+      throw new BadRequestException({ message: 'errors.workspace.deleteReadonly', args: { path } });
     }
 
     await this.prisma.workspaceFile.delete({
@@ -111,7 +111,7 @@ export class WorkspaceService {
     });
 
     if (!workspace) {
-      throw new NotFoundException(`Workspace not found`);
+      throw new NotFoundException({ message: 'errors.workspace.notFound', args: { taskId } });
     }
 
     const currentVersionCount = await this.prisma.workspaceVersion.count({
@@ -155,7 +155,7 @@ export class WorkspaceService {
     });
 
     if (!workspace) {
-      throw new NotFoundException(`Workspace not found`);
+      throw new NotFoundException({ message: 'errors.workspace.notFound', args: { taskId } });
     }
 
     const versions = await this.prisma.workspaceVersion.findMany({
@@ -178,19 +178,19 @@ export class WorkspaceService {
   async restoreVersion(taskId: string, userId: string, versionId: string): Promise<WorkspaceDTO> {
     const workspace = await this.prisma.workspace.findUnique({
       where: { userId_taskId: { userId, taskId } },
-      include: { files: true },
+      include: { files: true, versions: true },
     });
 
     if (!workspace) {
-      throw new NotFoundException(`Workspace not found`);
+      throw new NotFoundException({ message: 'errors.workspace.notFound', args: { taskId } });
     }
 
-    const version = await this.prisma.workspaceVersion.findUnique({
-      where: { id: versionId },
-    });
-
-    if (version?.workspaceId !== workspace.id) {
-      throw new NotFoundException(`Version not found`);
+    const version = workspace.versions.find((v) => v.id === versionId);
+    if (!version) {
+      throw new NotFoundException({
+        message: 'errors.workspace.versionNotFound',
+        args: { versionId },
+      });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

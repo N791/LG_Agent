@@ -1,10 +1,12 @@
 /* eslint-disable */
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Tabs, Card, message, Switch, Select } from 'antd';
+import { useEffect, useState } from 'react';
+import { Form, Input, Button, Tabs, Card, message, Switch, Select, InputNumber } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import request from '../../utils/request';
+import { useTranslation } from 'react-i18next';
 
 export default function AiSettings() {
+  const { t } = useTranslation('ai');
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -28,9 +30,13 @@ export default function AiSettings() {
 
         DEEPSEEK_BASE_URL: (res as any).DEEPSEEK_BASE_URL,
         DEEPSEEK_DEFAULT_MODEL: (res as any).DEEPSEEK_DEFAULT_MODEL,
+
+        RAG_ENABLED: (res as any).RAG_ENABLED !== 'false',
+        RAG_TOP_K: (res as any).RAG_TOP_K ? Number((res as any).RAG_TOP_K) : 3,
+        RAG_CHUNK_SIZE: (res as any).RAG_CHUNK_SIZE ? Number((res as any).RAG_CHUNK_SIZE) : 1000,
       });
     } catch (err) {
-      message.error('Failed to load AI Configurations');
+      message.error(t('messages.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -42,6 +48,9 @@ export default function AiSettings() {
       const payload = {
         ...values,
         MOCK_LLM_ENABLED: values.MOCK_LLM_ENABLED ? 'true' : 'false',
+        RAG_ENABLED: values.RAG_ENABLED ? 'true' : 'false',
+        RAG_TOP_K: values.RAG_TOP_K?.toString(),
+        RAG_CHUNK_SIZE: values.RAG_CHUNK_SIZE?.toString(),
       };
 
       // Do not send empty string for API keys if they were not modified
@@ -49,10 +58,10 @@ export default function AiSettings() {
       if (!payload.DEEPSEEK_API_KEY) delete payload.DEEPSEEK_API_KEY;
 
       await request.post('/system/configs/ai', payload);
-      message.success('AI Configurations updated successfully');
+      message.success(t('messages.updateSuccess'));
       fetchConfigs();
     } catch (err) {
-      message.error('Failed to update AI Configurations');
+      message.error(t('messages.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -61,18 +70,18 @@ export default function AiSettings() {
   const items = [
     {
       key: 'general',
-      label: 'General Settings',
+      label: t('tabs.general'),
       children: (
         <>
           <Form.Item
-            label="Default Provider"
+            label={t('general.defaultProvider')}
             name="DEFAULT_AI_PROVIDER"
-            help="The provider to use if a task doesn't specify one."
+            help={t('general.defaultProviderHelp')}
           >
             <Select>
-              <Select.Option value="openai">OpenAI</Select.Option>
-              <Select.Option value="deepseek">DeepSeek</Select.Option>
-              <Select.Option value="mock">Mock</Select.Option>
+              <Select.Option value="openai">{t('general.providers.openai')}</Select.Option>
+              <Select.Option value="deepseek">{t('general.providers.deepseek')}</Select.Option>
+              <Select.Option value="mock">{t('general.providers.mock')}</Select.Option>
             </Select>
           </Form.Item>
         </>
@@ -80,26 +89,26 @@ export default function AiSettings() {
     },
     {
       key: 'openai',
-      label: 'OpenAI',
+      label: t('tabs.openai'),
       children: (
         <>
           <Form.Item
-            label="API Key"
+            label={t('fields.apiKey')}
             name="OPENAI_API_KEY"
             help={
-              data.OPENAI_API_KEY_EXISTS
-                ? 'An API Key is already configured. Leave blank to keep the existing key.'
-                : 'Required for OpenAI.'
+              data.OPENAI_API_KEY_EXISTS ? t('hints.keyConfigured') : t('hints.requiredForOpenAI')
             }
           >
             <Input.Password
-              placeholder={data.OPENAI_API_KEY_EXISTS ? '••••••••••••••••' : 'Enter API Key'}
+              placeholder={
+                data.OPENAI_API_KEY_EXISTS ? t('hints.maskedKey') : t('hints.enterApiKey')
+              }
             />
           </Form.Item>
-          <Form.Item label="Base URL" name="OPENAI_BASE_URL">
+          <Form.Item label={t('fields.baseUrl')} name="OPENAI_BASE_URL">
             <Input placeholder="https://api.openai.com/v1" />
           </Form.Item>
-          <Form.Item label="Default Model" name="OPENAI_DEFAULT_MODEL">
+          <Form.Item label={t('fields.defaultModel')} name="OPENAI_DEFAULT_MODEL">
             <Input placeholder="gpt-4o" />
           </Form.Item>
         </>
@@ -107,26 +116,28 @@ export default function AiSettings() {
     },
     {
       key: 'deepseek',
-      label: 'DeepSeek',
+      label: t('tabs.deepseek'),
       children: (
         <>
           <Form.Item
-            label="API Key"
+            label={t('fields.apiKey')}
             name="DEEPSEEK_API_KEY"
             help={
               data.DEEPSEEK_API_KEY_EXISTS
-                ? 'An API Key is already configured. Leave blank to keep the existing key.'
-                : 'Required for DeepSeek.'
+                ? t('hints.keyConfigured')
+                : t('hints.requiredForDeepSeek')
             }
           >
             <Input.Password
-              placeholder={data.DEEPSEEK_API_KEY_EXISTS ? '••••••••••••••••' : 'Enter API Key'}
+              placeholder={
+                data.DEEPSEEK_API_KEY_EXISTS ? t('hints.maskedKey') : t('hints.enterApiKey')
+              }
             />
           </Form.Item>
-          <Form.Item label="Base URL" name="DEEPSEEK_BASE_URL">
+          <Form.Item label={t('fields.baseUrl')} name="DEEPSEEK_BASE_URL">
             <Input placeholder="https://api.deepseek.com/v1" />
           </Form.Item>
-          <Form.Item label="Default Model" name="DEEPSEEK_DEFAULT_MODEL">
+          <Form.Item label={t('fields.defaultModel')} name="DEEPSEEK_DEFAULT_MODEL">
             <Input placeholder="deepseek-chat" />
           </Form.Item>
         </>
@@ -134,11 +145,28 @@ export default function AiSettings() {
     },
     {
       key: 'mock',
-      label: 'Mock Settings',
+      label: t('tabs.mock'),
       children: (
         <>
-          <Form.Item label="Enable Mock Provider" name="MOCK_LLM_ENABLED" valuePropName="checked">
+          <Form.Item label={t('fields.enableMock')} name="MOCK_LLM_ENABLED" valuePropName="checked">
             <Switch />
+          </Form.Item>
+        </>
+      ),
+    },
+    {
+      key: 'rag',
+      label: t('tabs.rag'),
+      children: (
+        <>
+          <Form.Item label={t('fields.enableRag')} name="RAG_ENABLED" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <Form.Item label={t('fields.ragTopK')} name="RAG_TOP_K">
+            <InputNumber min={1} max={20} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item label={t('fields.ragChunkSize')} name="RAG_CHUNK_SIZE">
+            <InputNumber min={100} max={10000} step={100} style={{ width: '100%' }} />
           </Form.Item>
         </>
       ),
@@ -147,13 +175,13 @@ export default function AiSettings() {
 
   return (
     <div style={{ padding: 24 }}>
-      <Card title="AI API Configurations" loading={loading}>
+      <Card title={t('title')} loading={loading}>
         <Form form={form} layout="vertical" onFinish={onFinish} style={{ maxWidth: 600 }}>
           <Tabs defaultActiveKey="general" items={items} />
 
           <Form.Item style={{ marginTop: 24 }}>
             <Button type="primary" htmlType="submit" icon={<SaveOutlined />} loading={saving}>
-              Save Configurations
+              {t('saveButton')}
             </Button>
           </Form.Item>
         </Form>

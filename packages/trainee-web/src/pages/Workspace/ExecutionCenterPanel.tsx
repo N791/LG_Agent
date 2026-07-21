@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Tabs, Spin, Tag, Descriptions, Card, Progress } from 'antd';
 import { ExecutionMetricsDTO, AiReviewDTO } from '@lg-agent/contracts';
 import { AIReviewTab } from './AIReviewTab';
+import { useTranslation } from 'react-i18next';
 
 export interface ExecutionState {
   mode: 'LIVE' | 'HISTORY';
@@ -16,6 +17,7 @@ export interface ExecutionState {
 }
 
 export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ state }) => {
+  const { t } = useTranslation('workspace');
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState('console');
 
@@ -83,26 +85,25 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
         items={[
           {
             key: 'console',
-            label: `Console (${String(state.metrics?.logCount ?? 0)})`,
+            label: `${t('execution.console')} (${String(state.metrics?.logCount ?? 0)})`,
             children: (
               <div
                 ref={scrollRef}
-                className="h-[calc(100vh-450px)] p-4 overflow-auto text-gray-300 font-mono text-sm whitespace-pre-wrap bg-[#1e1e1e]"
-                style={{ height: '100%', minHeight: 200 }}
+                className="flex-1 p-4 overflow-y-auto text-gray-300 font-mono text-sm whitespace-pre-wrap bg-[#1e1e1e]"
               >
-                {state.logs || 'No logs yet.'}
+                {state.logs || t('execution.noLogs')}
               </div>
             ),
           },
           {
             key: 'summary',
-            label: 'Summary',
+            label: t('execution.summary'),
             children: (
-              <div className="p-4 overflow-auto bg-gray-50 text-gray-800 h-full">
+              <div className="flex-1 p-4 overflow-y-auto bg-gray-50 text-gray-800">
                 {state.metrics ? (
                   <Card
                     size="small"
-                    title="Execution Metrics"
+                    title={t('execution.metricsTitle')}
                     className="mb-4 bg-white border-gray-200 shadow-sm"
                   >
                     <Descriptions
@@ -111,34 +112,38 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
                       bordered
                       className="metrics-descriptions bg-white"
                     >
-                      <Descriptions.Item label="Status">{state.status}</Descriptions.Item>
-                      <Descriptions.Item label="Exit Code">
-                        {state.metrics.exitCode ?? 'N/A'}
+                      <Descriptions.Item label={t('execution.status')}>
+                        {state.status}
                       </Descriptions.Item>
-                      <Descriptions.Item label="Duration (ms)">
-                        {state.metrics.durationMs}ms
+                      <Descriptions.Item label={t('execution.exitCode')}>
+                        {state.metrics.exitCode ?? t('execution.na')}
                       </Descriptions.Item>
-                      <Descriptions.Item label="Logs Count">
+                      <Descriptions.Item label={t('execution.duration')}>
+                        {state.metrics.durationMs}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t('execution.logsCount')}>
                         {state.metrics.logCount}
                       </Descriptions.Item>
-                      <Descriptions.Item label="Start Time">
+                      <Descriptions.Item label={t('execution.startTime')}>
                         {new Date(state.metrics.startTime ?? 0).toLocaleTimeString()}
                       </Descriptions.Item>
-                      <Descriptions.Item label="End Time">
+                      <Descriptions.Item label={t('execution.endTime')}>
                         {state.metrics.endTime
                           ? new Date(state.metrics.endTime).toLocaleTimeString()
-                          : 'N/A'}
+                          : t('execution.na')}
                       </Descriptions.Item>
-                      <Descriptions.Item label="Score">{state.score ?? 'N/A'}</Descriptions.Item>
+                      <Descriptions.Item label={t('execution.score')}>
+                        {state.score ?? t('execution.na')}
+                      </Descriptions.Item>
                     </Descriptions>
                   </Card>
                 ) : (
-                  <div className="text-gray-500">No summary available.</div>
+                  <div className="text-gray-500">{t('execution.noSummary')}</div>
                 )}
                 {state.report?.message && (
                   <Card
                     size="small"
-                    title="Report"
+                    title={t('execution.report')}
                     className="bg-red-50 border-red-200 mt-4 text-red-700 font-mono shadow-sm"
                   >
                     {state.report.message}
@@ -147,7 +152,7 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
                 {state.error && (
                   <Card
                     size="small"
-                    title="System Error"
+                    title={t('execution.systemError')}
                     className="bg-red-50 border-red-300 mt-4 text-red-700 font-mono shadow-sm"
                   >
                     {state.error}
@@ -160,7 +165,7 @@ export const ExecutionCenterPanel: React.FC<{ state: ExecutionState }> = ({ stat
             ? [
                 {
                   key: 'review',
-                  label: 'AI Review',
+                  label: t('execution.aiReview'),
                   children: (
                     <AIReviewTab
                       submissionId={state.submissionId ?? ''}

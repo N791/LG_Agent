@@ -13,8 +13,8 @@ export class Ai2TaskService {
   constructor(private readonly llmGateway: LLMGatewayService) {}
 
   async generateTaskDraft(request: GenerateTaskRequest): Promise<Record<string, unknown>> {
-    if (!request.document) {
-      throw new BadRequestException('Document content is required.');
+    if (!request.document.trim()) {
+      throw new BadRequestException('errors.ai.contentRequired');
     }
 
     const systemPrompt = `
@@ -101,7 +101,7 @@ CRITICAL RULES:
       };
     } catch (error: unknown) {
       this.logger.error(`Failed to generate task draft: ${(error as Error).message}`);
-      throw new BadRequestException('Failed to parse LLM response into a valid Task draft.');
+      throw new BadRequestException('errors.ai.parseFailed');
     }
   }
 }

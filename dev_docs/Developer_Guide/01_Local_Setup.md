@@ -4,7 +4,7 @@
 
 ## 1. 环境准备 (Prerequisites)
 
-- **Node.js**: `v18.x` 或以上版本。
+- **Node.js**: `v20.x` 或以上版本。
 - **包管理器**: `pnpm` (`npm install -g pnpm`)。推荐由于 Turborepo 与 pnpm workspaces 的完美兼容。
 - **Docker**: 用于启动本地的数据库和缓存等依赖服务。
 
@@ -58,8 +58,9 @@ pnpm run dev
 该命令等价于 `pnpm turbo run dev --ui=tui`。它会：
 
 1. 在端口 `3000` 启动 NestJS API 服务。
-2. 在端口 `5173` 启动 Vite React 前端服务。
-3. 提供一个控制台交互式 TUI (Terminal UI)，您可以方便地查看不同微服务的日志。
+2. 在端口 `8081` 启动 Web 管理后台服务。
+3. 在端口 `8080` 启动 Trainee Web 闯关工作区服务。
+4. 提供一个控制台交互式 TUI (Terminal UI)，您可以方便地查看不同微服务的日志。
 
 ## 6. 测试环境
 

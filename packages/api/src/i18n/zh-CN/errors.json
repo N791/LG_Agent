@@ -1,0 +1,55 @@
+{
+  "auth": {
+    "userNotFound": "用户不存在",
+    "invalidCredentials": "凭据无效",
+    "invalidToken": "无效的令牌",
+    "passwordIncorrect": "当前密码不正确"
+  },
+  "workspace": {
+    "notFound": "找不到任务 {{taskId}} 的工作区",
+    "initRequired": "找不到任务 {{taskId}} 的工作区。请先初始化。",
+    "workspaceNotFound": "工作区未找到",
+    "fileNotFound": "找不到文件: {{path}}",
+    "deleteReadonly": "无法删除只读或锁定文件: {{path}}",
+    "versionNotFound": "版本未找到"
+  },
+  "task": {
+    "courseIdRequired": "必须提供 courseId",
+    "notFound": "找不到 ID 为 {{id}} 的任务"
+  },
+  "submission": {
+    "notFound": "找不到提交记录 {{id}}"
+  },
+  "schema": {
+    "notFound": "找不到架构 '{{name}}'",
+    "validationFailed": "验证架构 '{{schemaName}}' 失败"
+  },
+  "report": {
+    "unsupportedType": "暂不支持报告类型 '{{type}}'",
+    "unsupportedFormat": "暂不支持导出格式 '{{format}}'"
+  },
+  "organization": {
+    "notFound": "找不到 ID 为 {{id}} 的组织"
+  },
+  "discussion": {
+    "notFound": "讨论未找到"
+  },
+  "course": {
+    "notFound": "找不到 ID 为 {{id}} 的课程",
+    "notAvailable": "没有可用的课程"
+  },
+  "ai": {
+    "submissionNotFound": "找不到提交记录 {{id}}",
+    "promptNotFound": "找不到提示词模板 {{id}}",
+    "providerNotFound": "找不到 LLM 提供商 '{{name}}'",
+    "knowledgeNotFound": "找不到知识文档 {{id}}",
+    "blockedByRule": "请求被安全规则拦截: {{rule}}",
+    "contentRequired": "文档内容不能为空",
+    "parseFailed": "解析 LLM 响应为任务草稿失败",
+    "unsupportedAction": "不支持的操作: {{action}}",
+    "actionRequired": "action 和 content 不能为空"
+  },
+  "sandbox": {
+    "executionNotFound": "找不到执行记录 {{id}}，或已完成。"
+  }
+}

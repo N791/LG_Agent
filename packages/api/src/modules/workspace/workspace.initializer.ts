@@ -30,7 +30,7 @@ export class WorkspaceInitializer {
     });
 
     if (!task) {
-      throw new NotFoundException(`Task ${taskId} not found.`);
+      throw new NotFoundException({ message: 'errors.task.notFound', args: { id: taskId } });
     }
 
     // 3. Extract Starter Template from sandboxConfig or envConfig

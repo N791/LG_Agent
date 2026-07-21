@@ -3,12 +3,12 @@ import { Task } from '../types';
 
 export const tasksService = {
   getTask: async (id: string): Promise<Task> => {
-    const { data } = await request.get<Task>(`/tasks/${id}`);
-    return data;
+    const res = await request.get<unknown, Task>(`/tasks/${id}`);
+    return res;
   },
-  
+
   updateTask: async (id: string, payload: Partial<Task>): Promise<Task> => {
-    const { data } = await request.patch<Task>(`/tasks/${id}`, payload);
-    return data;
-  }
+    const res = await request.patch<unknown, Task>(`/tasks/${id}`, payload);
+    return res;
+  },
 };

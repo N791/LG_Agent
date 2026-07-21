@@ -19,11 +19,13 @@ import { courseService, CourseDTO } from '../../services/courseService';
 import { achievementService } from '../../services/achievementService';
 import { AchievementDTO } from '@lg-agent/contracts';
 import { LearningTimeline } from './LearningTimeline';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
 const MissionHub: React.FC = () => {
+  const { t } = useTranslation('missionHub');
   const navigate = useNavigate();
   const { courseId } = useParams<{ courseId: string }>();
 
@@ -70,7 +72,7 @@ const MissionHub: React.FC = () => {
         setTasks(Array.isArray(tasksData) ? tasksData : []);
       } catch (err) {
         (window as any).__LAST_ERROR = err instanceof Error ? err.stack : JSON.stringify(err);
-        setError('Failed to load mission hub data. Please try again later.');
+        setError(t('errors.loadFailed'));
         console.error('FETCH DATA ERROR:', err);
       } finally {
         setLoading(false);
@@ -111,7 +113,7 @@ const MissionHub: React.FC = () => {
       return (
         <div className="py-12 bg-white rounded-lg border border-gray-100 flex flex-col items-center justify-center">
           <BookOutlined className="text-4xl text-gray-300 mb-4" />
-          <Text className="text-gray-500">No missions found matching your criteria.</Text>
+          <Text className="text-gray-500">{t('errors.noMissions')}</Text>
         </div>
       );
     }
@@ -148,14 +150,14 @@ const MissionHub: React.FC = () => {
       <div className="max-w-7xl mx-auto p-12">
         <Result
           status="500"
-          title="Oops, something went wrong!"
+          title={t('errors.oops')}
           subTitle={
             <div>
               <p>{error}</p>
               <pre className="text-left mt-4 text-xs text-red-500 max-w-2xl overflow-auto p-4 bg-gray-50 border rounded">
                 {(window as any).__LAST_ERROR
                   ? String((window as any).__LAST_ERROR)
-                  : 'No error details'}
+                  : t('errors.noDetails')}
               </pre>
             </div>
           }
@@ -166,7 +168,7 @@ const MissionHub: React.FC = () => {
                 window.location.reload();
               }}
             >
-              Try Again
+              {t('actions.tryAgain')}
             </Button>
           }
         />
@@ -184,20 +186,21 @@ const MissionHub: React.FC = () => {
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex-1">
             <Title level={2} className="!mb-2 !text-gray-800">
-              {course?.title ?? 'Mission Hub'}
+              {course?.title ?? t('header.defaultTitle')}
             </Title>
             <Paragraph className="text-gray-500 mb-0 max-w-2xl text-base">
-              {course?.description ??
-                'Welcome! Continue your training journey by selecting a mission below.'}
+              {course?.description ?? t('header.defaultDesc')}
             </Paragraph>
           </div>
 
           {progress && (
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 min-w-[320px]">
               <div className="flex justify-between items-end mb-2">
-                <Text className="text-gray-600 font-medium">Stage {progress.currentStage}</Text>
+                <Text className="text-gray-600 font-medium">
+                  {t('progress.stage')} {progress.currentStage}
+                </Text>
                 <Text className="text-lg font-bold text-gray-800">
-                  {progress.completedTasks} / {progress.totalTasks} Missions
+                  {progress.completedTasks} / {progress.totalTasks} {t('progress.missions')}
                 </Text>
               </div>
               <Progress
@@ -208,13 +211,13 @@ const MissionHub: React.FC = () => {
               />
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="bg-white p-2 rounded shadow-sm border border-gray-100 flex flex-col items-center">
-                  <Text className="text-gray-400">Success Rate</Text>
+                  <Text className="text-gray-400">{t('progress.successRate')}</Text>
                   <Text className="font-bold text-blue-600">
                     {progress.statistics?.successRate ?? 0}%
                   </Text>
                 </div>
                 <div className="bg-white p-2 rounded shadow-sm border border-gray-100 flex flex-col items-center">
-                  <Text className="text-gray-400">Total Points</Text>
+                  <Text className="text-gray-400">{t('progress.totalPoints')}</Text>
                   <Text className="font-bold text-yellow-600">
                     {achievements?.totalPoints ?? 0}
                   </Text>
@@ -239,16 +242,18 @@ const MissionHub: React.FC = () => {
       {recent && (
         <div className="mb-10">
           <Title level={4} className="!mb-4 flex items-center text-gray-700">
-            <PlayCircleOutlined className="mr-2 text-blue-500" /> Recent Learning
+            <PlayCircleOutlined className="mr-2 text-blue-500" /> {t('recent.title')}
           </Title>
           <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 shadow-md text-white flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-              <div className="text-blue-100 text-sm mb-1 font-medium">Last accessed workspace</div>
+              <div className="text-blue-100 text-sm mb-1 font-medium">
+                {t('recent.lastAccessed')}
+              </div>
               <div className="text-xl font-bold truncate max-w-lg" title={recent.taskTitle}>
                 {recent.taskTitle}
               </div>
               <div className="text-blue-200 text-xs mt-2">
-                Updated at: {new Date(recent.lastAccessTime).toLocaleString()}
+                {t('recent.updatedAt')} {new Date(recent.lastAccessTime).toLocaleString()}
               </div>
             </div>
             <Button
@@ -260,7 +265,7 @@ const MissionHub: React.FC = () => {
               }}
               className="bg-white text-blue-700 hover:bg-gray-50 border-none font-bold shadow-sm whitespace-nowrap"
             >
-              Resume Learning
+              {t('actions.resume')}
             </Button>
           </div>
         </div>
@@ -269,7 +274,7 @@ const MissionHub: React.FC = () => {
       {/* Tools Section (Search & Filter) */}
       <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
         <Input
-          placeholder="Search missions by title or summary..."
+          placeholder={t('filters.searchPlaceholder')}
           prefix={<SearchOutlined className="text-gray-400" />}
           value={searchText}
           onChange={(e) => {
@@ -286,10 +291,10 @@ const MissionHub: React.FC = () => {
             className="w-full sm:w-40 h-10 shadow-sm"
             popupMatchSelectWidth={false}
           >
-            <Option value="ALL">All Difficulties</Option>
-            <Option value="BEGINNER">Beginner</Option>
-            <Option value="INTERMEDIATE">Intermediate</Option>
-            <Option value="ADVANCED">Advanced</Option>
+            <Option value="ALL">{t('filters.all')}</Option>
+            <Option value="BEGINNER">{t('filters.beginner')}</Option>
+            <Option value="INTERMEDIATE">{t('filters.intermediate')}</Option>
+            <Option value="ADVANCED">{t('filters.advanced')}</Option>
           </Select>
         </div>
       </div>
@@ -302,19 +307,27 @@ const MissionHub: React.FC = () => {
         items={[
           {
             key: '0',
-            label: <span className="px-4">Learning Journey</span>,
+            label: <span className="px-4">{t('tabs.journey')}</span>,
             children: (
               <LearningTimeline courseId={courseId || ''} onEnterTask={handleEnterWorkspace} />
             ),
           },
           {
             key: '1',
-            label: <span className="px-4">Mandatory ({mandatoryTasks.length})</span>,
+            label: (
+              <span className="px-4">
+                {t('tabs.mandatory')} ({mandatoryTasks.length})
+              </span>
+            ),
             children: <div className="mt-4">{renderTaskList(mandatoryTasks)}</div>,
           },
           {
             key: '2',
-            label: <span className="px-4">Elective ({electiveTasks.length})</span>,
+            label: (
+              <span className="px-4">
+                {t('tabs.elective')} ({electiveTasks.length})
+              </span>
+            ),
             children: <div className="mt-4">{renderTaskList(electiveTasks)}</div>,
           },
         ]}

@@ -7,6 +7,7 @@ import { router } from './router';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import './index.css';
+import './i18n';
 
 const rootElement = document.getElementById('root');
 if (rootElement) {

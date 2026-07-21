@@ -2,12 +2,12 @@ import request from '../utils/request';
 
 export const schemasService = {
   getAllSchemas: async () => {
-    const { data } = await request.get<Record<string, Record<string, unknown>>>('/schemas');
-    return data;
+    const res = await request.get<unknown, Record<string, Record<string, unknown>>>('/schemas');
+    return res;
   },
 
   getSchema: async (name: string) => {
-    const { data } = await request.get<Record<string, unknown>>(`/schemas/${name}`);
-    return data;
+    const res = await request.get<unknown, Record<string, unknown>>(`/schemas/${name}`);
+    return res;
   },
 };

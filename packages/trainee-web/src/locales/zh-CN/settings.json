@@ -1,0 +1,49 @@
+{
+  "title": "个人设置",
+  "tabs": {
+    "profile": "个人资料",
+    "security": "安全设置",
+    "notifications": "通知偏好"
+  },
+  "profile": {
+    "username": "用户名 (只读)",
+    "nickname": "昵称",
+    "nicknamePlaceholder": "我们该怎么称呼您？",
+    "email": "邮箱",
+    "emailPlaceholder": "your.email@example.com",
+    "save": "保存资料",
+    "updateSuccess": "资料更新成功",
+    "updateError": "资料更新失败"
+  },
+  "security": {
+    "title": "修改密码",
+    "currentPassword": "当前密码",
+    "currentPasswordRequired": "请输入当前密码",
+    "newPassword": "新密码",
+    "newPasswordRequired": "请输入新密码",
+    "confirmPassword": "确认新密码",
+    "confirmPasswordRequired": "请确认新密码",
+    "passwordMismatch": "两次输入的新密码不一致！",
+    "change": "修改密码",
+    "changeSuccess": "密码修改成功",
+    "changeError": "密码修改失败"
+  },
+  "notifications": {
+    "title": "通知偏好设置",
+    "description": "选择您希望接收哪些通知。",
+    "types": {
+      "taskCompleted": "任务成功",
+      "taskFailed": "任务失败",
+      "badgeAwarded": "徽章与成就",
+      "courseUnlocked": "课程解锁",
+      "aiReviewReady": "AI 评估报告",
+      "newDiscussion": "新讨论",
+      "mentorReply": "导师回复",
+      "mentorMention": "导师提及",
+      "systemAnnouncement": "系统公告"
+    },
+    "receiveDescription": "接收关于 {{type}} 的通知",
+    "updateSuccess": "偏好设置已更新",
+    "updateError": "更新偏好设置失败"
+  }
+}

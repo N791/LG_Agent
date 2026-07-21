@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { setCredentials } from '../../store/authSlice';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
@@ -18,9 +19,10 @@ const Login: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation('auth');
 
   const state = location.state as { from?: { pathname: string } } | null;
-  const from = state?.from?.pathname ?? '/mission-hub';
+  const from = state?.from?.pathname ?? '/dashboard';
 
   const onFinish = async (values: LoginValues) => {
     if (!values.username || !values.password) return;
@@ -50,14 +52,12 @@ const Login: React.FC = () => {
         }),
       );
 
-      void message.success('Welcome back, Trainee!');
+      void message.success(t('loginSuccess'));
       navigate(from, { replace: true });
     } catch (error: unknown) {
       console.error('Login error', error);
       const errRes = error as { response?: { data?: { message?: string } } };
-      void message.error(
-        errRes.response?.data?.message ?? 'Login failed. Please check your credentials.',
-      );
+      void message.error(errRes.response?.data?.message ?? t('loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -76,9 +76,9 @@ const Login: React.FC = () => {
               <RocketOutlined className="text-3xl text-white" />
             </div>
             <Title level={2} className="!text-white !mb-2">
-              Mission Control
+              {t('title')}
             </Title>
-            <Text className="text-gray-400">Sign in to access your training workspace</Text>
+            <Text className="text-gray-400">{t('subtitle')}</Text>
           </div>
 
           <Form
@@ -91,24 +91,18 @@ const Login: React.FC = () => {
             layout="vertical"
             className="w-full"
           >
-            <Form.Item
-              name="username"
-              rules={[{ required: true, message: 'Please input your Username!' }]}
-            >
+            <Form.Item name="username" rules={[{ required: true, message: t('usernameRequired') }]}>
               <Input
                 prefix={<UserOutlined className="text-gray-400" />}
-                placeholder="Username (e.g. trainee)"
+                placeholder={t('usernamePlaceholder')}
                 className="rounded-xl h-12"
               />
             </Form.Item>
 
-            <Form.Item
-              name="password"
-              rules={[{ required: true, message: 'Please input your Password!' }]}
-            >
+            <Form.Item name="password" rules={[{ required: true, message: t('passwordRequired') }]}>
               <Input.Password
                 prefix={<LockOutlined className="text-gray-400" />}
-                placeholder="Password"
+                placeholder={t('passwordPlaceholder')}
                 className="rounded-xl h-12"
               />
             </Form.Item>
@@ -120,7 +114,7 @@ const Login: React.FC = () => {
                 loading={loading}
                 className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 border-none hover:opacity-90 font-medium text-lg shadow-lg"
               >
-                Sign In
+                {t('loginButton')}
               </Button>
             </Form.Item>
           </Form>

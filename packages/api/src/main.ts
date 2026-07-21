@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { I18nValidationPipe, I18nValidationExceptionFilter } from 'nestjs-i18n';
+import { TranslationExceptionFilter } from './common/filters/translation-exception.filter';
 import { Logger } from 'nestjs-pino';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -70,10 +71,16 @@ async function bootstrap() {
   }
 
   app.useGlobalPipes(
-    new ValidationPipe({
+    new I18nValidationPipe({
       whitelist: true,
       transform: true,
     }),
+  );
+  app.useGlobalFilters(
+    new I18nValidationExceptionFilter({
+      detailedErrors: false,
+    }),
+    new TranslationExceptionFilter(),
   );
 
   const config = new DocumentBuilder()

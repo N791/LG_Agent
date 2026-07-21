@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Table, Card, Typography, Tabs, Tag } from 'antd';
 import request from '../../utils/request';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
 export default function Observability() {
+  const { t } = useTranslation('observability');
   const [logs, setLogs] = useState<Record<string, unknown>[]>([]);
   const [metrics, setMetrics] = useState<Record<string, unknown>[]>([]);
   const [auditLogs, setAuditLogs] = useState<Record<string, unknown>[]>([]);
@@ -68,25 +70,25 @@ export default function Observability() {
 
   const logColumns = [
     {
-      title: 'Level',
+      title: t('columns.level'),
       dataIndex: 'level',
       key: 'level',
       render: (level: string) => <Tag color={getLevelColor(level)}>{level}</Tag>,
       width: 100,
     },
     {
-      title: 'Message',
+      title: t('columns.message'),
       dataIndex: 'message',
       key: 'message',
     },
     {
-      title: 'Path',
+      title: t('columns.path'),
       dataIndex: 'path',
       key: 'path',
       width: 150,
     },
     {
-      title: 'Time',
+      title: t('columns.time'),
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: string) => new Date(date).toLocaleString(),
@@ -96,20 +98,20 @@ export default function Observability() {
 
   const metricColumns = [
     {
-      title: 'Name',
+      title: t('columns.name'),
       dataIndex: 'name',
       key: 'name',
       width: 120,
     },
     {
-      title: 'Value',
+      title: t('columns.value'),
       dataIndex: 'value',
       key: 'value',
       render: (val: number) => val.toFixed(2),
       width: 100,
     },
     {
-      title: 'Rating',
+      title: t('columns.rating'),
       dataIndex: 'rating',
       key: 'rating',
       render: (rating: string) =>
@@ -117,12 +119,12 @@ export default function Observability() {
       width: 150,
     },
     {
-      title: 'Path',
+      title: t('columns.path'),
       dataIndex: 'path',
       key: 'path',
     },
     {
-      title: 'Time',
+      title: t('columns.time'),
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: string) => new Date(date).toLocaleString(),
@@ -132,33 +134,33 @@ export default function Observability() {
 
   const auditColumns = [
     {
-      title: 'Action',
+      title: t('columns.action'),
       dataIndex: 'action',
       key: 'action',
       render: (action: string) => <Tag color="geekblue">{action}</Tag>,
       width: 150,
     },
     {
-      title: 'Actor ID',
+      title: t('columns.actorId'),
       dataIndex: 'actorId',
       key: 'actorId',
       render: (id: string) => <Text copyable>{id || 'System'}</Text>,
       width: 150,
     },
     {
-      title: 'Resource ID',
+      title: t('columns.resourceId'),
       dataIndex: 'resourceId',
       key: 'resourceId',
       width: 150,
     },
     {
-      title: 'Trace ID',
+      title: t('columns.traceId'),
       dataIndex: 'traceId',
       key: 'traceId',
       render: (id: string) => (id ? <Text copyable>{id}</Text> : '-'),
     },
     {
-      title: 'Time',
+      title: t('columns.time'),
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: string) => new Date(date).toLocaleString(),
@@ -169,7 +171,7 @@ export default function Observability() {
   const items = [
     {
       key: 'metrics',
-      label: 'Client Metrics',
+      label: t('tabs.metrics'),
       children: (
         <Table
           dataSource={metrics}
@@ -182,7 +184,7 @@ export default function Observability() {
     },
     {
       key: 'logs',
-      label: 'Client Logs',
+      label: t('tabs.logs'),
       children: (
         <Table
           dataSource={logs}
@@ -195,7 +197,7 @@ export default function Observability() {
     },
     {
       key: 'audit',
-      label: 'Audit Logs',
+      label: t('tabs.audit'),
       children: (
         <Table
           dataSource={auditLogs}
@@ -213,11 +215,9 @@ export default function Observability() {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <Title level={2} className="!mb-1">
-            Frontend Observability
+            {t('title')}
           </Title>
-          <Text type="secondary">
-            Monitor client telemetry, web vitals, and errors in real-time.
-          </Text>
+          <Text type="secondary">{t('description')}</Text>
         </div>
       </div>
 

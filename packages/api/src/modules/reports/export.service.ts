@@ -18,7 +18,10 @@ export class ExportService {
   ): Promise<Buffer | string> {
     const strategy = this.strategies.get(format.toLowerCase());
     if (!strategy) {
-      throw new BadRequestException(`Export format '${format}' is not supported yet.`);
+      throw new BadRequestException({
+        message: 'errors.report.unsupportedFormat',
+        args: { format },
+      });
     }
 
     return strategy.export(data, headers);

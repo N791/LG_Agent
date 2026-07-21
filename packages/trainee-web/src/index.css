@@ -11,3 +11,69 @@ body,
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
+
+/* Custom Scrollbar for IDE aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* tailwind slate-300 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* tailwind slate-400 */
+}
+
+/* Fix antd Tabs height for scrolling */
+.execution-tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.execution-tabs > .ant-tabs-content-holder,
+.execution-tabs > .ant-tabs-content-holder > .ant-tabs-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.execution-tabs > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
+  height: 100%;
+}
+
+.execution-tabs
+  > .ant-tabs-content-holder
+  > .ant-tabs-content
+  > .ant-tabs-tabpane.ant-tabs-tabpane-active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fix antd Tabs height for scrolling in LeftPanel (tabPosition="left") */
+.left-panel-tabs > .ant-tabs-content-holder,
+.left-panel-tabs > .ant-tabs-content-holder > .ant-tabs-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.left-panel-tabs > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
+  height: 100%;
+}
+
+.left-panel-tabs
+  > .ant-tabs-content-holder
+  > .ant-tabs-content
+  > .ant-tabs-tabpane.ant-tabs-tabpane-active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevents content from overflowing and breaking flex layout */
+}

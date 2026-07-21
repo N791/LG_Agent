@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../common/prisma.service';
 import { ChatRequestDto } from '../tutor/interfaces';
-import { LLMResponse } from '../interfaces/llm-provider.interface';
+import { LLMResponse, StreamEvent } from '../interfaces/llm-provider.interface';
 import { ConversationDTO, ConversationMessageDTO } from '@lg-agent/contracts';
 import { PromptAssemblyPipeline } from './prompt-assembly.pipeline';
 import { LLMGatewayService } from '../gateway/llm-gateway.service';
@@ -20,7 +20,10 @@ export class AiConversationService {
     // Validate action
     const validActions = ['chat', 'code-review', 'hint', 'explain-error', 'refactor'];
     if (!validActions.includes(request.action)) {
-      throw new BadRequestException(`Unsupported action: ${request.action}`);
+      throw new BadRequestException({
+        message: 'errors.ai.unsupportedAction',
+        args: { action: request.action },
+      });
     }
 
     // Ensure conversation exists
@@ -90,14 +93,21 @@ export class AiConversationService {
   }
 
   private async *streamWrapper(
-    stream: AsyncGenerator<string, void, unknown>,
+    stream: AsyncGenerator<StreamEvent, void, unknown>,
     conversationId: string,
   ): AsyncGenerator<string, void, unknown> {
     let fullContent = '';
+    let finalUsage = undefined;
+
     try {
-      for await (const chunk of stream) {
-        fullContent += chunk;
-        yield chunk;
+      for await (const event of stream) {
+        fullContent += event.content;
+
+        if (event.usage) {
+          finalUsage = event.usage;
+        }
+
+        yield event.content;
       }
     } finally {
       // Save assistant message after stream finishes
@@ -106,6 +116,7 @@ export class AiConversationService {
           conversationId,
           role: 'assistant',
           content: fullContent,
+          tokenUsage: finalUsage ? finalUsage.totalTokens : Math.ceil(fullContent.length / 4),
         },
       });
     }

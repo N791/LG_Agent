@@ -28,9 +28,7 @@ export class DatabaseWorkspaceRepository implements WorkspaceRepository {
     });
 
     if (!workspace) {
-      throw new NotFoundException(
-        `Workspace for task ${taskId} and user ${userId} not found. Please initialize it first.`,
-      );
+      throw new NotFoundException({ message: 'errors.workspace.initRequired', args: { taskId } });
     }
 
     const fileContents: Record<string, string> = {};

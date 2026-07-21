@@ -13,12 +13,16 @@ export class MarkdownChunker {
    * In a real implementation, this would use LangChain's RecursiveCharacterTextSplitter
    * or a custom Markdown AST parser to chunk by headers.
    */
-  chunkText(text: string, metadata: Record<string, unknown> = {}): DocumentChunk[] {
+  chunkText(
+    text: string,
+    metadata: Record<string, unknown> = {},
+    options?: { chunkSize: number },
+  ): DocumentChunk[] {
     const rawChunks = text.split(/\n\s*\n/);
     const chunks: DocumentChunk[] = [];
 
     let currentContent = '';
-    const MAX_CHUNK_LENGTH = 1000;
+    const MAX_CHUNK_LENGTH = options?.chunkSize ?? 1000;
 
     for (const piece of rawChunks) {
       if (!piece.trim()) continue;

@@ -12,12 +12,22 @@ program
   .description('AI Immersive Onboarding Engine - CLI Client')
   .version('0.1.0');
 
+import { initI18n } from './i18n';
+
 // Register nested commands but also flatten some common ones for ease of use
 program.addCommand(authCommands);
 program.addCommand(courseCommands);
 program.addCommand(workspaceCommands);
 
-program.parseAsync(process.argv).catch((err: unknown) => {
-  console.error('Fatal error:', err);
+const bootstrap = async () => {
+  await initI18n();
+  program.parseAsync(process.argv).catch((err: unknown) => {
+    console.error('Fatal error:', err);
+    process.exit(1);
+  });
+};
+
+bootstrap().catch((err: unknown) => {
+  console.error('Bootstrap failed:', err);
   process.exit(1);
 });

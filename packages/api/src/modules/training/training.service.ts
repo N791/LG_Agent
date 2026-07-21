@@ -18,7 +18,7 @@ export class TrainingService {
     // 1. Verify Task exists
     const task = await this.prisma.task.findUnique({ where: { id: taskId } });
     if (!task) {
-      throw new Error('Task not found');
+      throw new Error('errors.task.notFound');
     }
 
     // 2. Create Submission (PENDING/RUNNING)
@@ -96,7 +96,6 @@ export class TrainingService {
     }
   }
 
-
   async getTimeline(userId: string, courseId: string) {
     const [tasks, submissions] = await Promise.all([
       this.prisma.task.findMany({
@@ -110,18 +109,18 @@ export class TrainingService {
     ]);
 
     const passedTaskIds = new Set(
-      submissions.filter((s) => s.status === 'PASSED').map((s) => s.taskId)
+      submissions.filter((s) => s.status === 'PASSED').map((s) => s.taskId),
     );
 
     // Determine current stage max
     let currentStage = 1;
     if (passedTaskIds.size > 0) {
-      const completedTaskRecords = tasks.filter(t => passedTaskIds.has(t.id));
-      const maxStage = Math.max(...completedTaskRecords.map(t => t.stage));
+      const completedTaskRecords = tasks.filter((t) => passedTaskIds.has(t.id));
+      const maxStage = Math.max(...completedTaskRecords.map((t) => t.stage));
       currentStage = maxStage + 1;
     }
 
-    const timeline = tasks.map(task => {
+    const timeline = tasks.map((task) => {
       let status: 'LOCKED' | 'AVAILABLE' | 'PASSED' = 'LOCKED';
       if (passedTaskIds.has(task.id)) {
         status = 'PASSED';

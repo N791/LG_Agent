@@ -30,8 +30,8 @@ export class SchemaValidationService implements OnModuleInit {
 
       if (!newValidator(data)) {
         throw new BadRequestException({
-          message: `Validation failed for schema '${schemaName}'`,
-          errors: newValidator.errors,
+          message: 'errors.schema.validationFailed',
+          args: { schemaName, errors: newValidator.errors },
         });
       }
       return;
@@ -39,8 +39,8 @@ export class SchemaValidationService implements OnModuleInit {
 
     if (!validator(data)) {
       throw new BadRequestException({
-        message: `Validation failed for schema '${schemaName}'`,
-        errors: validator.errors,
+        message: 'errors.schema.validationFailed',
+        args: { schemaName, errors: validator.errors },
       });
     }
   }

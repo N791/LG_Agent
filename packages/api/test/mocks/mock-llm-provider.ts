@@ -2,6 +2,7 @@ import {
   ILLMProvider,
   LLMRequest,
   LLMResponse,
+  StreamEvent,
 } from '../../src/modules/ai/interfaces/llm-provider.interface';
 import { ModelInfoDTO } from '@lg-agent/contracts';
 
@@ -26,12 +27,12 @@ export class MockLLMProvider implements ILLMProvider {
     });
   }
 
-  async *stream(_request: LLMRequest): AsyncGenerator<string, void, unknown> {
+  async *stream(_request: LLMRequest): AsyncGenerator<StreamEvent, void, unknown> {
     await Promise.resolve();
 
-    yield 'Mock ';
-    yield 'streamed ';
-    yield 'response';
+    yield { content: 'Mock ', model: _request.model ?? 'mock-model-v1' };
+    yield { content: 'streamed ', model: _request.model ?? 'mock-model-v1' };
+    yield { content: 'response', model: _request.model ?? 'mock-model-v1' };
   }
 
   embed(_texts: string[]): Promise<number[][]> {

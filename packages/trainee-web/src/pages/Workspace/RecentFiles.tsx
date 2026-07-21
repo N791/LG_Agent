@@ -2,8 +2,10 @@ import React from 'react';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { workspaceService } from '../../services/workspace/WorkspaceService';
 import { FileOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 export const RecentFiles: React.FC = () => {
+  const { t } = useTranslation('workspace');
   const recentFiles = useWorkspaceStore((state) => state.recentFiles);
   const openFile = useWorkspaceStore((state) => state.openFile);
   const activeFile = useWorkspaceStore((state) => state.activeFile);
@@ -22,21 +24,23 @@ export const RecentFiles: React.FC = () => {
   return (
     <div className="border-b border-gray-200">
       <div className="px-4 py-2 text-xs font-bold text-gray-500 bg-gray-50 uppercase tracking-wider">
-        Recent Files
+        {t('fileTree.recentFiles')}
       </div>
       <div className="py-1">
         {recentFiles.map((path) => {
           const parts = path.split('/');
           const name = parts[parts.length - 1];
           const isActive = path === activeFile;
-          
+
           return (
             <div
               key={path}
               className={`px-4 py-1 text-sm cursor-pointer flex items-center gap-2 hover:bg-gray-100 ${
                 isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
               }`}
-              onClick={() => { handleOpen(path); }}
+              onClick={() => {
+                handleOpen(path);
+              }}
               title={path}
             >
               <FileOutlined className={isActive ? 'text-blue-500' : 'text-gray-400'} />

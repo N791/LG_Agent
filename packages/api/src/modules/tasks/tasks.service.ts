@@ -10,7 +10,7 @@ export class TasksService {
 
   async findAll(courseId?: string): Promise<Task[]> {
     if (!courseId) {
-      throw new BadRequestException('courseId is required');
+      throw new BadRequestException('errors.task.courseIdRequired');
     }
     return this.prisma.task.findMany({
       where: { courseId },
@@ -23,7 +23,7 @@ export class TasksService {
       where: { id },
     });
     if (!task) {
-      throw new NotFoundException(`Task with ID ${id} not found`);
+      throw new NotFoundException({ message: 'errors.task.notFound', args: { id } });
     }
     return task;
   }

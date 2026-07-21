@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Put, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  Put,
+  BadRequestException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserPreferenceService } from './user-preference.service';
 import { Prisma } from '@prisma/client';
@@ -18,7 +29,7 @@ export class UsersController {
   @Roles('TRAINEE', 'ADMIN', 'MENTOR')
   async getProfile(@Request() req: { user: { id: string } }) {
     const user = await this.usersService.findById(req.user.id);
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('errors.auth.userNotFound');
     const { password: _pw, ...profile } = user;
     return profile;
   }
@@ -44,10 +55,10 @@ export class UsersController {
     @Body() body: { currentPassword: string; newPassword: string },
   ) {
     const user = await this.usersService.findById(req.user.id);
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('errors.auth.userNotFound');
 
     const isMatch = await bcrypt.compare(body.currentPassword, user.password);
-    if (!isMatch) throw new BadRequestException('Current password is incorrect');
+    if (!isMatch) throw new BadRequestException('errors.auth.passwordIncorrect');
 
     const hashedPassword = await bcrypt.hash(body.newPassword, 10);
     await this.usersService.update(req.user.id, { password: hashedPassword });

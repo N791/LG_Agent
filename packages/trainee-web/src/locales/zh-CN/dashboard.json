@@ -1,0 +1,35 @@
+{
+  "welcomeTitle": "欢迎回来，学员！",
+  "welcomeSubtitle": "继续您上次的学习，或者开始一段新的旅程。",
+  "stats": {
+    "totalPoints": "总积分",
+    "successRate": "成功率",
+    "aiUsage": "AI 使用次数",
+    "activeDays": "活跃天数"
+  },
+  "courses": {
+    "title": "我的课程",
+    "status": {
+      "completed": "已完成",
+      "inProgress": "进行中",
+      "available": "可学习",
+      "locked": "未解锁"
+    },
+    "progress": "进度",
+    "requiresPoints": "需要 {{points}} 积分才能解锁",
+    "noDescription": "该课程暂无描述。"
+  },
+  "recent": {
+    "title": "最近活动",
+    "resumeLearning": "继续学习",
+    "lastActive": "上次活动：",
+    "continueWorkspace": "进入工作区",
+    "noActivity": "暂无最近活动。",
+    "startCourse": "开始一门课程后，即可在此查看进度。"
+  },
+  "errors": {
+    "loadFailed": "加载仪表盘数据失败。",
+    "oops": "哎呀，出错了！",
+    "tryAgain": "重试"
+  }
+}

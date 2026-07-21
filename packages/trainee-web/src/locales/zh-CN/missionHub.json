@@ -1,0 +1,51 @@
+{
+  "errors": {
+    "loadFailed": "加载任务中心数据失败。请稍后重试。",
+    "noMissions": "未找到符合条件的任务。",
+    "oops": "哎呀，出错了！",
+    "noDetails": "无错误详情"
+  },
+  "actions": {
+    "tryAgain": "重试",
+    "resume": "继续学习"
+  },
+  "header": {
+    "defaultTitle": "任务大厅",
+    "defaultDesc": "欢迎！在下方选择一个任务继续您的训练之旅。"
+  },
+  "progress": {
+    "stage": "阶段",
+    "missions": "任务",
+    "successRate": "成功率",
+    "totalPoints": "总积分"
+  },
+  "recent": {
+    "title": "最近学习",
+    "lastAccessed": "上次访问的工作区",
+    "updatedAt": "更新时间："
+  },
+  "filters": {
+    "searchPlaceholder": "按标题或简介搜索任务...",
+    "all": "所有难度",
+    "beginner": "初级",
+    "intermediate": "中级",
+    "advanced": "高级"
+  },
+  "tabs": {
+    "journey": "学习旅程",
+    "mandatory": "必修",
+    "elective": "选修"
+  },
+  "taskCard": {
+    "noDesc": "未提供描述。"
+  },
+  "drawer": {
+    "title": "任务详情",
+    "enterWorkspace": "进入工作区",
+    "stage": "阶段:",
+    "summary": "摘要",
+    "noSummary": "此任务暂无摘要。",
+    "description": "描述",
+    "noDescription": "未提供详细描述。"
+  }
+}
