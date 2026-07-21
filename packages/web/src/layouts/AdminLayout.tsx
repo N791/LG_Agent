@@ -64,6 +64,12 @@ const AdminLayout: React.FC = () => {
       label: 'Observability',
       roles: ['ADMIN'],
     },
+    {
+      key: '/admin/ai-settings',
+      icon: <SettingOutlined />,
+      label: 'AI Settings',
+      roles: ['ADMIN'],
+    },
   ];
 
   const menuItems = allMenuItems.filter((item) => item.roles.includes(user?.role ?? ''));
