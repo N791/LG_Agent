@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Row, Statistic, Table, Typography } from 'antd';
+import { Card, Col, Row, Statistic, Table } from 'antd';
 import {
   LineChart,
   Line,
@@ -21,8 +21,6 @@ import {
 import { statisticsService, OverviewStats } from '../../services/statistics';
 import { ChartAdapter } from './adapters/chart.adapter';
 import { useTranslation } from 'react-i18next';
-
-const { Title } = Typography;
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation('dashboard');
@@ -80,8 +78,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Title level={2}>{t('title')}</Title>
-
       {/* Overview Stats */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={4}>

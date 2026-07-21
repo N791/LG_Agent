@@ -24,7 +24,7 @@ void i18n.use(initReactI18next).init(
     resources,
     lng: 'zh-CN', // Default language
     fallbackLng: 'zh-CN', // Fallback language
-    ns: ['common', 'auth', 'missionHub', 'workspace', 'dashboard'],
+    ns: ['common', 'auth', 'missionHub', 'workspace', 'dashboard', 'settings'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false, // React already escapes values to prevent XSS
