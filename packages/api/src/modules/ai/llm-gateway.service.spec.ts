@@ -8,6 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../common/prisma.service';
 import { CostCalculator } from './cost/cost-calculator.service';
 
+import { AiConfigService } from './ai-config.service';
+
 describe('LLMGatewayService', () => {
   let gateway: LLMGatewayService;
   let registry: ProviderRegistry;
@@ -20,12 +22,19 @@ describe('LLMGatewayService', () => {
         ProviderRegistry,
         MockLLMProvider,
         {
+          provide: AiConfigService,
+          useValue: {
+            getDefaultProvider: jest.fn().mockResolvedValue('mock'),
+            getMockConfig: jest.fn().mockResolvedValue({ enabled: true }),
+          },
+        },
+        {
           provide: SensitiveDataFilter,
           useValue: { filter: jest.fn((content: string) => Promise.resolve(content)) },
         },
         {
           provide: ResponseSafetyFilter,
-          useValue: { 
+          useValue: {
             filterComplete: jest.fn((content: string) => Promise.resolve(content)),
             filterChunk: jest.fn((chunk: string) => Promise.resolve(chunk)),
           },

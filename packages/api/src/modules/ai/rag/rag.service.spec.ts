@@ -11,6 +11,8 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../../common/prisma.service';
 import { CostCalculator } from '../cost/cost-calculator.service';
 
+import { AiConfigService } from '../ai-config.service';
+
 describe('RagService', () => {
   let ragService: RagService;
 
@@ -23,6 +25,15 @@ describe('RagService', () => {
         LLMGatewayService,
         ProviderRegistry,
         MockLLMProvider,
+        {
+          provide: AiConfigService,
+          useValue: {
+            getRagConfig: jest.fn().mockResolvedValue({ enabled: true, topK: 3, chunkSize: 1000 }),
+            getDefaultProvider: jest.fn().mockResolvedValue('mock'),
+            getMockConfig: jest.fn().mockResolvedValue({ enabled: true }),
+            getOpenAIConfig: jest.fn().mockResolvedValue({ apiKey: 'test' }),
+          },
+        },
         {
           provide: SensitiveDataFilter,
           useValue: { filter: jest.fn((content: string) => Promise.resolve(content)) },

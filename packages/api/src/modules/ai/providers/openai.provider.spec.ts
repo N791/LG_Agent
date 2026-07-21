@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OpenAIProvider } from './openai.provider';
 import { LLMRequest } from '../interfaces/llm-provider.interface';
 
+import { AiConfigService } from '../ai-config.service';
+
 // Mock ChatOpenAI
 jest.mock('@langchain/openai', () => {
   return {
@@ -46,6 +48,18 @@ describe('OpenAIProvider', () => {
       imports: [ConfigModule.forRoot({ isGlobal: true })],
       providers: [
         OpenAIProvider,
+        {
+          provide: AiConfigService,
+          useValue: {
+            getOpenAIConfig: jest.fn().mockResolvedValue({
+              apiKey: 'sk-test-key',
+              baseURL: 'https://api.openai.com/v1',
+              defaultModel: 'gpt-4o',
+              timeoutMs: 30000,
+              maxRetries: 3,
+            }),
+          },
+        },
         {
           provide: ConfigService,
           useValue: {
