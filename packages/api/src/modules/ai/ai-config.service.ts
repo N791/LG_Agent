@@ -47,6 +47,8 @@ export class AiConfigService {
     };
   }
 
+  private async resolveConfig(key: string, isNumeric: true): Promise<number | undefined>;
+  private async resolveConfig(key: string, isNumeric?: false): Promise<string | undefined>;
   private async resolveConfig(
     key: string,
     isNumeric = false,

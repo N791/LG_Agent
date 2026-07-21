@@ -24,24 +24,23 @@ export class TranslationExceptionFilter implements ExceptionFilter {
           // ignore
         }
       } else if (typeof responseBody === 'object' && 'message' in responseBody) {
-        if (typeof responseBody.message === 'string') {
+        if (typeof responseBody['message'] === 'string') {
           try {
-            // Check if it's a translation key
-            const args = ('args' in responseBody ? responseBody.args : undefined) as
+            // Retrieve args if they were attached to the response body
+            const args = ('args' in responseBody ? responseBody['args'] : undefined) as
               Record<string, unknown> | undefined;
-            const translated = await i18n.t(responseBody.message, { args });
-            // If the translation resolves to the same key or an object, it means it's not a valid key,
-            // but nestjs-i18n will return the key itself if not found.
-            if (translated !== responseBody.message) {
-              responseBody.message = translated;
+            const translated = await i18n.t(responseBody['message'], { args });
+
+            // Only update if translation succeeded (different from key)
+            if (translated !== responseBody['message']) {
+              responseBody['message'] = translated;
             }
-            if ('args' in responseBody) {
-              delete responseBody.args;
-            }
+            // Remove args from final response to keep it clean
+            delete responseBody['args'];
           } catch (_e) {
-            // ignore
+            // Ignore translation errors
           }
-        } else if (Array.isArray(responseBody.message)) {
+        } else if (Array.isArray(responseBody['message'])) {
           // For validation errors, handled by I18nValidationExceptionFilter normally, but just in case
         }
       }
