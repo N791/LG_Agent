@@ -52,6 +52,9 @@ CODEOWNERS
 .agent/
 Design_docs/
 skills-lock.json
+stats.html
+playwright-report/
+
 
 # Playwright & Testing
 playwright-report/
