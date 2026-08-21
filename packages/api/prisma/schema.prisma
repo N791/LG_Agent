@@ -300,7 +300,7 @@ model DocumentVersion {
 
   @@unique([sourceId, version])
   @@unique([sourceId, contentHash])
-  @@index([organizationId, status, createdAt(sort: Desc)])
+  @@index([organizationId, status, createdAt(sort: Desc)], map: "document_versions_org_status_created_idx")
   @@map("document_versions")
 }
 
@@ -326,7 +326,7 @@ model DocumentNode {
   chunks          DocumentChunk[]
 
   @@unique([documentVersionId, stableKey])
-  @@index([organizationId, documentVersionId, parentId, ordinal])
+  @@index([organizationId, documentVersionId, parentId, ordinal], map: "document_nodes_org_version_parent_ordinal_idx")
   @@map("document_nodes")
 }
 
@@ -341,7 +341,7 @@ model DocumentChunk {
   tokenCount        Int                      @map("token_count") @db.Integer
   metadata          Json                     @default("{}") @db.JsonB
   chunkerVersion    String                   @default("structured-markdown-v1") @map("chunker_version") @db.VarChar
-  searchVector      Unsupported("tsvector")? @map("search_vector")
+  searchVector      Unsupported("tsvector")? @default(dbgenerated("to_tsvector('simple'::regconfig, COALESCE(content, ''::text))")) @map("search_vector")
   embedding         Unsupported("vector")?
 
   organization    Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -349,8 +349,10 @@ model DocumentChunk {
   node            DocumentNode        @relation(fields: [nodeId], references: [id], onDelete: Cascade)
   evidence        RetrievalEvidence[]
 
-  @@unique([documentVersionId, chunkerVersion, nodeId, ordinal])
+  @@unique([documentVersionId, chunkerVersion, nodeId, ordinal], map: "document_chunks_version_chunker_node_ordinal_key")
   @@index([organizationId, documentVersionId])
+  @@index([searchVector], type: Gin, map: "document_chunks_keyword_idx")
+  @@index([metadata], type: Gin, map: "document_chunks_metadata_idx")
   @@map("document_chunks")
 }
 
@@ -367,8 +369,8 @@ model CodeRepository {
   organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   snapshots    RepositorySnapshot[]
 
-  @@unique([organizationId, externalKey])
-  @@index([organizationId, name])
+  @@unique([organizationId, externalKey], map: "code_repositories_org_external_key_key")
+  @@index([organizationId, name], map: "code_repositories_org_name_idx")
   @@map("code_repositories")
 }
 
@@ -392,8 +394,9 @@ model RepositorySnapshot {
   relations      CodeRelation[]
   evidence       RetrievalEvidence[]
 
-  @@unique([organizationId, repositoryId, commitSha])
-  @@index([organizationId, repositoryId, status, createdAt(sort: Desc)])
+  @@unique([organizationId, repositoryId, commitSha], map: "repository_snapshots_org_repo_commit_key")
+  @@index([organizationId, repositoryId, status, createdAt(sort: Desc)], map: "repository_snapshots_org_repo_status_created_idx")
+  @@index([codeRepositoryId, createdAt(sort: Desc)], map: "repository_snapshots_code_repository_id_idx")
   @@map("repository_snapshots")
 }
 
@@ -414,8 +417,8 @@ model CodeFile {
   organization       Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   repositorySnapshot RepositorySnapshot @relation(fields: [repositorySnapshotId], references: [id], onDelete: Cascade)
 
-  @@unique([repositorySnapshotId, path])
-  @@index([organizationId, contentHash, parserVersion])
+  @@unique([repositorySnapshotId, path], map: "code_files_snapshot_path_key")
+  @@index([organizationId, contentHash, parserVersion], map: "code_files_org_hash_parser_idx")
   @@map("code_files")
 }
 
@@ -440,8 +443,8 @@ model CodeSymbol {
   incomingRelations  CodeRelation[]      @relation("CodeRelationTarget")
   evidence           RetrievalEvidence[]
 
-  @@unique([repositorySnapshotId, stableKey])
-  @@index([organizationId, repositorySnapshotId, name])
+  @@unique([repositorySnapshotId, stableKey], map: "code_symbols_snapshot_stable_key_key")
+  @@index([organizationId, repositorySnapshotId, name], map: "code_symbols_org_snapshot_name_idx")
   @@map("code_symbols")
 }
 
@@ -459,10 +462,10 @@ model CodeRelation {
   sourceSymbol       CodeSymbol         @relation("CodeRelationSource", fields: [sourceSymbolId], references: [id], onDelete: Cascade)
   targetSymbol       CodeSymbol         @relation("CodeRelationTarget", fields: [targetSymbolId], references: [id], onDelete: Cascade)
 
-  @@unique([repositorySnapshotId, sourceSymbolId, targetSymbolId, relationType])
-  @@index([organizationId, repositorySnapshotId, relationType])
-  @@index([organizationId, repositorySnapshotId, sourceSymbolId, relationType])
-  @@index([organizationId, repositorySnapshotId, targetSymbolId, relationType])
+  @@unique([repositorySnapshotId, sourceSymbolId, targetSymbolId, relationType], map: "code_relations_snapshot_source_target_type_key")
+  @@index([organizationId, repositorySnapshotId, relationType], map: "code_relations_org_snapshot_type_idx")
+  @@index([organizationId, repositorySnapshotId, sourceSymbolId, relationType], map: "code_relations_org_snapshot_source_type_idx")
+  @@index([organizationId, repositorySnapshotId, targetSymbolId, relationType], map: "code_relations_org_snapshot_target_type_idx")
   @@map("code_relations")
 }
 
@@ -516,7 +519,7 @@ model RetrievalTrace {
   conversation Conversation?       @relation(fields: [conversationId], references: [id], onDelete: SetNull)
   evidence     RetrievalEvidence[]
 
-  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([organizationId, createdAt(sort: Desc)], map: "retrieval_traces_org_created_idx")
   @@index([expiresAt])
   @@map("retrieval_traces")
 }
@@ -543,7 +546,7 @@ model RetrievalEvidence {
   codeSymbol         CodeSymbol?         @relation(fields: [codeSymbolId], references: [id], onDelete: Restrict)
 
   @@unique([traceId, rank])
-  @@index([organizationId, traceId])
+  @@index([organizationId, traceId], map: "retrieval_evidence_org_trace_idx")
   @@index([documentVersionId])
   @@index([repositorySnapshotId])
   @@index([expiresAt])
@@ -566,7 +569,7 @@ model ConversationSummary {
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@unique([conversationId, version])
-  @@index([organizationId, conversationId, createdAt(sort: Desc)])
+  @@index([organizationId, conversationId, createdAt(sort: Desc)], map: "conversation_summaries_org_conversation_created_idx")
   @@index([expiresAt])
   @@map("conversation_summaries")
 }
@@ -836,7 +839,7 @@ model PermissionRegistryState {
 }
 
 model Permission {
-  id              String    @id @default(uuid()) @db.Uuid
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   key             String    @unique @db.VarChar
   scope           String    @db.VarChar
   registryVersion Int       @map("registry_version") @db.Integer
@@ -845,7 +848,7 @@ model Permission {
   deprecatedAt    DateTime? @map("deprecated_at") @db.Timestamptz
   replacementKey  String?   @map("replacement_key") @db.VarChar
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   roles RolePermission[]
 
@@ -854,7 +857,7 @@ model Permission {
 }
 
 model AuthorizationRole {
-  id             String   @id @default(uuid()) @db.Uuid
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId String?  @map("organization_id") @db.Uuid
   key            String   @db.VarChar
   name           String   @db.VarChar
@@ -862,9 +865,9 @@ model AuthorizationRole {
   isSystem       Boolean  @default(false) @map("is_system")
   version        Int      @default(1) @db.Integer
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  organization Organization?    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization?    @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   permissions  RolePermission[]
   users        UserRole[]
 
@@ -878,8 +881,8 @@ model RolePermission {
   permissionId String   @map("permission_id") @db.Uuid
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  role       AuthorizationRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission Permission        @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+  role       AuthorizationRole @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  permission Permission        @relation(fields: [permissionId], references: [id], onDelete: Restrict, onUpdate: NoAction)
 
   @@id([roleId, permissionId])
   @@index([permissionId])
@@ -893,9 +896,9 @@ model UserRole {
   assignedById   String?  @map("assigned_by_id") @db.Uuid
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  user         User              @relation(fields: [userId, organizationId], references: [id, organizationId], onDelete: Cascade)
-  role         AuthorizationRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User              @relation(fields: [userId, organizationId], references: [id, organizationId], onDelete: Cascade, onUpdate: Restrict)
+  role         AuthorizationRole @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([userId, roleId, organizationId])
   @@index([roleId, organizationId])

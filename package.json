@@ -11,7 +11,7 @@
   ],
   "license": "UNLICENSED",
   "scripts": {
-    "prelint": "turbo run build --filter=@lg-agent/contracts",
+    "prelint": "turbo run build --filter=@lg-agent/contracts --filter=@lg-agent/permission-react",
     "architecture:check": "node packages/api/scripts/check-architecture.mjs",
     "design:check": "node packages/api/scripts/check-design-consistency.mjs",
     "deployment:policy": "node packages/api/scripts/check-authorization-migration-safety.mjs",
