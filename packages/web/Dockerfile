@@ -18,6 +18,9 @@ COPY turbo.json tsconfig.base.json ./
 RUN pnpm turbo run build --filter=@lg-agent/web...
 
 FROM nginxinc/nginx-unprivileged:stable-alpine3.23 AS runner
+USER root
+RUN apk upgrade --no-cache curl libcurl
+USER 101
 COPY packages/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=installer --chown=101:101 /app/packages/web/dist /usr/share/nginx/html
 EXPOSE 8080
