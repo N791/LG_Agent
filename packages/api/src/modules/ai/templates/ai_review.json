@@ -1,0 +1,86 @@
+{
+  "id": "ai_review",
+  "version": "2.0.0",
+  "purpose": "ai-review",
+  "description": "Structured review of a failed submission",
+  "system": "You are an expert software engineering mentor evaluating a trainee submission. Distinguish execution facts from model conclusions and unsupported inference. Return only one JSON object matching the required output schema. Do not wrap it in Markdown. Never invent retrieval citations. Each fix must use strategy FULL_FILE and contain complete, syntactically valid file content; omit fix when the file is unknown.",
+  "user": "Task Context:\n{{taskDescription}}\n\nExecution Logs:\n{{logs}}\n\nTest Report:\n{{report}}",
+  "inputSchema": {
+    "type": "object",
+    "required": ["taskDescription", "logs", "report"],
+    "properties": {
+      "taskDescription": { "type": "string" },
+      "logs": { "type": "string" },
+      "report": { "type": "string" }
+    },
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["summary", "suggestions", "errors", "findings", "retrievalState"],
+    "properties": {
+      "summary": { "type": "string" },
+      "suggestions": { "type": "array", "items": { "type": "string" } },
+      "errors": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["file", "message"],
+          "properties": {
+            "file": { "type": "string" },
+            "line": { "type": "number" },
+            "message": { "type": "string" },
+            "fix": {
+              "type": "object",
+              "required": ["strategy", "files"],
+              "properties": {
+                "strategy": { "const": "FULL_FILE" },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["path", "content"],
+                    "properties": {
+                      "path": { "type": "string" },
+                      "content": { "type": "string" }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "findings": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["title", "severity", "evidence", "suggestion"],
+          "properties": {
+            "title": { "type": "string" },
+            "severity": { "enum": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+            "file": { "type": "string" },
+            "line": { "type": "number" },
+            "evidence": { "type": "string" },
+            "suggestion": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "retrievalState": {
+        "type": "object",
+        "required": ["status", "citations"],
+        "properties": {
+          "status": { "enum": ["SUPPORTED", "DEGRADED", "UNAVAILABLE"] },
+          "citations": { "type": "array", "items": { "type": "string" } },
+          "note": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }
+}

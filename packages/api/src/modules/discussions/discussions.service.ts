@@ -2,8 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/prefer-nullish-coalescing */
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
-import { NOTIFICATION_PUBLISHER } from '../notifications/notification-publisher.interface';
-import type { INotificationPublisher } from '../notifications/notification-publisher.interface';
+import { NOTIFICATION_PUBLISHER, type INotificationPublisher } from '../notifications';
 import {
   CreateDiscussionDTO,
   AddCommentDTO,
@@ -11,16 +10,46 @@ import {
   NotificationType,
   DiscussionAnalyticsDTO,
 } from '@lg-agent/contracts';
-import { User } from '@prisma/client';
+import { Role } from '@prisma/client';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
+import { TenantScopeService } from '../../common/tenant/tenant-scope.service';
 
 @Injectable()
 export class DiscussionsService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(NOTIFICATION_PUBLISHER) private readonly notificationPublisher: INotificationPublisher,
+    private readonly tenantScope: TenantScopeService,
   ) {}
 
-  async createDiscussion(user: User, dto: CreateDiscussionDTO): Promise<DiscussionDTO> {
+  async createDiscussion(user: TenantActor, dto: CreateDiscussionDTO): Promise<DiscussionDTO> {
+    await this.tenantScope.assertTask(dto.taskId, user);
+    const author = await this.prisma.user.findFirst({
+      where: { id: user.id, organizationId: user.organizationId },
+    });
+    if (!author) throw new NotFoundException('errors.auth.userNotFound');
+    if (dto.workspaceId) {
+      const workspace = await this.prisma.workspace.findFirst({
+        where: {
+          id: dto.workspaceId,
+          ...this.tenantScope.workspace(user),
+          ...(user.role === Role.TRAINEE && { userId: user.id }),
+        },
+        select: { id: true },
+      });
+      if (!workspace) throw new NotFoundException('errors.workspace.notFound');
+    }
+    if (dto.submissionId) {
+      const submission = await this.prisma.submission.findFirst({
+        where: {
+          id: dto.submissionId,
+          ...this.tenantScope.submission(user),
+          ...(user.role === Role.TRAINEE && { userId: user.id }),
+        },
+        select: { id: true },
+      });
+      if (!submission) throw new NotFoundException('errors.submission.notFound');
+    }
     const discussion = await this.prisma.discussion.create({
       data: {
         userId: user.id,
@@ -56,7 +85,7 @@ export class DiscussionsService {
       userId: 'MENTORS',
       type: NotificationType.NEW_DISCUSSION,
       title: 'New Discussion',
-      message: `${user.nickname || user.username} started a discussion: ${dto.title}`,
+      message: `${author.nickname || author.username} started a discussion: ${dto.title}`,
       payload: { discussionId: discussion.id, taskId: dto.taskId },
     });
 
@@ -64,11 +93,14 @@ export class DiscussionsService {
   }
 
   async getDiscussions(
-    userId: string,
+    actor: TenantActor,
     taskId?: string,
     workspaceId?: string,
   ): Promise<DiscussionDTO[]> {
-    const where: any = { userId };
+    const where: any = {
+      ...this.tenantScope.discussion(actor),
+      ...(actor.role === Role.TRAINEE && { userId: actor.id }),
+    };
     if (taskId) where.taskId = taskId;
     if (workspaceId) where.workspaceId = workspaceId;
 
@@ -101,9 +133,13 @@ export class DiscussionsService {
       });
   }
 
-  async getDiscussionDetails(id: string): Promise<DiscussionDTO> {
-    const discussion = await this.prisma.discussion.findUnique({
-      where: { id },
+  async getDiscussionDetails(id: string, actor: TenantActor): Promise<DiscussionDTO> {
+    const discussion = await this.prisma.discussion.findFirst({
+      where: {
+        id,
+        ...this.tenantScope.discussion(actor),
+        ...(actor.role === Role.TRAINEE && { userId: actor.id }),
+      },
       include: {
         user: true,
         comments: {
@@ -118,9 +154,19 @@ export class DiscussionsService {
     return this.mapDiscussion(discussion);
   }
 
-  async addComment(id: string, author: User, dto: AddCommentDTO): Promise<DiscussionDTO> {
-    const discussion = await this.prisma.discussion.findUnique({ where: { id } });
+  async addComment(id: string, actor: TenantActor, dto: AddCommentDTO): Promise<DiscussionDTO> {
+    const discussion = await this.prisma.discussion.findFirst({
+      where: {
+        id,
+        ...this.tenantScope.discussion(actor),
+        ...(actor.role === Role.TRAINEE && { userId: actor.id }),
+      },
+    });
     if (!discussion) throw new NotFoundException('errors.discussion.notFound');
+    const author = await this.prisma.user.findFirst({
+      where: { id: actor.id, organizationId: actor.organizationId },
+    });
+    if (!author) throw new NotFoundException('errors.auth.userNotFound');
 
     await this.prisma.discussionComment.create({
       data: {
@@ -155,28 +201,37 @@ export class DiscussionsService {
       });
     }
 
-    return this.getDiscussionDetails(id);
+    return this.getDiscussionDetails(id, actor);
   }
 
-  async updateDiscussionStatus(id: string, status: string): Promise<DiscussionDTO> {
+  async updateDiscussionStatus(
+    id: string,
+    status: string,
+    actor: TenantActor,
+  ): Promise<DiscussionDTO> {
+    await this.getDiscussionDetails(id, actor);
     await this.prisma.discussion.update({
       where: { id },
       data: { status },
     });
-    return this.getDiscussionDetails(id);
+    return this.getDiscussionDetails(id, actor);
   }
 
-  async resolveDiscussion(id: string): Promise<DiscussionDTO> {
+  async resolveDiscussion(id: string, actor: TenantActor): Promise<DiscussionDTO> {
+    await this.getDiscussionDetails(id, actor);
     await this.prisma.discussion.update({
       where: { id },
       data: { status: 'RESOLVED' },
     });
-    return this.getDiscussionDetails(id);
+    return this.getDiscussionDetails(id, actor);
   }
 
-  async getDiscussionAnalytics(userId: string): Promise<DiscussionAnalyticsDTO> {
+  async getDiscussionAnalytics(actor: TenantActor): Promise<DiscussionAnalyticsDTO> {
     const discussions = await this.prisma.discussion.findMany({
-      where: { userId },
+      where: {
+        ...this.tenantScope.discussion(actor),
+        ...(actor.role === Role.TRAINEE && { userId: actor.id }),
+      },
       include: { comments: { orderBy: { createdAt: 'asc' } } },
     });
 
@@ -217,9 +272,16 @@ export class DiscussionsService {
     };
   }
 
-  async assignDiscussion(id: string, assignedToId: string): Promise<DiscussionDTO> {
-    const discussion = await this.prisma.discussion.findUnique({ where: { id } });
+  async assignDiscussion(
+    id: string,
+    assignedToId: string,
+    actor: TenantActor,
+  ): Promise<DiscussionDTO> {
+    const discussion = await this.prisma.discussion.findFirst({
+      where: { id, ...this.tenantScope.discussion(actor) },
+    });
     if (!discussion) throw new NotFoundException('errors.discussion.notFound');
+    await this.tenantScope.assertUser(assignedToId, actor);
 
     const nextStatus = discussion.status === 'OPEN' ? 'IN_PROGRESS' : discussion.status;
     await this.prisma.discussion.update({
@@ -231,7 +293,7 @@ export class DiscussionsService {
       } as any,
     });
 
-    return this.getDiscussionDetails(id);
+    return this.getDiscussionDetails(id, actor);
   }
 
   private mapDiscussion(d: any): DiscussionDTO {

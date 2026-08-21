@@ -39,12 +39,13 @@ RUN adduser --system --uid 1001 nestjs
 COPY --from=installer /app/package.json ./package.json
 COPY --from=installer /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/json/ ./
-# We need prisma for production runtime (engines)
+# Prisma CLI is a production dependency because the immutable API image is also
+# the release transaction image used by the Helm migration hook.
 RUN corepack enable pnpm && npm pkg delete scripts.prepare && pnpm install --frozen-lockfile --prod
 
 # Copy Prisma schema and generate client
 COPY --from=installer /app/packages/api/prisma ./packages/api/prisma
-RUN pnpm dlx prisma@5.22.0 generate --schema=packages/api/prisma/schema.prisma
+RUN pnpm --filter @lg-agent/api exec prisma generate --schema=packages/api/prisma/schema.prisma
 
 # Copy compiled code
 COPY --from=installer /app/packages/api/dist ./packages/api/dist
@@ -57,4 +58,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV NODE_ENV=production
 
-CMD ["node", "packages/api/dist/src/main"]
+CMD ["node", "packages/api/dist/main.js"]

@@ -49,6 +49,19 @@
     "unsupportedAction": "Unsupported action: {{action}}",
     "actionRequired": "action and content are required"
   },
+  "authorization": {
+    "permissionDenied": "You do not have permission to perform this action.",
+    "permissionDeclarationMissing": "This endpoint has no authorization policy.",
+    "roleNameRequired": "Role name is required.",
+    "roleNotFound": "Role not found.",
+    "memberNotFound": "One or more members were not found in this organization.",
+    "systemRoleImmutable": "Built-in roles cannot be modified. Copy the role first.",
+    "unknownPermission": "The request contains an unknown permission.",
+    "platformPermissionForbidden": "Organization roles cannot receive platform permissions.",
+    "platformRoleAssignmentForbidden": "Organization administrators cannot assign platform roles.",
+    "registryNotSynchronized": "The permission registry is not synchronized.",
+    "confirmationMismatch": "Enter the role name to confirm this high-risk change."
+  },
   "sandbox": {
     "executionNotFound": "Execution {{id}} not found or already completed."
   }

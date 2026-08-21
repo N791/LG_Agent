@@ -12,13 +12,17 @@
   "license": "UNLICENSED",
   "scripts": {
     "prelint": "turbo run build --filter=@lg-agent/contracts",
+    "architecture:check": "node packages/api/scripts/check-architecture.mjs",
+    "design:check": "node packages/api/scripts/check-design-consistency.mjs",
+    "deployment:policy": "node packages/api/scripts/check-authorization-migration-safety.mjs",
+    "db:init": "node packages/api/scripts/init-database.mjs",
     "dev": "turbo run dev --ui=tui",
     "build": "turbo run build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint packages/*/src --fix",
     "format": "prettier --write \"packages/*/src/**/*.{ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"packages/*/src/**/*.{ts,tsx,json,css,md}\"",
-    "typecheck": "tsc --noEmit -p packages/api/tsconfig.json && tsc --noEmit -p packages/web/tsconfig.json && tsc --noEmit -p packages/cli/tsconfig.json",
+    "typecheck": "tsc --noEmit -p packages/api/tsconfig.json && tsc --noEmit -p packages/web/tsconfig.json && tsc --noEmit -p packages/trainee-web/tsconfig.json && tsc --noEmit -p packages/cli/tsconfig.json",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "test:e2e": "turbo run test:e2e",
@@ -52,7 +56,7 @@
     "typescript-eslint": "^8.63.0"
   },
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=20.6.0",
     "pnpm": ">=9.0.0"
   },
   "packageManager": "pnpm@9.15.9",

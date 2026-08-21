@@ -1,93 +1,67 @@
-# LG-Agent 平台架构
+# LG-Agent 系统架构
 
-## 系统概述
+## 架构基线
 
-LG-Agent 是一个基于云原生原则设计的企业级 AI 辅助学习平台。该平台由一个统一的 Monorepo 组成，使用 Turborepo 和 pnpm workspaces 进行管理。
+LG-Agent 是 pnpm/Turborepo 管理的模块化单体。NestJS API 按领域 module 组织；每个 domain 的 Nest module 是 composition root，通过 token 绑定 adapter。跨 domain 只能从 `index.ts` 进入公共 interface，`internal`、`repository`、`strategy`、`provider` 与 `adapter` 路径属于 implementation。
+
+这一约束由 [ADR 0001](../../docs/adr/0001-modular-monolith.md) 和 `pnpm architecture:check` 强制执行。只有独立扩缩、故障隔离或所有权有实证需求时才引入网络 seam。
 
 ```mermaid
-graph TD
-    %% User Interfaces
-    subgraph Clients ["客户端层 (Clients)"]
-        Web[Web Console<br/>React/Vite SPA]
-        TraineeWeb[Trainee Workspace<br/>React/Vite SPA]
-        CLI[LG-Agent CLI<br/>Node.js (Deprecated)]
-    end
+flowchart LR
+  Admin["Admin Web :8080"] --> API["NestJS API :4000"]
+  Trainee["Trainee Web :8081"] --> API
+  CLI["CLI（兼容/已废弃）"] -.-> API
 
-    %% API Layer
-    subgraph API ["后端服务层 (API)"]
-        Nest[NestJS API Server<br/>DDD Architecture]
-        Auth[Auth Module]
-        Task[Task Manager]
-        RAG[RAG & AI Tutor]
-        Gateway[LLM Gateway<br/>+ Rule Engine]
+  subgraph Monolith["API 模块化单体"]
+    Auth["Auth + Authorization"]
+    Domain["Organization / Course / Task / Training"]
+    Workspace["Authoring Workspace"]
+    Submission["Submission"]
+    Sandbox["Sandbox"]
+    AI["AI + Retrieval"]
+    Ops["Platform + Observability"]
+    Submission --> Sandbox
+    Submission --> AI
+    Submission --> Workspace
+  end
 
-        Nest --- Auth
-        Nest --- Task
-        Nest --- RAG
-        Nest --- Gateway
-    end
-
-    %% External & Persistence Layer
-    subgraph Infrastructure ["基础设施层 (Infrastructure)"]
-        PG[(PostgreSQL<br/>Core Data)]
-        Redis[(Redis<br/>Cache & Rate Limit)]
-        MinIO[(MinIO/S3<br/>Object Storage)]
-    end
-
-    %% LLM Providers
-    subgraph LLM ["大型语言模型 (LLM)"]
-        OpenAI(OpenAI)
-        DeepSeek(DeepSeek)
-        Qwen(Qwen)
-    end
-
-    %% Connections
-    Web -->|HTTP/REST| Nest
-    TraineeWeb -->|HTTP/REST/WS| Nest
-    CLI -.->|HTTP/REST| Nest
-
-    Auth --> PG
-    Task --> PG
-    Gateway -.->|Token Logs| PG
-
-    Auth --> Redis
-    Gateway --> Redis
-
-    Task --> MinIO
-    RAG --> MinIO
-
-    Gateway -->|Unified API| OpenAI
-    Gateway -->|Unified API| DeepSeek
-    Gateway -->|Unified API| Qwen
+  API --> Monolith
+  Monolith --> PG[("PostgreSQL + pgvector")]
+  Monolith -. cache .-> Redis[("Redis（可选运行依赖）")]
+  Workspace -. template source .-> Git["允许列表 Git host"]
+  AI --> LLM["OpenAI / DeepSeek / compatible endpoint"]
+  Sandbox --> Docker["Docker runtime"]
 ```
 
-### 1. 核心服务 (Core Services)
+## 核心 module 与 seam
 
-- **Web 控制台 (`@lg-agent/web`)**: 导师 (Mentors) 专用的管理后台，用于课程管理和数据洞察。
-- **学员工作区 (`@lg-agent/trainee-web`)**: 一个高度集成的在线学习工作区 (SPA)，内置 Monaco 代码编辑器、任务说明、AI 导师交互面板和沙盒终端输出。
-- **API 服务 (`@lg-agent/api`)**: 基于 NestJS 的后端，作为主要编排层负责身份验证、任务管理、沙盒调度、RAG 与 LLM 路由，以及遥测 (Telemetry) 数据收集。
-- **命令行工具 (`@lg-agent/cli`)**: (已废弃) 早期的 Node.js 命令行工具。
+| Module               | 公共 interface                                      | 深层 implementation                                     |
+| -------------------- | --------------------------------------------------- | ------------------------------------------------------- |
+| Auth / Authorization | JWT actor、`RequirePermission`、permission registry | JWT 配置、策略、registry reconcile、审计                |
+| Workspace            | Authoring Workspace 命令与版本                      | 数据库 repository、Git template source adapter          |
+| Submission           | `run`、状态、日志、取消、replay                     | 幂等、租约、重试、事件、terminal hooks                  |
+| Sandbox              | 执行请求与统一事件生命周期                          | Docker/local executor adapter、运行时 profile、安全策略 |
+| AI                   | tutor、review、task generation、retrieval           | LLM provider、规则、Prompt repository、检索 adapter     |
+| Observability        | telemetry、audit、health/readiness                  | provider adapter、指标、日志和持久审计                  |
 
-### 2. 数据持久化 (无状态架构)
+## Workspace、Submission 与 Sandbox
 
-为确保后端 API 能够在 Kubernetes 中进行水平扩展，状态被严格地在外部进行管理：
+这三个概念不可合并：
 
-- **PostgreSQL**: 主要的关系型数据库，用于存储用户、课程、任务、学习记录和 AI 日志。通过 Prisma ORM 进行管理。
-- **Redis**: 内存数据存储，用于 JWT 黑名单、速率限制和临时工作区缓存。
-- **MinIO (兼容 S3)**: 对象存储，用于存储 RAG 文档、学员提交的文件以及系统备份。
+- **Authoring Workspace** 是用户与 Task 的持久可编辑文件、baseline 和版本。
+- **Execution Workspace** 是单次执行临时物化的隔离文件系统，执行后销毁。
+- **Submission** 是 assessed execution 的唯一持久入口，拥有状态机、幂等、事件、取消、replay、score 和 terminal hooks。
+- **Sandbox** 只选择 executor adapter 并执行 Execution Workspace，不创建另一套 Submission 生命周期。
 
-### 3. AI 网关与推理 (AI Gateway & Inference)
+生产 composition 默认将 `IExecutionAdapter` 绑定到数据库 adapter，以支持多 API Pod 的租约、恢复、重试与取消；详见 [ADR 0002](../../docs/adr/0002-submission-single-entry.md) 与 [ADR 0003](../../docs/adr/0003-durable-execution-adapter.md)。
 
-AI 网关标准化了对多个 LLM 供应商（如 OpenAI、DeepSeek、Qwen）的访问。
+## 前端状态
 
-- **敏感信息过滤**: 采用规则引擎在数据传输前剔除 PII（个人身份信息）和内部机密。
-- **成本与审计日志**: 所有的 Prompt（提示词）都会被记录，Token 消耗会被聚合，指标数据通过 Prometheus 暴露。
-- **AI 导师流水线**: 处理 RAG 检索、构建上下文（工作区代码），并通过 SSE (Server-Sent Events) 以流式输出至前端 AI 导师面板。
+Admin Web 通过 route permission 展示组织、用户、课程、任务、Submission、授权、检索和可观测性页面。Trainee Web 的 `WorkspaceSession` 是深 module：它在一个 interface 后协调远端 baseline、本地 draft、dirty files、离线快照、版本、活动文件与执行状态，页面只使用 commands 和 selectors。
 
-### 4. 基础设施与执行沙盒 (Infrastructure & Sandbox Execution)
+## 数据与外部依赖
 
-- **沙盒执行**: 后端通过 Docker Runner 安全地隔离运行学员提交的代码，通过 WebSocket 实时推送执行日志至前端终端 (xterm.js)。
-- **Docker**: 多阶段构建生成无发行版 (distroless)、非 root 的 Alpine 镜像。
-- **Kubernetes (Helm)**: 统一的 Helm Charts 管理部署，通过 Nginx Ingress 将系统暴露到外部。
-- **可观测性**: 基于 Prometheus（指标）和 Pino（结构化 JSON 日志）。
-- **质量工程 (Quality Engineering)**: Playwright E2E、Vitest 单元测试以及 GitHub Actions CI 流水线，在每个 PR 上强制执行严格的质量门禁。
+- PostgreSQL 是业务、Workspace、Submission、权限、审计和检索元数据的 source of truth；pgvector 支持持久向量索引。
+- Redis 配置保留用于缓存类能力，但当前健康检查只验证 PostgreSQL；不要把 Redis 描述为 durable source of truth。
+- MinIO/S3 作为生产外部对象存储契约，由平台预置，Helm chart 不负责部署。
+- Docker executor 是生产 Sandbox adapter；`local` 只允许非生产。

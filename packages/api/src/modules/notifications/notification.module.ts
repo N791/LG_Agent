@@ -4,9 +4,11 @@ import { NotificationService } from './notification.service';
 import { NotificationPublisher } from './notification.publisher';
 import { NotificationGateway } from './notification.gateway';
 import { NOTIFICATION_PUBLISHER } from './notification-publisher.interface';
+import { AuthConfigModule } from '../auth/auth-config.module';
 
 @Global()
 @Module({
+  imports: [AuthConfigModule],
   controllers: [NotificationController],
   providers: [
     NotificationService,

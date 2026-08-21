@@ -1,20 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { IExecutor } from './interfaces/executor.interface';
-import { DockerExecutor } from './docker.executor';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import type { IExecutor } from './interfaces/executor.interface';
 import { EnvDetectorService } from './env-detector.service';
 import { ExecutionEventDTO, ExecutionEventType, WorkspaceDTO } from '@lg-agent/contracts';
+import { SANDBOX_EXECUTOR } from './sandbox.tokens';
+import { RuntimeMetricsService } from './runtime-metrics.service';
 
 @Injectable()
 export class SandboxService {
-  private executor: IExecutor;
-
   constructor(
-    private dockerExecutor: DockerExecutor,
-    private envDetector: EnvDetectorService,
-  ) {
-    // Inject DockerExecutor as the default implementation for Epic 12
-    this.executor = this.dockerExecutor;
-  }
+    @Inject(SANDBOX_EXECUTOR) private readonly executor: IExecutor,
+    private readonly envDetector: EnvDetectorService,
+    @Optional() private readonly runtimeMetrics?: RuntimeMetricsService,
+  ) {}
 
   async *runTask(
     taskId: string,
@@ -25,6 +22,9 @@ export class SandboxService {
       testScript?: string | null;
       action?: import('@lg-agent/contracts').SandboxAction;
       executionId?: string;
+      organizationId?: string;
+      runtime?: Partial<import('@lg-agent/contracts').RuntimeEnvironmentDTO> | null;
+      queuedAtMs?: number;
     },
   ): AsyncGenerator<ExecutionEventDTO, void, unknown> {
     // Phase 1: Environment Detection
@@ -48,6 +48,12 @@ export class SandboxService {
     }
 
     // Phase 2: Execution
+    if (config.queuedAtMs && config.runtime?.language && config.runtime.version) {
+      this.runtimeMetrics?.observeQueue(
+        { language: config.runtime.language, version: config.runtime.version },
+        Math.max(0, Date.now() - config.queuedAtMs) / 1000,
+      );
+    }
     yield* this.executor.execute(taskId, userId, workspace, config);
   }
 }

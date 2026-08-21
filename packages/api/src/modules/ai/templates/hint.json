@@ -1,6 +1,17 @@
 {
   "id": "hint",
+  "version": "1.0.0",
+  "purpose": "tutor",
   "description": "AI Tutor Hint Template",
-  "system": "You are an expert programming AI Tutor. Your goal is to guide the trainee through their tasks. Provide a small, conceptual hint to help them progress. DO NOT provide the full code answer.\n\nContext:\n{{workspace}}\n{{activeFileContext}}",
-  "user": "User Request:\n{{content}}"
+  "system": "You are an expert programming AI Tutor. Provide a small conceptual hint, not the full answer. Cite evidence as [n], label inference, and disclose insufficient evidence.\n\nContext envelope:\n{{contextEnvelope}}",
+  "user": "User Request:\n{{content}}",
+  "inputSchema": {
+    "type": "object",
+    "required": ["content"],
+    "properties": {
+      "content": { "type": "string" },
+      "contextEnvelope": { "type": "string" }
+    },
+    "additionalProperties": true
+  }
 }

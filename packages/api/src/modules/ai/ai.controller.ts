@@ -5,24 +5,41 @@ import {
   Res,
   BadRequestException,
   Get,
+  HttpCode,
   UseGuards,
   Request,
   Param,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { ChatRequestDto } from './tutor/interfaces';
-import { LLMResponse } from './interfaces/llm-provider.interface';
-import { AiConversationService } from './conversation/ai-conversation.service';
+import {
+  ChatRequestDTO,
+  type CitationDTO,
+  GenerateTaskRequestDTO,
+  type TutorResponseDTO,
+  PERMISSIONS,
+} from '@lg-agent/contracts';
+import {
+  AiConversationService,
+  type TutorStreamResult,
+} from './conversation/ai-conversation.service';
 import { ModelRegistryService } from './model-registry.service';
 import { ModelInfoDTO } from '@lg-agent/contracts';
-import { Ai2TaskService, GenerateTaskRequest } from './ai2task.service';
+import { Ai2TaskService } from './ai2task.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { QuickActionRegistry } from './tutor/quick-actions/quick-action.registry';
 
 import { AiReviewService } from './tutor/ai-review.service';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
+import { endSse, initializeSse, writeSseEvent } from '../../common/sse';
+import { RequirePermission } from '../authorization';
+import { RetrievalUxService } from './retrieval/retrieval-ux.service';
+import { RetrievalObservabilityService } from './retrieval/retrieval-observability.service';
+import { RetrievalShadowService } from './retrieval/evaluation/retrieval-shadow.service';
+import { RetrievalTraceService } from './retrieval/retrieval-trace.service';
 
 @Controller('ai')
 @UseGuards(JwtAuthGuard)
+@RequirePermission(PERMISSIONS.AI_TUTOR_USE)
 export class AiController {
   constructor(
     private readonly aiConversationService: AiConversationService,
@@ -30,6 +47,10 @@ export class AiController {
     private readonly ai2taskService: Ai2TaskService,
     private readonly quickActionRegistry: QuickActionRegistry,
     private readonly aiReviewService: AiReviewService,
+    private readonly retrievalUx: RetrievalUxService,
+    private readonly retrievalObservability: RetrievalObservabilityService,
+    private readonly retrievalShadow: RetrievalShadowService,
+    private readonly retrievalTraces: RetrievalTraceService,
   ) {}
 
   @Get('tutor/quick-actions/:action')
@@ -38,13 +59,20 @@ export class AiController {
   }
 
   @Get('tutor/review/:submissionId')
-  async getAiReview(@Param('submissionId') submissionId: string) {
-    return this.aiReviewService.generateReview(submissionId);
+  async getAiReview(
+    @Param('submissionId') submissionId: string,
+    @Request() req: { user: TenantActor },
+  ) {
+    return this.aiReviewService.getAuthorizedReview(submissionId, req.user);
   }
 
   @Post('generate-task')
-  async generateTask(@Body() request: GenerateTaskRequest) {
-    return this.ai2taskService.generateTaskDraft(request);
+  @RequirePermission(PERMISSIONS.AI_TASK_GENERATE)
+  async generateTask(
+    @Request() req: { user: TenantActor },
+    @Body() request: GenerateTaskRequestDTO,
+  ) {
+    return this.ai2taskService.generateTaskDraft(request, req.user);
   }
 
   @Get('models')
@@ -53,64 +81,144 @@ export class AiController {
   }
 
   @Post('tutor/chat')
+  @HttpCode(200)
   async chat(
-    @Request() req: { user: { id: string; organizationId?: string } },
-    @Body() request: ChatRequestDto,
+    @Request() req: { user: TenantActor },
+    @Body() request: ChatRequestDTO,
     @Res() res: Response,
   ) {
     if (!request.action || !request.content) {
       throw new BadRequestException('errors.ai.actionRequired');
     }
 
-    try {
-      const result = await this.aiConversationService.chat({
-        action: request.action,
-        taskId: request.taskId,
-        content: request.content,
-        stream: request.stream,
-        conversationId: request.conversationId,
-        userId: req.user.id,
-        organizationId: req.user.organizationId ?? '',
-      });
+    const result = await this.aiConversationService.chat({
+      action: request.action,
+      taskId: request.taskId,
+      content: request.content,
+      stream: request.stream,
+      conversationId: request.conversationId,
+      activeFile: request.activeFile,
+      activeFileContent: request.activeFileContent,
+      repositorySnapshotId: request.repositorySnapshotId,
+      workspaceVersionId: request.workspaceVersionId,
+      submissionLog: request.submissionLog,
+      taskState: request.taskState,
+      selection: request.selection,
+      userId: req.user.id,
+      organizationId: req.user.organizationId,
+    });
 
-      // Handle Stream
-      if (request.stream) {
-        const stream = result as AsyncGenerator<string, void, unknown>;
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
-
-        for await (const chunk of stream) {
-          res.write(`data: ${chunk}\n\n`);
+    if (request.stream) {
+      const streaming = result as TutorStreamResult;
+      initializeSse(res);
+      try {
+        for await (const chunk of streaming.stream) {
+          writeSseEvent(res, { type: 'CHUNK', data: chunk });
         }
-        res.write('data: [DONE]\n\n');
-        res.end();
-      } else {
-        // Handle normal response
-        const response = result as LLMResponse;
-        res.json(response);
+        endSse(res, await streaming.done);
+      } catch (error: unknown) {
+        const providerMissing = (error as Error).message.startsWith('AI_PROVIDER_NOT_CONFIGURED');
+        writeSseEvent(res, {
+          type: 'ERROR',
+          message: providerMissing ? 'AI_PROVIDER_NOT_CONFIGURED' : 'AI_TUTOR_STREAM_FAILED',
+          data: {
+            code: providerMissing ? 'AI_PROVIDER_NOT_CONFIGURED' : 'AI_TUTOR_STREAM_FAILED',
+            recovery: providerMissing
+              ? 'Configure a production LLM provider. Mock responses are disabled outside tests.'
+              : 'Retry the request or open Retrieval Preview to inspect index readiness.',
+          },
+        });
+        endSse(res);
       }
-    } catch (error: unknown) {
-      const err = error as Error;
-      if (
-        err.name === 'BadRequestException' ||
-        err.message.includes('safety') ||
-        err.message.includes('blocked')
-      ) {
-        res.status(400).json({ error: err.message });
-      } else if (err.name === 'NotFoundException') {
-        res.status(404).json({ error: err.message });
-      } else {
-        res.status(500).json({ error: 'Internal Server Error', details: err.message });
-      }
+      return;
     }
+
+    const response = result as TutorResponseDTO;
+    res.json({ code: 200, message: 'success', data: response });
+  }
+
+  @Post('retrieval/preview')
+  @RequirePermission(PERMISSIONS.AI_RETRIEVAL_READ)
+  async previewRetrieval(@Request() req: { user: TenantActor }, @Body() request: ChatRequestDTO) {
+    const scopedRequest = Object.assign(new ChatRequestDTO(), request, {
+      userId: req.user.id,
+      organizationId: req.user.organizationId,
+    });
+    const result = await this.aiConversationService.preview(scopedRequest);
+    return { context: result.context, traceSummary: result.trace };
+  }
+
+  @Post('retrieval/citations/open')
+  async openCitation(@Request() req: { user: TenantActor }, @Body() citation: CitationDTO) {
+    return this.retrievalUx.openCitation(citation, req.user);
+  }
+
+  @Get('retrieval/indexes')
+  @RequirePermission(PERMISSIONS.AI_RETRIEVAL_READ)
+  async listRetrievalIndexes(@Request() req: { user: TenantActor }) {
+    return this.retrievalUx.listIndexes(req.user);
+  }
+
+  @Get('retrieval/health')
+  @RequirePermission(PERMISSIONS.AI_RETRIEVAL_READ)
+  retrievalHealth() {
+    return this.retrievalObservability.snapshots();
+  }
+
+  @Get('retrieval/shadow-comparisons')
+  @RequirePermission(PERMISSIONS.AI_RETRIEVAL_READ)
+  shadowComparisons(@Request() req: { user: TenantActor }) {
+    return this.retrievalShadow.list(req.user.organizationId);
+  }
+
+  @Get('retrieval/traces/:traceId')
+  @RequirePermission(PERMISSIONS.AI_RETRIEVAL_READ)
+  retrievalTrace(@Request() req: { user: TenantActor }, @Param('traceId') traceId: string) {
+    return this.retrievalTraces.get(traceId, req.user.organizationId);
+  }
+
+  @Post('retrieval/indexes/:kind/:id/activate')
+  @RequirePermission(PERMISSIONS.AI_RETRIEVAL_MANAGE)
+  async activateRetrievalIndex(
+    @Request() req: { user: TenantActor },
+    @Param('kind') rawKind: string,
+    @Param('id') id: string,
+  ) {
+    const kind = this.parseRetrievalIndexKind(rawKind);
+    await this.retrievalUx.activateIndex(kind, id, req.user);
+    return { activated: true };
+  }
+
+  @Post('retrieval/indexes/:kind/:id/retry')
+  @RequirePermission(PERMISSIONS.AI_RETRIEVAL_MANAGE)
+  async retryRetrievalIndex(
+    @Request() req: { user: TenantActor },
+    @Param('kind') rawKind: string,
+    @Param('id') id: string,
+  ) {
+    const kind = this.parseRetrievalIndexKind(rawKind);
+    await this.retrievalUx.retryIndex(kind, id, req.user);
+    return {
+      queued: true,
+      code: 'RETRIEVAL_INDEX_RETRY_QUEUED',
+      recovery: 'Refresh index status to follow the rebuild.',
+    };
+  }
+
+  private parseRetrievalIndexKind(rawKind: string): 'DOCUMENT' | 'CODE' {
+    if (rawKind === 'DOCUMENT' || rawKind === 'CODE') return rawKind;
+    throw new BadRequestException('RETRIEVAL_INDEX_KIND_INVALID');
   }
 
   @Get('tutor/conversations/:taskId')
   async getConversationHistory(
-    @Request() req: { user: { id: string } },
+    @Request() req: { user: TenantActor },
     @Param('taskId') taskId: string,
   ) {
-    return this.aiConversationService.getConversationHistory(taskId, req.user.id);
+    return this.aiConversationService.getConversationHistory(
+      taskId,
+      req.user.id,
+      req.user.organizationId,
+    );
   }
 }

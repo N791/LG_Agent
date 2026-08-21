@@ -2,15 +2,6 @@ type WorkspaceShortcutAction =
   | { type: 'switch-left-panel'; tab: 'objective' | 'mentor' | 'versions' }
   | { type: 'cycle-editor-theme'; nextTheme: string };
 
-export const WORKSPACE_LOCALE_LABELS = {
-  objective: 'Task objective',
-  mentor: 'AI mentor',
-  versions: 'Version history',
-  'vs-dark': 'Dark theme',
-  'vs-light': 'Light theme',
-  'hc-black': 'High contrast theme',
-} as const;
-
 const THEME_CYCLE = ['vs-dark', 'vs-light', 'hc-black'];
 
 export function resolveWorkspaceKeyboardShortcut(

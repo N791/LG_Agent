@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
 import { t } from '../i18n';
+import type { RunSubmissionResponseDTO } from '@lg-agent/contracts';
 
 export const workspaceCommands = new Command('workspace').description('Workspace and execution');
 
@@ -18,9 +19,10 @@ interface Task {
 }
 
 interface SandboxResult {
+  id: string;
   status: string;
   score: number;
-  logs: string;
+  logs?: string;
 }
 
 workspaceCommands
@@ -77,10 +79,26 @@ workspaceCommands
 
       console.log(chalk.cyan(t('workspace.submitting', { taskId: config.taskId })));
 
-      const result = await api.post<SandboxResult>('/training/submit', {
-        taskId: config.taskId,
-        code,
+      await api.post('/workspaces/init', { taskId: config.taskId });
+      await api.put(`/workspaces/${config.taskId}/files`, {
+        files: [{ path: 'index.js', content: code }],
       });
+      const accepted = await api.post<RunSubmissionResponseDTO>('/submissions/run', {
+        taskId: config.taskId,
+      });
+
+      let result: SandboxResult | undefined;
+      for (let attempt = 0; attempt < 600; attempt += 1) {
+        const current = await api.get<SandboxResult>(`/submissions/${accepted.submissionId}`);
+        if (['PASSED', 'FAILED', 'ERROR'].includes(current.status)) {
+          result = current;
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+      if (!result) {
+        throw new Error(`Submission ${accepted.submissionId} did not finish within 10 minutes`);
+      }
 
       console.log(chalk.blue.bold(t('workspace.sandboxResult')));
       console.log(
@@ -88,7 +106,7 @@ workspaceCommands
       );
       console.log(`${t('workspace.score')}${String(result.score)}`);
       console.log(t('workspace.logs'));
-      console.log(chalk.gray(result.logs));
+      console.log(chalk.gray(result.logs ?? ''));
       console.log(chalk.blue.bold(t('workspace.separator')));
     } catch (_e) {
       const e = _e as Error;

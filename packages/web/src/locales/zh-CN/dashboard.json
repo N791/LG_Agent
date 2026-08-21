@@ -11,11 +11,11 @@
     "funnelTitle": "员工通关进度",
     "passedUsers": "通关数",
     "dropOffs": "失败数",
-    "aiUsageTitle": "各模型 AI 使用量 (Tokens)",
+    "aiUsageTitle": "各模型 AI 词元使用量",
     "learningTrendsTitle": "学习趋势 (提交数)",
     "passed": "通过",
     "failed": "失败",
-    "tokens": "Tokens"
+    "tokens": "词元数"
   },
   "tables": {
     "bottlenecksTitle": "主要任务分析 (最高失败率)",

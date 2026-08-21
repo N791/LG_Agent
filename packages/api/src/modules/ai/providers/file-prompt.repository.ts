@@ -1,65 +1,74 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IPromptRepository, PromptTemplate } from '../interfaces/prompt-repository.interface';
 import * as fs from 'fs';
 import * as path from 'path';
+import Ajv, { ValidateFunction } from 'ajv';
 
 @Injectable()
 export class FilePromptRepository implements IPromptRepository {
-  private templates = new Map<string, PromptTemplate>();
+  private readonly logger = new Logger(FilePromptRepository.name);
+  private readonly templates = new Map<string, PromptTemplate>();
+  private readonly ajv = new Ajv({ allErrors: true, strict: false });
+  private readonly validateTemplate: ValidateFunction;
 
   constructor() {
+    this.validateTemplate = this.ajv.compile({
+      type: 'object',
+      additionalProperties: false,
+      required: ['id', 'version', 'purpose', 'description', 'system', 'user', 'inputSchema'],
+      properties: {
+        id: { type: 'string', minLength: 1 },
+        version: { type: 'string', pattern: '^\\d+\\.\\d+\\.\\d+$' },
+        purpose: {
+          enum: ['tutor', 'code-review', 'ai-review', 'task-generation'],
+        },
+        description: { type: 'string', minLength: 1 },
+        system: { type: 'string' },
+        user: { type: 'string' },
+        inputSchema: { type: 'object' },
+        outputSchema: { type: 'object' },
+      },
+    });
     this.loadTemplates();
   }
 
   private loadTemplates() {
+    const templatesPath = this.resolveTemplatesPath();
     try {
-      const templatesPath = path.join(process.cwd(), 'src/modules/ai/templates');
-      if (!fs.existsSync(templatesPath)) {
-        fs.mkdirSync(templatesPath, { recursive: true });
-
-        // MVP: Create default templates
-        const templates = [
-          {
-            id: 'CODE_REVIEW',
-            description: 'AI Code Review Template',
-            system:
-              'You are an expert code reviewer. Please review the following code and provide constructive feedback.\n\nContext:\n{{workspace}}\n{{activeFileContext}}',
-            user: 'Task Description: {{task_description}}\n\nUser Request:\n{{content}}',
-          },
-          {
-            id: 'hint',
-            description: 'AI Tutor Hint Template',
-            system:
-              'You are an expert programming AI Tutor. Your goal is to guide the trainee through their tasks. Provide a small, conceptual hint to help them progress. DO NOT provide the full code answer.\n\nContext:\n{{workspace}}\n{{activeFileContext}}',
-            user: 'User Request:\n{{content}}',
-          },
-          {
-            id: 'explain_error',
-            description: 'AI Tutor Error Explanation Template',
-            system:
-              'You are an expert programming AI Tutor. Your goal is to explain compilation or runtime errors to the trainee in simple, understandable terms. Suggest potential causes but encourage them to find the exact fix.\n\nContext:\n{{workspace}}\n{{activeFileContext}}',
-            user: 'Error/Request:\n{{content}}',
-          },
-        ];
-
-        for (const tmpl of templates) {
-          fs.writeFileSync(
-            path.join(templatesPath, `${tmpl.id}.json`),
-            JSON.stringify(tmpl, null, 2),
-          );
-        }
-      }
-
       const files = fs.readdirSync(templatesPath).filter((f) => f.endsWith('.json'));
       for (const file of files) {
         const content = fs.readFileSync(path.join(templatesPath, file), 'utf8');
-        const template = JSON.parse(content) as unknown as PromptTemplate;
+        const candidate: unknown = JSON.parse(content);
+        if (!this.validateTemplate(candidate)) {
+          throw new Error(
+            `Invalid prompt template ${file}: ${new Ajv().errorsText(this.validateTemplate.errors)}`,
+          );
+        }
+        const template = candidate as PromptTemplate;
+        this.ajv.compile(template.inputSchema);
+        if (template.outputSchema) this.ajv.compile(template.outputSchema);
+        if (this.templates.has(template.id)) {
+          throw new Error(`Duplicate prompt template id: ${template.id}`);
+        }
         this.templates.set(template.id, template);
       }
     } catch (error: unknown) {
-      const err = error as Error;
-      console.error(`Failed to load prompt templates: ${err.message}`);
+      this.logger.error(`Failed to load prompt templates: ${(error as Error).message}`);
+      throw error;
     }
+  }
+
+  private resolveTemplatesPath(): string {
+    const candidates = [
+      path.join(__dirname, '../templates'),
+      path.join(process.cwd(), 'packages/api/src/modules/ai/templates'),
+      path.join(process.cwd(), 'src/modules/ai/templates'),
+    ];
+    const templatesPath = candidates.find((candidate) => fs.existsSync(candidate));
+    if (!templatesPath) {
+      throw new Error(`Prompt template directory not found. Checked: ${candidates.join(', ')}`);
+    }
+    return templatesPath;
   }
 
   getTemplate(id: string): Promise<PromptTemplate> {
@@ -70,5 +79,9 @@ export class FilePromptRepository implements IPromptRepository {
       );
     }
     return Promise.resolve(template);
+  }
+
+  listTemplates(): Promise<PromptTemplate[]> {
+    return Promise.resolve([...this.templates.values()]);
   }
 }

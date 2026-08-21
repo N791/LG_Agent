@@ -5,9 +5,11 @@ import validator from '@rjsf/validator-ajv8';
 import { schemasService } from '../../services/schemas';
 import { Spin, Radio, Alert, Card, type RadioChangeEvent } from 'antd';
 import Editor from '@monaco-editor/react';
+import type { SchemaId, SchemaName } from '@lg-agent/contracts';
+import { useTranslation } from 'react-i18next';
 
 export interface JsonSchemaEditorProps extends Omit<FormProps, 'schema' | 'validator'> {
-  schemaName: string;
+  schemaName: SchemaName | SchemaId;
 }
 
 type Mode = 'FORM' | 'JSON';
@@ -18,6 +20,7 @@ export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({
   onChange,
   ...props
 }) => {
+  const { t } = useTranslation('admin');
   const [schema, setSchema] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,7 +67,7 @@ export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({
         onChange({ formData: parsed } as unknown as IChangeEvent);
       }
     } catch (e: unknown) {
-      setJsonError(`JSON Syntax Error: ${(e as Error).message}`);
+      setJsonError(t('editor.jsonSyntaxError', { message: (e as Error).message }));
     }
   };
 
@@ -78,11 +81,11 @@ export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({
   };
 
   if (loading) {
-    return <Spin tip={`Loading Schema (${schemaName})...`} />;
+    return <Spin tip={t('editor.loadingSchema', { name: schemaName })} />;
   }
 
   if (!schema) {
-    return <div>Failed to load schema for {schemaName}</div>;
+    return <div>{t('editor.schemaLoadFailed', { name: schemaName })}</div>;
   }
 
   return (
@@ -90,8 +93,8 @@ export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({
       size="small"
       extra={
         <Radio.Group value={mode} onChange={handleModeChange} size="small" buttonStyle="solid">
-          <Radio.Button value="FORM">Visual Form</Radio.Button>
-          <Radio.Button value="JSON">Raw JSON</Radio.Button>
+          <Radio.Button value="FORM">{t('editor.visualForm')}</Radio.Button>
+          <Radio.Button value="JSON">{t('editor.rawJson')}</Radio.Button>
         </Radio.Group>
       }
       className="mb-4 shadow-sm border border-gray-200"
@@ -99,7 +102,13 @@ export const JsonSchemaEditor: React.FC<JsonSchemaEditorProps> = ({
       {mode === 'JSON' ? (
         <div className="border rounded h-[400px]">
           {jsonError && (
-            <Alert message="Invalid JSON" description={jsonError} type="error" showIcon banner />
+            <Alert
+              message={t('editor.invalidJson')}
+              description={jsonError}
+              type="error"
+              showIcon
+              banner
+            />
           )}
           <Editor
             height={jsonError ? '360px' : '400px'}

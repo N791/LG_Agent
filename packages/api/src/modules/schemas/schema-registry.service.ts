@@ -1,10 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class SchemaRegistryService {
-  private schemas = new Map<string, Record<string, unknown>>();
+  private readonly schemas = new Map<string, Record<string, unknown>>();
 
   registerSchema(name: string, schema: Record<string, unknown>) {
+    const existing = this.schemas.get(name);
+    if (existing && existing !== schema) {
+      throw new ConflictException({
+        message: 'errors.schema.conflict',
+        args: { name },
+      });
+    }
     this.schemas.set(name, schema);
   }
 

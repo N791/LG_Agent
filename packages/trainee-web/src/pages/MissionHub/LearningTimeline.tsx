@@ -4,6 +4,7 @@ import { Timeline, Typography, Tag, Button, Spin, Alert } from 'antd';
 import { CheckCircleOutlined, LockOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { TimelineNodeDTO } from '@lg-agent/contracts';
 import { trainingService } from '../../services/trainingService';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
@@ -13,6 +14,7 @@ interface LearningTimelineProps {
 }
 
 export const LearningTimeline: React.FC<LearningTimelineProps> = ({ courseId, onEnterTask }) => {
+  const { t } = useTranslation('missionHub');
   const [nodes, setNodes] = useState<TimelineNodeDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,7 +26,7 @@ export const LearningTimeline: React.FC<LearningTimelineProps> = ({ courseId, on
         const data = await trainingService.getTimeline(courseId);
         setNodes(data);
       } catch (err) {
-        setError('Failed to load learning timeline.');
+        setError(t('timeline.loadFailed'));
       } finally {
         setLoading(false);
       }
@@ -35,7 +37,11 @@ export const LearningTimeline: React.FC<LearningTimelineProps> = ({ courseId, on
   }, [courseId]);
 
   if (loading) {
-    return <div className="py-12 flex justify-center"><Spin size="large" /></div>;
+    return (
+      <div className="py-12 flex justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   if (error) {
@@ -43,13 +49,13 @@ export const LearningTimeline: React.FC<LearningTimelineProps> = ({ courseId, on
   }
 
   if (nodes.length === 0) {
-    return <Text className="text-gray-500">No missions found for this course.</Text>;
+    return <Text className="text-gray-500">{t('timeline.empty')}</Text>;
   }
 
   const timelineItems = nodes.map((node) => {
     let color = 'gray';
     let icon = <LockOutlined />;
-    
+
     if (node.status === 'PASSED') {
       color = 'green';
       icon = <CheckCircleOutlined />;
@@ -65,21 +71,23 @@ export const LearningTimeline: React.FC<LearningTimelineProps> = ({ courseId, on
         <div className={`ml-2 mb-8 ${node.status === 'LOCKED' ? 'opacity-50' : ''}`}>
           <div className="flex items-center gap-3 mb-2">
             <Text className="font-bold text-lg">{node.title}</Text>
-            <Tag color={color}>Stage {node.stage}</Tag>
-            {node.status === 'PASSED' && <Tag color="success">Completed</Tag>}
+            <Tag color={color}>{t('timeline.stage', { stage: node.stage })}</Tag>
+            {node.status === 'PASSED' && <Tag color="success">{t('timeline.completed')}</Tag>}
           </div>
-          
+
           {node.status !== 'LOCKED' && (
-            <Button 
-              type={node.status === 'AVAILABLE' ? 'primary' : 'default'} 
-              size="small" 
-              onClick={() => { onEnterTask(node.taskId); }}
+            <Button
+              type={node.status === 'AVAILABLE' ? 'primary' : 'default'}
+              size="small"
+              onClick={() => {
+                onEnterTask(node.taskId);
+              }}
             >
-              {node.status === 'PASSED' ? 'Review Mission' : 'Start Mission'}
+              {node.status === 'PASSED' ? t('actions.reviewMission') : t('actions.startMission')}
             </Button>
           )}
         </div>
-      )
+      ),
     };
   });
 

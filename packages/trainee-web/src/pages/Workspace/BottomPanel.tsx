@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
-import { ExecutionCenterPanel, ExecutionState } from './ExecutionCenterPanel';
+import { ExecutionCenterPanel } from './ExecutionCenterPanel';
+import type { ExecutionState } from './ExecutionCenterPanel';
 import { useTranslation } from 'react-i18next';
 
 export interface BottomPanelProps {
@@ -15,7 +16,7 @@ export const BottomPanel: React.FC<BottomPanelProps> = React.memo(({ executionSt
     <div
       className="h-full w-full bg-white border-t border-gray-200 flex flex-col"
       role="region"
-      aria-label="Execution and output panel"
+      aria-label={t('aria.executionPanel')}
     >
       <Tabs
         activeKey={activeTab}

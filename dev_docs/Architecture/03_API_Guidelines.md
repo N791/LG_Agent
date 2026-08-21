@@ -1,54 +1,46 @@
-# API 设计规范 (API Guidelines)
+# API 设计规范
 
-LG-Agent 的后端 API 基于 **NestJS** 构建，遵循 RESTful 标准，并通过 OpenAPI (Swagger) 提供自动化的 API 文档和类型安全契约。
+## 路由与协议
 
-## 1. 路由与命名规范
+- 业务路由使用全局前缀 `/api/v1`，Swagger UI 为 `/api/docs`。
+- Controller 使用复数资源名；操作型端点只用于明确命令，如 `submissions/:id/cancel`。
+- 普通 JSON 使用 HTTP 状态码并由全局 interceptor 统一为 `{ code, message, data }`。
+- 错误由全局 filter 统一为 `{ code, message, details?, traceId? }`。
+- SSE 不套普通 envelope，事件使用版本化 DTO；Submission 日志支持 `Last-Event-ID` replay。
 
-- **基础前缀**: 所有的业务 API 都必须以 `/api/v1` 作为路由前缀（通常在 `main.ts` 中通过全局前缀配置）。
-- **资源命名**: 路由应当是名词复数。
-  - ✅ `/api/v1/courses`
-  - ✅ `/api/v1/courses/:courseId/tasks`
-  - ❌ `/api/v1/getCourse`
+## 契约 source of truth
 
-## 2. 请求入参校验 (DTO & ValidationPipe)
+共享 DTO、枚举、permission 常量和 SSE 类型位于 `@lg-agent/contracts`。`packages/contracts/schemas/openapi.json` 从 Nest Controller 生成，是 payload 的机器可读基线。禁止前端复制后端 DTO，也禁止在 contracts 中引入 Nest/Prisma implementation。
 
-我们严格采用白名单模式过滤掉不受信任的请求负载。所有的入参必须使用 `class-validator` 配合 `Data Transfer Object (DTO)` 进行定义。
+生成与检查：
 
-```typescript
-import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-
-export class CreateTaskDto {
-  @ApiProperty({ description: '任务标题', example: '初识 Node.js' })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
-  title: string;
-}
+```bash
+pnpm --filter @lg-agent/contracts build
+pnpm --filter @lg-agent/api openapi:generate
+node packages/api/scripts/check-openapi-breaking.mjs <base.json> <candidate.json>
+node packages/api/scripts/check-endpoint-map.mjs \
+  "Design_docs/Design/08_8._核心_API_设计（Core_API_Design）.md" \
+  packages/contracts/schemas/openapi.json
 ```
 
-所有的 DTO 定义必须放在 `@lg-agent/contracts` 包中，以便前端和 CLI 工具可以直接复用这些类型，保持单一真实数据源。
+CI 会拒绝 stale OpenAPI、breaking change、endpoint map 漂移、consumer version 漂移和 permission registry 漂移。
 
-## 3. 标准响应格式与错误处理
+## 输入、身份与租户
 
-不要手动构造包含 `code` 和 `data` 的响应体，请利用 NestJS 内置的 HTTP 状态码。
+- 全局 `I18nValidationPipe` 启用 `whitelist` 与 `transform`；请求 DTO 必须声明验证规则。
+- 全局 JWT guard 默认保护所有路由；公开端点必须显式 `@Public()`。
+- Controller 使用 `@RequirePermission` 或 `@RequireAnyPermission`；不要依据前端隐藏状态授权。
+- 组织级调用必须把 authenticated tenant actor 传入 owning domain 的 interface，由 repository 同时约束 `organizationId`。
+- 跨组织资源对非平台管理员返回 403 或 404，避免存在性泄漏。
 
-- **成功响应**:
-  - `200 OK`: 用于绝大多数 GET/PUT 成功请求。
-  - `201 Created`: 仅用于 POST 请求成功创建资源时。
-- **异常响应**:
-  - 如果业务逻辑发生可预期的错误，请抛出适当的 `HttpException` (如 `BadRequestException`, `NotFoundException`)。NestJS 的全局过滤器会自动将它们序列化为标准格式：
+## Module interface
 
-```json
-{
-  "statusCode": 400,
-  "message": ["title must be shorter than or equal to 100 characters"],
-  "error": "Bad Request"
-}
-```
+跨 domain import 只能来自该 domain 的 `index.ts`。Controller 调用本 domain 的公共 interface；不得 deep import 另一个 domain 的 repository、strategy、provider 或 adapter。新 module 需要说明公共 interface、private implementation、adapter 绑定、tenant scope 和 contract-test seam。
 
-## 4. Swagger 文档生成
+## 变更清单
 
-我们使用 `@nestjs/swagger` 根据装饰器自动生成 OpenAPI 规范文件 (`swagger.json`)。在本地开发时，可以通过访问 `http://localhost:3000/api/docs` 查看交互式接口文档。
-
-开发者有责任在编写每一个 Controller 和 DTO 属性时，附加必要的 `@ApiOperation` 和 `@ApiProperty` 装饰器，以便前端开发人员可以清晰地了解接口的作用和数据结构。
+1. 更新 contracts DTO/permission/schema。
+2. 更新 Controller 装饰器与 OpenAPI。
+3. 增加 interface/contract test；SSE 同时测试 replay 与终止事件。
+4. 运行 `pnpm architecture:check`、`pnpm design:check`、OpenAPI 检查和相关测试。
+5. breaking change 必须版本化并附迁移说明。

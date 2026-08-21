@@ -4,6 +4,9 @@ node_modules/
 # Build outputs
 dist/
 build/
+.gradle/
+.gradle-work/
+local.properties
 *.tsbuildinfo
 
 # Environment

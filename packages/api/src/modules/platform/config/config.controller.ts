@@ -1,16 +1,16 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../auth/guards/roles.guard';
-import { Roles } from '../../auth/decorators/roles.decorator';
 import { SystemConfigService } from './system-config.service';
+import { PERMISSIONS, UpdateAiConfigsRequestDTO } from '@lg-agent/contracts';
+import { RequirePermission } from '../../authorization';
 
 @Controller('system/configs')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@UseGuards(JwtAuthGuard)
 export class SystemConfigController {
   constructor(private readonly configService: SystemConfigService) {}
 
   @Get('ai')
+  @RequirePermission(PERMISSIONS.SYSTEM_CONFIG_READ)
   async getAiConfigs() {
     // Only fetch non-sensitive or masked sensitive configs for the frontend
     // We never expose actual raw keys here for security
@@ -36,7 +36,8 @@ export class SystemConfigController {
   }
 
   @Post('ai')
-  async updateAiConfigs(@Body() body: Record<string, string>) {
+  @RequirePermission(PERMISSIONS.SYSTEM_CONFIG_MANAGE)
+  async updateAiConfigs(@Body() body: UpdateAiConfigsRequestDTO) {
     const {
       OPENAI_BASE_URL,
       OPENAI_DEFAULT_MODEL,

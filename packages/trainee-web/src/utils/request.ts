@@ -2,6 +2,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { store } from '../store';
 import { setTokens, logout } from '../store/authSlice';
 import { authService } from '../services/authService';
+import i18n from '../i18n';
 
 const request = axios.create({
   baseURL: '/api/v1',
@@ -51,7 +52,7 @@ request.interceptors.response.use(
   (response) => {
     const res = response.data as { code?: number; message?: string; data?: unknown };
     if (res.code !== undefined && res.code !== 200 && res.code !== 201) {
-      return Promise.reject(new Error(res.message ?? 'Request failed'));
+      return Promise.reject(new Error(res.message ?? i18n.t('common:requestFailed')));
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return res.data !== undefined ? (res.data as any) : res;
@@ -109,7 +110,9 @@ request.interceptors.response.use(
       } catch (refreshError) {
         // Refresh failed → force logout
         const errorObj =
-          refreshError instanceof Error ? refreshError : new Error('Token refresh failed');
+          refreshError instanceof Error
+            ? refreshError
+            : new Error(i18n.t('common:tokenRefreshFailed'));
         processPendingQueue(errorObj, null);
         store.dispatch(logout());
         if (window.location.pathname !== '/login') {

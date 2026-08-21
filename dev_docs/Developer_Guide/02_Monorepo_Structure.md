@@ -1,58 +1,45 @@
-# Monorepo 目录结构解析 (Monorepo Structure)
-
-LG-Agent 采用 Monorepo（单体仓库）的方式组织代码，利用 **Turborepo** 提供极速的构建缓存，结合 **pnpm workspaces** 解决多包依赖管理问题。
-
-## 顶层目录结构
+# Monorepo 结构
 
 ```text
 LG_Agent/
-├── packages/           # 核心子包 (微服务与前端)
-│   ├── api/            # 后端服务 (NestJS)
-│   ├── web/            # 导师与管理控制台 (React/Vite)
-│   ├── trainee-web/    # 学员专属工作区SPA (React/Vite)
-│   ├── cli/            # 终端命令行工具 (Node CLI - 已废弃)
-│   └── contracts/      # 共享契约与类型定义
-├── prod_docs/          # 面向用户的部署与使用文档
-├── dev_docs/           # 内部开发与架构设计文档
-├── deploy/             # Kubernetes Helm Charts 等基础设施文件
-├── package.json        # 根依赖与工作区配置
-└── turbo.json          # Turborepo 构建流水线配置
+├─ packages/
+│  ├─ api/              NestJS 模块化单体、Prisma 与发布校验
+│  ├─ contracts/        共享 DTO、permission、JSON Schema、OpenAPI
+│  ├─ permission-react/ React permission interface
+│  ├─ web/              Admin Web
+│  ├─ trainee-web/      学员端与 WorkspaceSession
+│  └─ cli/              兼容 CLI（已废弃）
+├─ deploy/              Helm、发布/回滚/smoke、runtime images
+├─ docs/                ADR、runbook、exit report
+├─ Design_docs/         产品/设计基线（01–09 受 CI 检查）
+├─ dev_docs/            开发与架构说明
+└─ prod_docs/           用户与生产运维说明
 ```
 
-## 核心 Package 职责划分
+## Package 职责
 
-### 1. `@lg-agent/api`
+| Package                      | 职责                                 | 依赖规则                                      |
+| ---------------------------- | ------------------------------------ | --------------------------------------------- |
+| `@lg-agent/contracts`        | DTO、permission、schema、OpenAPI     | 不依赖 Nest、Prisma 或 UI                     |
+| `@lg-agent/api`              | domain module 与 adapter composition | 跨 domain 只从 `index.ts` import              |
+| `@lg-agent/permission-react` | permission-aware React interface     | 只依赖 contracts/React                        |
+| `@lg-agent/web`              | 平台管理界面                         | 通过 HTTP contracts 调 API                    |
+| `@lg-agent/trainee-web`      | 学习与 Authoring Workspace 界面      | Workspace 页面只用 session commands/selectors |
+| `@lg-agent/cli`              | 旧工作流兼容                         | 不再作为推荐入口                              |
 
-基于 **NestJS** 构建的核心后端。
+## API module 规则
 
-- **职责**: 处理所有业务逻辑，包括鉴权、任务管理、学习报告分析，以及作为 AI Gateway 将请求转发给 OpenAI/DeepSeek/Qwen。
-- **技术栈**: NestJS, Prisma (PostgreSQL ORM), Redis, Jest。
-- **目录设计**: 遵循领域驱动设计 (DDD)，划分为 `modules/` (按业务领域拆分，如 `auth`, `tasks`, `ai`)，通过依赖注入降低耦合。
+每个 domain 拥有 controller、application interface 与 implementation。Nest module 是 composition root；repository、strategy、provider 和 adapter 默认 private。公共 import 进入 `index.ts`。当前核心 deep module 是 Workspace、Submission、Sandbox、AI Retrieval 与 Authorization。
 
-### 2. `@lg-agent/web`
+删除一个 shallow module 若只会把同样复杂度搬到调用者，就不应创建它。真实 seam 需要至少两个 adapter 或明确的替换/故障隔离需求；例如 Sandbox 有 Docker/local executor，Submission 有 database/in-process execution adapter，LLM 有多个 provider。
 
-面向导师和学员的 **SPA 前端** 控制台。
+## 前端 locality
 
-- **职责**: 提供直观的仪表盘、任务编辑器（支持 JSON Schema 在线校验）、代码提交记录展示和 AI 对话界面。
-- **技术栈**: React 18, Vite, Ant Design, Tailwind CSS。
-- **打包方式**: 生产环境下编译为静态文件，通过 Nginx 托管。
+`packages/trainee-web/src/modules/workspace-session` 将远端 baseline、本地 draft、dirty file、离线快照、版本和执行状态集中在一个深 module。页面与面板不得再次复制这些状态机。Admin/Trainee route 的 `handle.permission` 仅控制体验，真正授权仍由 API guard 强制。
 
-### 3. `@lg-agent/trainee-web`
+## 自动约束
 
-高度集成的 **学员专属在线工作区 (SPA)**。
-
-- **职责**: 替代原有的 CLI 工具，提供一站式的沉浸式学习体验。内置 Mission Hub (任务大厅)、Monaco Code Editor (代码编辑器)、AI Mentor Chat (AI导师实时辅导)、以及 Execution Center (沙盒执行终端输出)。
-- **技术栈**: React 18, Vite, Ant Design, Monaco Editor, xterm.js, Tailwind CSS。
-
-### 4. `@lg-agent/cli` (已废弃)
-
-早期的 **Node.js 命令行工具**。
-
-- **状态**: 随着 `@lg-agent/trainee-web` 的上线，该模块将被逐渐弃用，现存仅为了向后兼容部分老旧脚本。
-
-### 5. `@lg-agent/contracts`
-
-至关重要的 **共享契约库**，实现了前后端类型的单一真实数据源 (Single Source of Truth)。
-
-- **职责**: 定义系统中所使用的公共接口 (Interfaces)、枚举 (Enums)、数据传输对象 (DTOs) 以及 JSON Schemas。
-- **原理**: `api`, `web`, `trainee-web`, `cli` 都将 `@lg-agent/contracts` 作为依赖引入。当 API 的出入参发生变更时，修改契约库即可让所有消费者在 TypeScript 编译阶段感知到类型变化，避免运行时的接口不匹配问题。
+- `pnpm architecture:check`：deep import、循环 Nest module、controller 跨 domain 调用、contracts 框架依赖和公共入口。
+- `pnpm design:check`：Design_docs 01–09 与代码基线。
+- OpenAPI/endpoint/version/registry scripts：契约与 permission 一致性。
+- ESLint、TypeScript strict、Jest/Vitest、Playwright：实现与行为。

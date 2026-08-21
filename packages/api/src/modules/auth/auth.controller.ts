@@ -4,6 +4,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { User } from '@prisma/client';
+import { LoginRequestDTO, RefreshTokenRequestDTO } from '@lg-agent/contracts';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -17,7 +18,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Return JWT token.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @HttpCode(HttpStatus.OK)
-  login(@Request() req: { user: Partial<User> }) {
+  login(@Request() req: { user: Partial<User> }, @Body() _body: LoginRequestDTO) {
     return this.authService.login(req.user);
   }
 
@@ -25,21 +26,7 @@ export class AuthController {
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh JWT token' })
   @HttpCode(HttpStatus.OK)
-  refresh(@Body('refresh_token') refreshToken: string) {
-    return this.authService.refresh(refreshToken);
-  }
-
-  @Public()
-  @Post('ldap')
-  @HttpCode(HttpStatus.OK)
-  ldapLogin() {
-    return { message: 'LDAP login placeholder' };
-  }
-
-  @Public()
-  @Post('sso')
-  @HttpCode(HttpStatus.OK)
-  ssoLogin() {
-    return { message: 'SSO login placeholder' };
+  refresh(@Body() body: RefreshTokenRequestDTO) {
+    return this.authService.refresh(body.refresh_token);
   }
 }

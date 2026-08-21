@@ -1,5 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Input, Spin, Tag, Typography, message, Avatar, Checkbox, Select } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Alert,
+  Button,
+  Input,
+  Spin,
+  Tag,
+  Typography,
+  message,
+  Avatar,
+  Checkbox,
+  Select,
+} from 'antd';
 import { ArrowLeftOutlined, MessageOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
 import { DiscussionApi } from '../../services/discussion.service';
 import { DiscussionDTO, DiscussionCommentDTO } from '@lg-agent/contracts';
@@ -35,15 +46,18 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
   const [assigning, setAssigning] = useState(false);
   const [resolving, setResolving] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
-  const [, setAnalytics] = useState<{
+  const [analytics, setAnalytics] = useState<{
     totalDiscussions: number;
     activeDiscussions: number;
     overdueCount: number;
     waitingForTraineeCount: number;
     avgResponseMinutes: number;
   } | null>(null);
+  const [analyticsUnavailable, setAnalyticsUnavailable] = useState(false);
+  const loadedKeyRef = useRef<string | null>(null);
 
   const user = useSelector((state: RootState) => state.auth.user);
+  const canLoadOrganizationAnalytics = user?.role === 'MENTOR' || user?.role === 'ADMIN';
 
   const fetchDiscussions = async () => {
     setLoading(true);
@@ -58,18 +72,23 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
   };
 
   const fetchAnalytics = async () => {
+    if (!canLoadOrganizationAnalytics) return;
     try {
       const data = await DiscussionApi.getAnalytics();
       setAnalytics(data);
-    } catch (err) {
-      console.error('Failed to load discussion analytics', err);
+      setAnalyticsUnavailable(false);
+    } catch (_err) {
+      setAnalyticsUnavailable(true);
     }
   };
 
   useEffect(() => {
+    const loadKey = `${taskId}:${workspaceId ?? ''}:${canLoadOrganizationAnalytics ? 'manage' : 'personal'}`;
+    if (loadedKeyRef.current === loadKey) return;
+    loadedKeyRef.current = loadKey;
     void fetchDiscussions();
-    void fetchAnalytics();
-  }, [taskId, workspaceId]);
+    if (canLoadOrganizationAnalytics) void fetchAnalytics();
+  }, [taskId, workspaceId, canLoadOrganizationAnalytics]);
 
   const handleCreate = async () => {
     if (!newTitle.trim() || !newComment.trim()) {
@@ -202,7 +221,7 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
     }
   };
 
-  const queueStats = {
+  const personalStats = {
     needsAttention: discussions.filter(
       (item) =>
         item.status !== 'RESOLVED' &&
@@ -213,6 +232,13 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
     resolved: discussions.filter((item) => item.status === 'RESOLVED' || item.status === 'CLOSED')
       .length,
   };
+  const queueStats = analytics
+    ? {
+        needsAttention: analytics.overdueCount,
+        waitingForTrainee: analytics.waitingForTraineeCount,
+        resolved: personalStats.resolved,
+      }
+    : personalStats;
 
   if (isCreating) {
     return (
@@ -467,6 +493,19 @@ export const MentorPanel: React.FC<MentorPanelProps> = ({ taskId, workspaceId })
       </div>
 
       <div className="flex-shrink-0 p-3 bg-gray-50/50 border-b border-gray-100">
+        {analyticsUnavailable ? (
+          <Alert
+            className="mb-2"
+            type="warning"
+            showIcon
+            message={t('mentorPanel.analyticsUnavailable')}
+            action={
+              <Button size="small" onClick={() => void fetchAnalytics()}>
+                {t('mentorPanel.retry')}
+              </Button>
+            }
+          />
+        ) : null}
         <div className="flex flex-wrap gap-2 text-xs">
           <span className="text-gray-500 font-medium mr-1">{t('mentorPanel.stats')}</span>
           <span className="text-red-600 font-medium">

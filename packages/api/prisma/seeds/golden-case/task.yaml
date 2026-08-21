@@ -7,3 +7,13 @@ env_config:
   image: node:20-alpine
   packages: {}
   node: true
+  runtime:
+    language: node
+    runtime: node
+    version: '20'
+    entry: index.js
+    actionRequirements:
+      run: required
+      build: required
+      lint: required
+      test: required

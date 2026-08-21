@@ -1,0 +1,49 @@
+name: Runtime Image Governance
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: Digest-pinned runtime image to verify
+        required: true
+        type: string
+
+jobs:
+  scan-and-sbom:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Require digest pin
+        shell: bash
+        run: |
+          [[ '${{ inputs.image }}' =~ @sha256:[a-f0-9]{64}$ ]] ||
+            { echo 'Runtime image must be digest pinned'; exit 1; }
+      - name: Scan vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ inputs.image }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          ignore-unfixed: true
+      - name: Upload scan report
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ inputs.image }}
+          format: cyclonedx-json
+          output-file: runtime-sbom.cdx.json
+      - name: Retain governance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-image-governance
+          path: |
+            trivy-results.sarif
+            runtime-sbom.cdx.json

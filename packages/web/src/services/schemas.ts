@@ -1,4 +1,5 @@
 import request from '../utils/request';
+import type { SchemaId, SchemaName } from '@lg-agent/contracts';
 
 export const schemasService = {
   getAllSchemas: async () => {
@@ -6,8 +7,10 @@ export const schemasService = {
     return res;
   },
 
-  getSchema: async (name: string) => {
-    const res = await request.get<unknown, Record<string, unknown>>(`/schemas/${name}`);
+  getSchema: async (name: SchemaName | SchemaId) => {
+    const res = await request.get<unknown, Record<string, unknown>>(
+      `/schemas/${encodeURIComponent(name)}`,
+    );
     return res;
   },
 };

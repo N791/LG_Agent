@@ -3,14 +3,13 @@ import { Injectable, Logger, Inject, Optional } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { TaskDifficulty, NotificationType, NotificationPriority } from '@lg-agent/contracts';
 import { DefaultScoringPolicy, IScoringPolicy } from './scoring.policy';
-import { 
-  IBadgeEvaluator, 
-  FirstBloodBadgeEvaluator, 
-  CourseCompleterBadgeEvaluator, 
-  QuickLearnerBadgeEvaluator 
+import {
+  IBadgeEvaluator,
+  FirstBloodBadgeEvaluator,
+  CourseCompleterBadgeEvaluator,
+  QuickLearnerBadgeEvaluator,
 } from './badge.evaluator';
-import type { INotificationPublisher } from '../notifications/notification-publisher.interface';
-import { NOTIFICATION_PUBLISHER } from '../notifications/notification-publisher.interface';
+import { NOTIFICATION_PUBLISHER, type INotificationPublisher } from '../notifications';
 
 @Injectable()
 export class AchievementService {
@@ -19,12 +18,14 @@ export class AchievementService {
   private badgeEvaluators: IBadgeEvaluator[] = [
     new FirstBloodBadgeEvaluator(),
     new CourseCompleterBadgeEvaluator(),
-    new QuickLearnerBadgeEvaluator()
+    new QuickLearnerBadgeEvaluator(),
   ];
 
   constructor(
     private prisma: PrismaService,
-    @Optional() @Inject(NOTIFICATION_PUBLISHER) private readonly notificationPublisher?: INotificationPublisher,
+    @Optional()
+    @Inject(NOTIFICATION_PUBLISHER)
+    private readonly notificationPublisher?: INotificationPublisher,
   ) {}
 
   async checkAndAward(userId: string, taskId: string): Promise<void> {
@@ -56,7 +57,7 @@ export class AchievementService {
         where: { userId },
         select: { badgeCode: true },
       });
-      const earnedBadgeCodes = new Set(earnedBadges.map(b => b.badgeCode));
+      const earnedBadgeCodes = new Set(earnedBadges.map((b) => b.badgeCode));
 
       const context = { userId, task };
 
@@ -87,7 +88,6 @@ export class AchievementService {
           }
         }
       }
-
     } catch (error) {
       this.logger.error(`Error in checkAndAward for user ${userId}, task ${taskId}:`, error);
     }
@@ -133,11 +133,10 @@ export class AchievementService {
 
     return {
       totalPoints: user.totalPoints,
-      badges: user.userBadges.map(b => ({
+      badges: user.userBadges.map((b) => ({
         badgeCode: b.badgeCode,
         awardedAt: b.awardedAt.toISOString(),
       })),
     };
   }
 }
-

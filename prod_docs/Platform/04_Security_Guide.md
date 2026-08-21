@@ -1,47 +1,38 @@
-# 平台安全与防护指南 (Security Guide)
+# 平台安全指南
 
-LG-Agent 作为一个企业级平台，处理着大量的用户数据和商业机密（如敏感的代码、提示词和模型凭据）。本指南列出了在生产环境中部署时必须遵循的安全最佳实践。
+## 凭据与身份
 
-## 1. 凭据与 Secret 管理
+- 所有生产凭据位于外部 Secret；Git、values、日志和前端 bundle 不得出现明文。
+- JWT secret 至少 32 字符；access/refresh expiry 与算法由 `AuthConfig` 一次验证后注入。
+- 当前支持 login 与 refresh，**没有** Redis JWT blacklist/logout revocation；响应事件时应轮换 Secret、缩短 token 生命周期或按 runbook采取强制措施，不要依赖不存在的黑名单。
+- bootstrap admin 只用于初始化或幂等修复同一管理员的系统角色绑定；
+  它不会隐式重置密码。生产环境始终标记为必须改密，bootstrap 凭据使用后应轮换并清除。
 
-在任何情况下，**绝对不要**将密码、API Key 等敏感信息硬编码到代码或配置文件中，也**不要**明文存放在 Helm Chart 的 `values.yaml` 中。
+## Permission RBAC 与租户
 
-- **Kubernetes Secrets**: 所有的环境变量中涉及凭据的部分（如 `DATABASE_URL`, `JWT_SECRET`, `OPENAI_API_KEY`）必须通过 Kubernetes Secrets 注入。
-- **Secret 注入方案**: 我们推荐使用 External Secrets Operator (ESO) 或 HashiCorp Vault 进行自动化注入，而不是手动创建 Secret。
+授权不是仅靠 `ADMIN/MENTOR/TRAINEE` 枚举。运行时使用 permission registry、自定义 role、role-permission、user-role 与 resource policy；`users.role` 只作兼容桥。
 
-## 2. 身份验证与 RBAC
+- 前端 route permission 只控制显示，API 的 JWT + PermissionGuard 才是强制 interface。
+- Organization 是 tenant seam；repository 查询必须同时约束 actor 的 `organizationId`。
+- registry version/digest 不一致时 readiness 503，Pod 不接流量。
+- 角色/成员变更必须生成 audit event；跨 Organization 返回 403/404。
 
-平台内置了严格的基于角色的访问控制 (Role-Based Access Control, RBAC)。
+## AI 与检索
 
-- **JWT 签名**: 必须使用长度至少为 256 位的强随机字符串作为 `JWT_SECRET`，并定期轮换。
-- **Redis 黑名单**: 用户登出后，其 JWT Token 会被立即加入 Redis 黑名单，直到过期。因此，Redis 的高可用性对安全拦截至关重要。
-- **角色权限**:
-  - `ADMIN`: 平台管理员，拥有全部权限。
-  - `MENTOR`: 导师，仅能管理自身创建的课程和查看归属学员的数据。
-  - `TRAINEE`: 学员，仅能拉取任务和提交作业。
+出站 Prompt 经过关键词、regex、prompt-injection 与 masking 规则。日志只保存 prompt hash 和脱敏 rule hit。检索 source、citation open、trace 与 index 管理均执行 Organization ACL。真实 provider key 仅存在于 API Secret。
 
-## 3. 敏感信息防泄漏 (PII Masking)
+## Sandbox
 
-为了防止学员在与 AI 导师交互时泄露企业敏感信息，LG-Agent 内置了**数据防泄漏 (DLP)** 机制。
+Docker executor 已在代码中强制：
 
-- **规则引擎拦截**: 在 Prompt 发送到外部模型提供商（如 OpenAI）之前，平台会经过内部的规则引擎。
-- **默认过滤**: 默认会通过正则表达式过滤身份证号、手机号、企业内网 IP 和常见密钥格式。
-- **自定义词库**: 管理员可以通过控制台配置企业特定的敏感词库。当命中的敏感词触发拦截阈值时，该 AI 请求将被直接阻断并生成审计告警。
+- image digest/allowlist；
+- `network=none`、read-only root filesystem；
+- drop capabilities、`no-new-privileges`；
+- 非 root UID、CPU/memory/PID/time/concurrency 限制；
+- Execution Workspace 与 Authoring Workspace 分离。
 
-## 4. 网络安全与隔离
+生产禁止 local executor。启用 Java/Python/Go/Rust 前必须构建、扫描、签名并替换 `.env.example` 中的示例 digest，再按 `docs/architecture/multi-language-sandbox-runbook.md` 灰度。
 
-- **Nginx Ingress**: 应开启 SSL/TLS 终止，并配置强化的 Cipher Suite。
-- **内部网络隔离**:
-  - Web 节点和 API 节点不应直接暴露给公网。
-  - 数据库 (PostgreSQL) 和 缓存 (Redis) 必须放在私有子网 (Private Subnet) 中，仅允许 API 节点的安全组/网络策略 (Network Policy) 访问。
-- **出站流量 (Outbound)**: 限制 API 节点只能访问指定的外部域名（如 `api.openai.com`）。
+## 平台侧待落实
 
-## 5. 沙盒安全性 (Sandbox Security)
-
-当学员通过 Web 工作区 (Trainee Workspace) 提交代码执行或测试时，系统会在基于 Docker 的自动化 Runner 沙盒中执行这些不受信任的代码。为了防止恶意代码对系统产生破坏，必须遵循以下隔离原则：
-
-- **物理/逻辑隔离**: 评测和执行沙盒必须运行在与主业务集群隔离的计算资源池（如专用的 Kubernetes Node Pool 或独立的虚拟机组）中。
-- **特权限制 (Privilege Limits)**: 沙盒容器 **绝不能** 以 root 身份运行，严禁开启 `privileged: true`。容器必须在安全上下文中以特定的非特权用户（如 `nobody` 或 `uid: 1000`）运行。
-- **资源限制 (Cgroups)**: 必须在调度层面为执行沙盒配置严格的资源配额（例如 `memory: 256Mi`, `cpu: 0.5`），防止 Fork 炸弹或内存泄漏引发的拒绝服务攻击 (DoS)。
-- **网络隔离 (Network Isolation)**: 沙盒必须禁用任何出站访问外网和内网核心组件的权限，如有必要可采用严格的 egress network policy 控制或直接挂载 `--network none`。
-- **文件系统限制 (Filesystem Limits)**: 容器的根文件系统必须挂载为只读 (`readOnlyRootFilesystem: true`)，仅开放指定的 `/tmp` 或工作区目录作为临时可写卷，并施加存储配额限制。
+当前 Helm chart 未自带 NetworkPolicy、HPA、专用 Sandbox node pool 或 Docker daemon/remote runner。平台必须提供等价网络隔离与 executor 运行条件，并通过渗透、逃逸、资源耗尽和真实执行 smoke 验证。文档中的建议不代表 chart 已创建这些资源。

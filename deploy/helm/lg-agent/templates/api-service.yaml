@@ -1,9 +1,10 @@
+{{- if .Values.api.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "lg-agent.fullname" . }}-api
   labels:
-    app: {{ include "lg-agent.name" . }}-api
+    {{- include "lg-agent.componentLabels" (dict "root" . "component" "api") | nindent 4 }}
 spec:
   type: {{ .Values.api.service.type }}
   ports:
@@ -12,4 +13,7 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: {{ include "lg-agent.name" . }}-api
+    app.kubernetes.io/name: {{ include "lg-agent.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: api
+{{- end }}

@@ -1,0 +1,44 @@
+goldenTasks:
+  - language: node
+    version: '20'
+    entry: index.js
+    files:
+      - path: index.js
+        content: "console.log('golden-node')"
+  - language: java
+    version: '21'
+    entry: Main.java
+    files:
+      - path: pom.xml
+        content: '<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>golden</groupId><artifactId>golden</artifactId><version>1.0</version><properties><maven.compiler.release>21</maven.compiler.release></properties><build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-checkstyle-plugin</artifactId><version>3.6.0</version></plugin></plugins></build></project>'
+      - path: Main.java
+        content: 'public class Main { public static void main(String[] args) { System.out.println("golden-java"); } }'
+  - language: python
+    version: '3.12'
+    entry: main.py
+    files:
+      - path: main.py
+        content: "print('golden-python')"
+      - path: test_main.py
+        content: 'def test_golden(): assert True'
+  - language: go
+    version: '1.24'
+    entry: .
+    files:
+      - path: go.mod
+        content: "module golden\n\ngo 1.24"
+      - path: main.go
+        content: "package main\nimport \"fmt\"\nfunc main() { fmt.Println(\"golden-go\") }"
+  - language: rust
+    version: '1.84'
+    entry: src/main.rs
+    files:
+      - path: Cargo.toml
+        content: "[package]\nname = \"golden\"\nversion = \"0.1.0\"\nedition = \"2021\""
+      - path: src/main.rs
+        content: 'fn main() { println!("golden-rust"); }'
+
+failureScoring:
+  passedExitCode: 0
+  passedScore: 100
+  failedScore: 0

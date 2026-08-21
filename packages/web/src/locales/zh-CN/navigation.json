@@ -5,6 +5,8 @@
   "courses": "课程管理",
   "learningAnalytics": "学习分析",
   "observability": "系统监控",
+  "retrieval": "检索管理",
+  "authorization": "角色与权限",
   "settings": "设置",
   "aiSettings": "AI 设置",
   "logout": "退出登录",

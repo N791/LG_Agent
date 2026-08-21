@@ -1,0 +1,41 @@
+name: Android Mobile Companion
+
+on:
+  pull_request:
+    paths:
+      - 'packages/android/**'
+      - '.github/workflows/android.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/android/**'
+      - '.github/workflows/android.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/android
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install pinned Android SDK
+        run: sdkmanager 'platforms;android-34' 'build-tools;34.0.0'
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Verify TypeScript to Kotlin mobile contract compatibility
+        run: node scripts/check-mobile-contract.mjs
+      - name: Verify wrapper, lint, unit tests, and reproducible debug build
+        run: >-
+          bash gradlew --no-daemon
+          :app:testLocalDebugUnitTest
+          :app:lintLocalDebug
+          :app:assembleLocalDebug
+          :app:assemblePilotRelease

@@ -1,44 +1,38 @@
-# 导师手册 (Mentor Manual)
+# 导师与管理员手册
 
-欢迎使用 LG-Agent 平台。作为一名导师，您有权限创建课程、配置自动化沙盒，并监控学员的学习进度。
+实际可见页面由账号 permission 决定。管理员通常可访问 Organization、用户、课程、任务、Submission、授权、检索、AI 设置与可观测性；导师账号只显示获授权范围。
 
-## 1. 仪表盘与分析 (Dashboard & Analytics)
+## 课程与任务
 
-导师仪表盘为您提供了组织的全局概览。
+1. 在“课程”创建或选择 Course。
+2. 进入 Task 列表，创建/编辑 Task，填写标题、说明、阶段、难度及环境/沙盒/测试/Prompt 配置。
+3. 可使用“AI 生成任务”，但生成结果仍需人工校验后保存。
+4. JSON 配置由 contracts/schema 验证；保存失败时按字段错误修正。
 
-> **建议**: 优先查看通关率、卡点分布与 AI 审计日志，能够快速判断哪些知识点需要补充训练材料。
+可用运行时由平台 `SANDBOX_ENABLED_LANGUAGES`、image allowlist 与签名 digest 决定。代码支持 Node、Java、Python、Go、Rust profile，但生产默认只启用 Node；不要仅凭界面文本承诺其他语言。
 
-- **学员进度 (Trainee Progress)**: 可视化图表展示各个任务的通过率，帮助您快速识别哪些概念对学员来说最困难（学习瓶颈）。
-- **AI 分析 (AI Analytics)**: 监控每个学员的 AI Token 使用情况。您可以追踪成本开销，并审查 AI 审计日志，以了解学员是仅仅在“要答案”，还是在通过引导进行有效学习。
-- **AI 接口配置**: 您可以在“AI 设置”页面动态调整 OpenAI/DeepSeek 供应商参数、选择默认模型、或者控制 RAG 知识库检索相关的启用状态、Chunk Size 和 Top K。
+## Submission 与学习数据
 
-## 2. 课程与任务管理 (Course & Task Management)
+“Submission”页面可按授权范围查看 assessed attempt、状态、score 与执行日志。Submission 是唯一评测生命周期，支持管理员 replay；学员普通 run 与正式 submit 的语义不同。日志通过 SSE 与 durable ExecutionEvent 提供，长日志可能归档。
 
-课程由一系列按顺序排列的**任务 (Tasks)** 组成。
+Dashboard/统计页面提供训练与 AI 使用概览。数据只反映当前实现采集的指标，不能把图表推断为个人绩效结论。
 
-### 创建与编辑任务
+## 授权管理
 
-进入“课程管理”页面，点击新建任务。在任务编辑器中，您需要定义以下内容：
+授权页面支持：
 
-> **建议**: 任务内容应尽量包含清晰的目标、输入输出示例、相关知识库附件及可执行测试脚本。
+- 查看 permission registry；
+- 创建/复制 role；
+- impact preview；
+- 更新 role permissions；
+- 更新 role members。
 
-1. **Markdown 指南**: 这是学员将要看到的题目描述和操作指导。请尽量描述清晰，提供输入输出的预期示例。
-2. **JSON Schema 配置**:
-   - **`envConfig`**: 定义所需的运行环境（例如 `Node.js 18`, `Python 3.10` 等）。
-   - **`testConfig`**: 定义当学员执行 `submit` 时，沙盒中需要运行的测试脚本命令（例如 `npm run test` 或 `pytest`）。
-3. **知识库 (RAG Knowledge Base)**: 上传相关的 PDF 或 Markdown 文件。AI 导师将通过语义检索 (RAG) 基于这些文档来回答学员的具体问题。
+高风险变更需要确认 role name。变更后检查目标用户 `/me/permissions`、跨 Organization 隔离和 audit event。不要只修改旧 `users.role` 字段。
 
-## 3. Schema 治理与验证
+## AI 设置与检索
 
-LG-Agent 使用严格的 JSON Schema 来验证任务配置。当您在 Web 控制台配置 `envConfig` 或 `testConfig` 时：
+AI 设置可管理已实现的 provider/RAG 参数。检索页面可查看 index、health、shadow comparison、trace，以及激活/重试操作。当前没有导师上传 PDF/Markdown 的 Web/API 流程；知识 source 由平台既定导入流程提供，不能向用户承诺界面上传。
 
-- 编辑器会自动从平台的契约包中加载最新的校验规则。
-- 如果您的配置格式错误或缺少必填字段，页面将出现高亮错误提示。
-- **注意**: 只有在 Schema 验证完全通过后，您才能保存并发布该任务。
+## 运维与审计
 
-## 4. 查阅学员提交记录
-
-在“评测记录”模块，您可以查看所有学员的提交流水：
-
-- **评测日志**: 查看沙盒执行测试命令时的完整终端输出。
-- **代码快照**: 查看学员在提交时刻的代码库结构和内容。
+拥有对应 permission 的人员可查看 telemetry、audit 和 AI request audit。导出、复制或共享日志前必须确认 Organization 范围并移除敏感信息。发现 registry mismatch、跨租户可见或 Sandbox 异常时立即停止相关操作并联系平台团队。

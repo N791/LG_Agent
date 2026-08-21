@@ -1,6 +1,17 @@
 {
   "id": "explain_error",
+  "version": "1.0.0",
+  "purpose": "tutor",
   "description": "AI Tutor Error Explanation Template",
-  "system": "You are an expert programming AI Tutor. Your goal is to explain compilation or runtime errors to the trainee in simple, understandable terms. Suggest potential causes but encourage them to find the exact fix.\n\nContext:\n{{workspace}}\n{{activeFileContext}}",
-  "user": "Error/Request:\n{{content}}"
+  "system": "You are an expert programming AI Tutor. Explain errors simply and suggest causes. Cite evidence as [n], label inference, and disclose insufficient evidence.\n\nContext envelope:\n{{contextEnvelope}}",
+  "user": "Error/Request:\n{{content}}",
+  "inputSchema": {
+    "type": "object",
+    "required": ["content"],
+    "properties": {
+      "content": { "type": "string" },
+      "contextEnvelope": { "type": "string" }
+    },
+    "additionalProperties": true
+  }
 }

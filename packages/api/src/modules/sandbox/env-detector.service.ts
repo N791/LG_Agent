@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { exec } from 'child_process';
 import * as util from 'util';
+import type { RuntimeEnvironmentDTO, WorkspaceFileDTO } from '@lg-agent/contracts';
 
 const execPromise = util.promisify(exec);
 
@@ -10,6 +11,8 @@ export interface EnvRequirement {
   python?: boolean | string;
   docker?: boolean | string;
   git?: boolean | string;
+  runtime?: Partial<RuntimeEnvironmentDTO>;
+  files?: WorkspaceFileDTO[];
 }
 
 @Injectable()

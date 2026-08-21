@@ -1,0 +1,11 @@
+# Public Interface Test Matrix
+
+| Public seam      | Interface and implementations                                               | Contract behavior                                                                                          | Executable test                                                                                                                                      |
+| ---------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Submission       | `SubmissionsService`, `IExecutionAdapter`; in-process and database adapters | single lifecycle, legal transitions, idempotent delivery, retry/dead-letter, cancel/replay, terminal hooks | `submissions.service.spec.ts`, `submission-state-machine.spec.ts`, `submission-lifecycle.e2e.spec.ts`, `services/execution-adapter.contract.spec.ts` |
+| WorkspaceSession | commands/selectors with HTTP, IndexedDB, and execution ports                | initial load, offline restore, conflict resolution, autosave, version restore, submit/run                  | `packages/trainee-web/src/modules/workspace-session/workspace-session.contract.test.ts`                                                              |
+| Sandbox          | `IExecutor`, `SandboxFacade`; Docker and local executors                    | common event lifecycle, isolation flags, timeout, cleanup, authorization, production adapter policy        | `executor.contract.spec.ts`, `execution.manager.spec.ts`, `execution-workspace.service.spec.ts`                                                      |
+| AuthConfig       | `AUTH_CONFIG`, `AuthConfig`, `createAuthConfig`                             | required secret, stable defaults, algorithm and expiry publication                                         | `auth-config.contract.spec.ts`                                                                                                                       |
+
+Tests import or exercise the public seam. Concrete implementations appear only in parameterized
+adapter suites, where substitutability is the behavior under test.

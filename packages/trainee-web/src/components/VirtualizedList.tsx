@@ -1,6 +1,7 @@
 import React from 'react';
 import { List } from 'antd';
 import VirtualList from 'rc-virtual-list';
+import { useTranslation } from 'react-i18next';
 
 interface VirtualizedListProps<T> {
   data: T[];
@@ -27,10 +28,11 @@ export function VirtualizedList<T>({
   header,
   footer,
 }: VirtualizedListProps<T>) {
+  const { t } = useTranslation('common');
   return (
-    <List 
-      className={className} 
-      locale={{ emptyText: emptyText ?? 'No data' }}
+    <List
+      className={className}
+      locale={{ emptyText: emptyText ?? t('noData') }}
       header={header}
       footer={footer}
     >
@@ -38,7 +40,13 @@ export function VirtualizedList<T>({
         data={data}
         height={height}
         itemHeight={itemHeight}
-        itemKey={itemKey ?? ((item: T) => (item as { id?: React.Key }).id ?? (item as { key?: React.Key }).key ?? JSON.stringify(item))}
+        itemKey={
+          itemKey ??
+          ((item: T) =>
+            (item as { id?: React.Key }).id ??
+            (item as { key?: React.Key }).key ??
+            JSON.stringify(item))
+        }
         onScroll={onScroll}
       >
         {(item: T, index: number) => renderItem(item, index)}

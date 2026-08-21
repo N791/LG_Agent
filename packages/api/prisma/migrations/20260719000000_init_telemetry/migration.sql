@@ -1,3 +1,7 @@
+DO $migration$
+BEGIN
+IF to_regclass('public.client_logs') IS NULL THEN
+
 -- CreateTable
 CREATE TABLE "client_logs" (
     "id" UUID NOT NULL,
@@ -33,3 +37,7 @@ ALTER TABLE "client_logs" ADD CONSTRAINT "client_logs_user_id_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "client_metrics" ADD CONSTRAINT "client_metrics_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+END IF;
+END;
+$migration$;

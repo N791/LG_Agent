@@ -12,7 +12,9 @@ class NotificationService {
     if (options?.limit) params.append('limit', options.limit.toString());
     if (options?.offset) params.append('offset', options.offset.toString());
 
-    const res = await api.get<{ items: NotificationDTO[]; total: number }>(`/notifications?${params.toString()}`);
+    const res = await api.get<{ items: NotificationDTO[]; total: number }>(
+      `/notifications?${params.toString()}`,
+    );
     return res.data;
   }
 
@@ -39,7 +41,9 @@ class NotificationService {
   }
 
   async updatePreference(type: string, enabled: boolean) {
-    const res = await api.put<NotificationPreferenceDTO>(`/notifications/preferences/${type}`, { enabled });
+    const res = await api.put<NotificationPreferenceDTO>(`/notifications/preferences/${type}`, {
+      enabled,
+    });
     return res.data;
   }
 
@@ -51,7 +55,7 @@ class NotificationService {
     this.socketConnectPromise ??= new Promise((resolve, reject) => {
       // Adjust the URL if your API is not at the same host
       const envUrl = import.meta.env['VITE_API_URL'] as string | undefined;
-      const API_URL = envUrl ?? 'http://localhost:3000';
+      const API_URL = envUrl ?? 'http://localhost:4000';
 
       this.socket = io(`${API_URL}/notifications`, {
         auth: { token },

@@ -1,13 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { Prisma, User } from '@prisma/client';
+import { LegacyRoleBridgeService } from '../authorization';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly legacyRoleBridge: LegacyRoleBridgeService,
+  ) {}
 
-  async findAll(): Promise<User[]> {
+  async findAll(organizationId: string): Promise<User[]> {
     return this.prisma.user.findMany({
+      where: { organizationId },
       include: { organization: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -25,14 +30,27 @@ export class UsersService {
     });
   }
 
+  async findByIdScoped(id: string, organizationId: string): Promise<User> {
+    const user = await this.prisma.user.findFirst({ where: { id, organizationId } });
+    if (!user) throw new NotFoundException('errors.auth.userNotFound');
+    return user;
+  }
+
   async create(data: Prisma.UserUncheckedCreateInput): Promise<User> {
-    return this.prisma.user.create({ data });
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({ data });
+      await this.legacyRoleBridge.userCreated(tx, user);
+      return user;
+    });
   }
 
   async update(id: string, data: Prisma.UserUncheckedUpdateInput): Promise<User> {
-    return this.prisma.user.update({
-      where: { id },
-      data,
+    return this.prisma.$transaction(async (tx) => {
+      const before = await tx.user.findUniqueOrThrow({ where: { id } });
+      await this.legacyRoleBridge.prepareUserUpdate(tx, before, data);
+      const user = await tx.user.update({ where: { id }, data });
+      await this.legacyRoleBridge.userUpdated(tx, before, user);
+      return user;
     });
   }
 

@@ -13,8 +13,27 @@ export interface AiReviewError {
   fix?: QuickFixDTO;
 }
 
+export type AiReviewSeverity = 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+
+export interface AiReviewFindingDTO {
+  title: string;
+  severity: AiReviewSeverity;
+  file?: string;
+  line?: number;
+  evidence: string;
+  suggestion: string;
+}
+
+export interface AiReviewRetrievalStateDTO {
+  status: 'SUPPORTED' | 'DEGRADED' | 'UNAVAILABLE';
+  citations: string[];
+  note?: string;
+}
+
 export interface AiReviewDTO {
   summary: string;
   suggestions: string[];
   errors: AiReviewError[];
+  findings?: AiReviewFindingDTO[];
+  retrievalState?: AiReviewRetrievalStateDTO;
 }

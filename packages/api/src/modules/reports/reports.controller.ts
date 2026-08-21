@@ -1,8 +1,18 @@
-import { Controller, Post, Body, Res, BadRequestException, UseGuards } from '@nestjs/common';
-import { ExportService } from './export.service';
-import { SubmissionsService } from '../submissions/submissions.service';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  BadRequestException,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import { ReportsService } from './reports.service';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
+import { PERMISSIONS } from '@lg-agent/contracts';
+import { RequirePermission } from '../authorization';
 
 export class ExportRequestDto {
   reportType!: string;
@@ -12,14 +22,16 @@ export class ExportRequestDto {
 
 @Controller('reports')
 @UseGuards(JwtAuthGuard)
+@RequirePermission(PERMISSIONS.ANALYTICS_READ)
 export class ReportsController {
-  constructor(
-    private readonly exportService: ExportService,
-    private readonly submissionsService: SubmissionsService,
-  ) {}
+  constructor(private readonly reports: ReportsService) {}
 
   @Post('export')
-  async exportReport(@Body() request: ExportRequestDto, @Res() res: Response) {
+  async exportReport(
+    @Body() request: ExportRequestDto,
+    @Request() req: { user: TenantActor },
+    @Res() res: Response,
+  ) {
     const { reportType, format, filters } = request;
 
     if (reportType !== 'submissions') {
@@ -29,23 +41,7 @@ export class ReportsController {
       });
     }
 
-    // Fetch data based on filters
-    const submissions = await this.submissionsService.findAll(
-      filters as { userId?: string; courseId?: string; taskId?: string },
-    );
-
-    // Transform data for export
-    const exportData = submissions.map((sub) => ({
-      ID: sub.id,
-      Trainee: sub.user.username,
-      Task: sub.task.title,
-      Status: sub.status,
-      Score: sub.score,
-      Date: sub.createdAt.toISOString(),
-    }));
-
-    // Generate report
-    const reportContent = await this.exportService.export(format, exportData);
+    const reportContent = await this.reports.exportSubmissions(format, req.user, filters);
 
     // Set response headers and send
     const ext = format.toLowerCase();

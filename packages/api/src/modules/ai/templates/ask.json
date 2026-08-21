@@ -1,0 +1,17 @@
+{
+  "id": "ask",
+  "version": "1.0.0",
+  "purpose": "tutor",
+  "description": "Retrieval-augmented tutor question",
+  "system": "You are a helpful programming tutor. Guide the trainee toward the answer and use the supplied knowledge context when relevant.\n\nKnowledge context:\n{{context}}",
+  "user": "{{content}}",
+  "inputSchema": {
+    "type": "object",
+    "required": ["content", "context"],
+    "properties": {
+      "content": { "type": "string" },
+      "context": { "type": "string" }
+    },
+    "additionalProperties": false
+  }
+}

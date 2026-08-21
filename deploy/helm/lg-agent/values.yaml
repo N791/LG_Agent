@@ -1,12 +1,37 @@
 global:
-  env: "production"
+  env: production
+  releaseVersion: v1.0.0
+  # Production releases must override every image tag with the same immutable
+  # vX.Y.Z or sha-<40 hex> identifier.
+  imageTag: v1.0.0
+  imagePullSecrets: []
+
+release:
+  # Enabled only for the API phase. Later web-only phases set this to false so
+  # migrations and registry reconciliation run exactly once per release.
+  runMigration: true
+  hookTimeoutSeconds: 600
+
+secrets:
+  # Provision this Secret before Helm (directly or with External Secrets).
+  # Required keys are validated by the pre-rollout Job.
+  existingSecret: lg-agent-api-runtime
+  requiredKeys:
+    databaseUrl: DATABASE_URL
+    jwtSecret: JWT_SECRET
+    redisUrl: REDIS_URL
+    objectStorageEndpoint: MINIO_ENDPOINT
+    objectStorageAccessKey: MINIO_ACCESS_KEY
+    objectStorageSecretKey: MINIO_SECRET_KEY
+    llmApiKey: OPENAI_API_KEY
+    sandboxImagePullSecret: SANDBOX_IMAGE_PULL_SECRET
 
 api:
-  replicaCount: 1
+  enabled: true
+  replicaCount: 2
   image:
-    repository: ghcr.io/lg-agent/api
+    repository: ghcr.io/lg-agent/lg-agent-api
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
     tag: ""
   service:
     type: ClusterIP
@@ -19,18 +44,18 @@ api:
       cpu: 100m
       memory: 256Mi
   env:
-    # Database connections
-    DATABASE_URL: "postgresql://postgres:postgres@external-postgres:5432/lg_agent"
-    REDIS_URL: "redis://external-redis:6379"
-    # S3 / Minio
-    MINIO_ENDPOINT: "external-minio"
-    MINIO_PORT: "9000"
-    MINIO_USE_SSL: "false"
+    LLM_PROVIDER: openai
+    SANDBOX_EXECUTOR: docker
+    SANDBOX_ENABLED_LANGUAGES: node
+  probes:
+    livenessPath: /api/v1/health
+    readinessPath: /api/v1/health/ready
 
-web:
+adminWeb:
+  enabled: true
   replicaCount: 1
   image:
-    repository: ghcr.io/lg-agent/web
+    repository: ghcr.io/lg-agent/lg-agent-web
     pullPolicy: IfNotPresent
     tag: ""
   service:
@@ -43,6 +68,30 @@ web:
     requests:
       cpu: 10m
       memory: 64Mi
+  probes:
+    livenessPath: /healthz
+    readinessPath: /readyz
+
+traineeWeb:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: ghcr.io/lg-agent/lg-agent-trainee-web
+    pullPolicy: IfNotPresent
+    tag: ""
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 750m
+      memory: 512Mi
+    requests:
+      cpu: 25m
+      memory: 96Mi
+  probes:
+    livenessPath: /healthz
+    readinessPath: /readyz
 
 ingress:
   enabled: true
@@ -55,15 +104,13 @@ ingress:
       paths:
         - path: /api
           pathType: Prefix
-          backend:
-            serviceName: lg-agent-api
-            servicePort: 3000
+          component: api
         - path: /
           pathType: Prefix
-          backend:
-            serviceName: lg-agent-web
-            servicePort: 80
+          component: adminWeb
+    - host: learn.lg-agent.local
+      paths:
+        - path: /
+          pathType: Prefix
+          component: traineeWeb
   tls: []
-  #  - secretName: lg-agent-tls
-  #    hosts:
-  #      - lg-agent.local

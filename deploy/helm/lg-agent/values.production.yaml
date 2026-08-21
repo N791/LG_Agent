@@ -1,0 +1,26 @@
+global:
+  env: production
+  releaseVersion: v1.0.0
+  imageTag: v1.0.0
+  imagePullSecrets:
+    - name: lg-agent-registry
+
+secrets:
+  # This name is not a credential. The Secret must be provisioned out of band
+  # (recommended: ExternalSecret) and contain every key listed in values.yaml.
+  existingSecret: lg-agent-api-runtime
+
+api:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/lg-agent/lg-agent-api
+
+adminWeb:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/lg-agent/lg-agent-web
+
+traineeWeb:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/lg-agent/lg-agent-trainee-web

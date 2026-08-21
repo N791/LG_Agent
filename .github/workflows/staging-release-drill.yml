@@ -1,0 +1,115 @@
+name: Staging Release & Rollback Drill
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: Immutable GitHub release (vX.Y.Z)
+        required: true
+        type: string
+      imageTag:
+        description: vX.Y.Z or sha-<40 hex>
+        required: true
+        type: string
+      rollbackRevision:
+        description: Last known-good Helm revision
+        required: true
+        type: string
+      backupVerificationId:
+        description: Successful staging restore-drill record
+        required: true
+        type: string
+
+jobs:
+  drill:
+    name: Replay, smoke and rollback
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_VERSION: ${{ inputs.releaseVersion }}
+      IMAGE_TAG: ${{ inputs.imageTag }}
+      BACKUP_VERIFICATION_ID: ${{ inputs.backupVerificationId }}
+      RELEASE_NAME: lg-agent
+      NAMESPACE: lg-agent-staging
+      VALUES_FILE: deploy/helm/lg-agent/values.production.yaml
+      API_PUBLIC_URL: ${{ vars.STAGING_API_URL }}
+      SMOKE_API_URL: ${{ vars.STAGING_API_URL }}
+      SMOKE_ADMIN_URL: ${{ vars.STAGING_ADMIN_URL }}
+      SMOKE_TRAINEE_URL: ${{ vars.STAGING_TRAINEE_URL }}
+      SMOKE_ADMIN_USERNAME: ${{ secrets.STAGING_SMOKE_ADMIN_USERNAME }}
+      SMOKE_ADMIN_PASSWORD: ${{ secrets.STAGING_SMOKE_ADMIN_PASSWORD }}
+      SMOKE_TARGET_USERNAME: ${{ secrets.STAGING_SMOKE_TARGET_USERNAME }}
+      SMOKE_TARGET_PASSWORD: ${{ secrets.STAGING_SMOKE_TARGET_PASSWORD }}
+      SMOKE_ROLE_ID: ${{ vars.STAGING_SMOKE_ROLE_ID }}
+      SMOKE_ROLE_NAME: ${{ vars.STAGING_SMOKE_ROLE_NAME }}
+      SMOKE_TARGET_USER_ID: ${{ vars.STAGING_SMOKE_TARGET_USER_ID }}
+      SMOKE_EXPECTED_PERMISSION: ${{ vars.STAGING_SMOKE_EXPECTED_PERMISSION }}
+      SMOKE_CROSS_ORG_PATH: ${{ vars.STAGING_SMOKE_CROSS_ORG_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.17.3
+      - uses: azure/setup-kubectl@v4
+      - uses: sigstore/cosign-installer@v3.8.2
+      - name: Configure staging cluster
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.kube"
+          printf '%s' '${{ secrets.STAGING_KUBECONFIG_B64 }}' | base64 --decode > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+          kubectl auth can-i create deployments -n "$NAMESPACE" | grep -qx yes
+      - name: Download and verify signed release evidence
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release download "$RELEASE_VERSION" --pattern release-evidence.zip
+          unzip release-evidence.zip -d release-evidence
+          test "$(wc -l < release-evidence/image-digests.txt)" -eq 3
+          while IFS= read -r image; do
+            cosign verify \
+              --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/release.yml@refs/.*$" \
+              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              "$image"
+          done < release-evidence/image-digests.txt
+          echo "IMAGE_DIGESTS_FILE=$PWD/release-evidence/image-digests.txt" >> "$GITHUB_ENV"
+      - name: Execute clean/upgrade release transaction
+        run: bash deploy/scripts/release-transaction.sh
+      - name: Replay migration and release transaction
+        run: bash deploy/scripts/release-transaction.sh
+      - name: Exercise Helm rollback
+        env:
+          ROLLBACK_REVISION: ${{ inputs.rollbackRevision }}
+        run: bash deploy/scripts/rollback-release.sh
+      - name: Install browser for evidence screenshots
+        if: always()
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install --with-deps chromium
+      - name: Capture staging evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p staging-evidence
+          helm history "$RELEASE_NAME" -n "$NAMESPACE" > staging-evidence/helm-history.txt
+          kubectl get pods,deployments,services -n "$NAMESPACE" -o wide > staging-evidence/resources.txt
+          kubectl logs "job/$RELEASE_NAME-migration" -n "$NAMESPACE" \
+            > staging-evidence/migration.log 2>&1 || true
+          pnpm exec playwright screenshot --wait-for-timeout 3000 \
+            "$SMOKE_ADMIN_URL" staging-evidence/admin-web.png || true
+          pnpm exec playwright screenshot --wait-for-timeout 3000 \
+            "$SMOKE_TRAINEE_URL" staging-evidence/trainee-web.png || true
+          printf 'release=%s\nimage=%s\nbackup=%s\nrollback=%s\n' \
+            "$RELEASE_VERSION" "$IMAGE_TAG" "$BACKUP_VERIFICATION_ID" \
+            "${{ inputs.rollbackRevision }}" > staging-evidence/acceptance.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: epic82-staging-${{ inputs.releaseVersion }}-${{ github.run_id }}
+          path: staging-evidence
+          retention-days: 90

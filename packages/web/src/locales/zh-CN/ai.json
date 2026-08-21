@@ -10,7 +10,7 @@
     "general": "通用设置",
     "openai": "OpenAI",
     "deepseek": "DeepSeek",
-    "mock": "Mock 设置",
+    "mock": "模拟设置",
     "rag": "RAG 设置"
   },
   "general": {
@@ -19,23 +19,23 @@
     "providers": {
       "openai": "OpenAI",
       "deepseek": "DeepSeek",
-      "mock": "Mock"
+      "mock": "模拟提供商"
     }
   },
   "fields": {
-    "apiKey": "API Key",
-    "baseUrl": "Base URL",
+    "apiKey": "接口密钥",
+    "baseUrl": "基础地址",
     "defaultModel": "默认模型",
-    "enableMock": "启用 Mock 提供商",
+    "enableMock": "启用模拟提供商",
     "enableRag": "启用 RAG 知识库增强",
     "ragTopK": "检索条数 (Top K)",
     "ragChunkSize": "知识库分块大小 (Chunk Size)"
   },
   "hints": {
-    "keyConfigured": "API Key 已配置。如不修改请留空。",
+    "keyConfigured": "接口密钥已配置。如不修改请留空。",
     "requiredForOpenAI": "OpenAI 必填。",
     "requiredForDeepSeek": "DeepSeek 必填。",
-    "enterApiKey": "请输入 API Key",
+    "enterApiKey": "请输入接口密钥",
     "maskedKey": "••••••••••••••••"
   }
 }

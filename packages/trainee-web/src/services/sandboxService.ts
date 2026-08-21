@@ -45,14 +45,11 @@ export async function* streamExecutionLogs(
     for (const line of lines) {
       if (line.startsWith('data: ')) {
         const data = line.slice(6);
-        if (data === '[DONE]') {
+        const event = JSON.parse(data) as { type: string };
+        if (event.type === 'DONE') {
           return;
         }
-        try {
-          yield JSON.parse(data);
-        } catch (_e) {
-          // ignore incomplete chunks or parse errors
-        }
+        yield event;
       }
     }
   }

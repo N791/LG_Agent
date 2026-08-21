@@ -1,0 +1,40 @@
+{
+  "version": "epic79-golden.v1",
+  "cases": [
+    {
+      "id": "document-versioned-qa",
+      "kind": "DOCUMENT_QA",
+      "query": "Which policy version defines workspace retention?",
+      "expectedRoute": "DOCUMENT",
+      "relevantEvidenceIds": ["doc:retention:v2:policy"]
+    },
+    {
+      "id": "code-symbol-navigation",
+      "kind": "CODE_NAVIGATION",
+      "query": "Locate ContextOrchestratorService.retrieve",
+      "expectedRoute": "CODE",
+      "relevantEvidenceIds": ["code:snapshot-a:context-orchestrator-retrieve"]
+    },
+    {
+      "id": "bounded-call-chain",
+      "kind": "CALL_CHAIN",
+      "query": "What calls retrieve and which document retriever does it invoke?",
+      "expectedRoute": "CODE",
+      "relevantEvidenceIds": ["code:snapshot-a:chat", "code:snapshot-a:retrieve"]
+    },
+    {
+      "id": "related-test-location",
+      "kind": "TEST_LOCATION",
+      "query": "Find tests for repository symbol expansion",
+      "expectedRoute": "CODE",
+      "relevantEvidenceIds": ["code:snapshot-a:repository-code-intelligence-spec"]
+    },
+    {
+      "id": "mixed-policy-and-code",
+      "kind": "MIXED",
+      "query": "Does citation authorization match the documented tenant policy?",
+      "expectedRoute": "MIXED",
+      "relevantEvidenceIds": ["doc:security:v1:acl", "code:snapshot-a:open-citation"]
+    }
+  ]
+}

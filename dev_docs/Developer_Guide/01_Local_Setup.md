@@ -1,71 +1,90 @@
-# 本地开发环境搭建 (Local Setup)
+# 本地开发环境搭建
 
-为了在本地运行 LG-Agent 平台，您需要准备基础环境并启动所需的依赖服务。
+## 前置条件
 
-## 1. 环境准备 (Prerequisites)
+- Node.js 20.6+（CI 使用 22；项目脚本使用 Node 原生 `--env-file`）
+- pnpm 9（仓库锁定 `pnpm@9.15.9`）
+- Docker 与 Docker Compose
+- Git
 
-- **Node.js**: `v20.x` 或以上版本。
-- **包管理器**: `pnpm` (`npm install -g pnpm`)。推荐由于 Turborepo 与 pnpm workspaces 的完美兼容。
-- **Docker**: 用于启动本地的数据库和缓存等依赖服务。
-
-## 2. 启动依赖服务 (Dependencies)
-
-平台在本地运行时依赖于 PostgreSQL 和 Redis。我们提供了一个 `docker-compose.yml` 文件来一键启动这些服务。
-
-在项目根目录下执行：
+## 配置与依赖
 
 ```bash
-docker-compose up -d
+pnpm install --frozen-lockfile
+cp .env.example .env
+docker compose up -d --wait
 ```
 
-这将启动：
+Windows PowerShell 可使用 `Copy-Item .env.example .env`。`.env` 至少需要有效的 `DATABASE_URL`、32 字符以上的非默认 `JWT_SECRET`、MinIO 凭据；本地无真实 LLM 时可将 `LLM_PROVIDER=mock`。
 
-- **PostgreSQL** (`localhost:5433`): 主要关系型数据库。
-- **Redis** (`localhost:6379`): 用于速率限制和缓存。
+Compose 端口：
 
-## 3. 安装依赖与构建契约包
+| 依赖                  |        Host |   Container |
+| --------------------- | ----------: | ----------: |
+| PostgreSQL + pgvector |       54322 |        5432 |
+| Redis                 |       16379 |        6379 |
+| MinIO API / Console   | 9000 / 9001 | 9000 / 9001 |
 
-首先安装所有的 npm 依赖：
+注意 `.env.example` 的 `REDIS_URL` 与 `REDIS_HOST/REDIS_PORT` 都存在；本地 URL 应与映射端口一致。生产 Secret 契约见 prod_docs。
+
+## 初始化数据库
 
 ```bash
-pnpm install
+pnpm --filter @lg-agent/contracts build
+pnpm db:init
 ```
 
-因为 `@lg-agent/api` 和 `@lg-agent/web` 都依赖于 `@lg-agent/contracts` (数据契约包)，我们需要先构建它：
+一键初始化会依次校验环境与 Prisma Schema、生成 Prisma Client、
+执行受版本控制的 `migrate deploy`、对齐权限注册表与系统角色，
+并确认最终 migration 状态。权限对齐不可省略，否则管理员验证成功后
+会被管理页的 `/me/permissions` 会话检查拒绝。
+该命令幂等，可在首次部署失败后或日后升级时安全重复执行。
+
+项目脚本会优先保留 shell/CI 已注入的环境变量，并自动读取
+`packages/api/.env` 或仓库根目录的 `.env`。不要直接使用
+`pnpm --filter @lg-agent/api exec prisma ...` 进行本地初始化，因为 filtered exec
+的工作目录是 `packages/api`，Prisma 不会自动读取仓库根目录的 `.env`。
+
+演示数据不是部署必需项，且包含固定的训练账号。仅在隔离的本地开发数据库中，
+显式设置 `ALLOW_INSECURE_DEMO_SEED=true` 后再运行
+`pnpm --filter @lg-agent/api seed`；生产环境禁止运行该命令。
+
+需要一次性管理员时配置 `BOOTSTRAP_*` 变量后运行：
 
 ```bash
-pnpm turbo run build --filter @lg-agent/contracts
+pnpm --filter @lg-agent/api bootstrap:admin
 ```
 
-## 4. 数据库初始化 (Database Setup)
+bootstrap 可幂等修复同一账号的系统角色绑定，但仅在已有账号属于
+同一组织、仍是启用的 `ADMIN`、且配置密码匹配时执行；它不会隐式重置密码。
+开发环境直接使用 `.env` 中明确设置的强密码，生产环境则始终要求首次登录后改密。
 
-进入 `@lg-agent/api` 目录，将 Prisma Schema 推送到本地的 PostgreSQL 数据库，并生成 Prisma Client：
+不要用 `prisma db push` 替代受版本控制的 migration。
+
+## 启动
 
 ```bash
-cd packages/api
-pnpm prisma db push
-pnpm prisma generate
+pnpm dev
 ```
 
-## 5. 启动服务 (Running the Application)
+- API：`http://localhost:4000`；Swagger：`http://localhost:4000/api/docs`
+- Admin Web：`http://localhost:8080`
+- Trainee Web：`http://localhost:8081`
 
-回到项目根目录，使用 Turborepo 一键启动 API 和 Web 端的开发服务器：
+Turborepo 会并行启动 package 的 `dev` 命令。也可用 `pnpm --filter <package> dev` 单独启动。
+
+## 提交前验证
 
 ```bash
-pnpm run dev
+pnpm architecture:check
+pnpm design:check
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm test
+pnpm --filter @lg-agent/api test:retrieval-gate
+pnpm --filter @lg-agent/web test:e2e
+pnpm --filter @lg-agent/trainee-web test:e2e
 ```
 
-该命令等价于 `pnpm turbo run dev --ui=tui`。它会：
-
-1. 在端口 `3000` 启动 NestJS API 服务。
-2. 在端口 `8081` 启动 Web 管理后台服务。
-3. 在端口 `8080` 启动 Trainee Web 闯关工作区服务。
-4. 提供一个控制台交互式 TUI (Terminal UI)，您可以方便地查看不同微服务的日志。
-
-## 6. 测试环境
-
-如果您需要运行集成测试 (E2E/Integration tests)，确保 `DATABASE_URL` 正确指向了 `docker-compose` 中暴露的数据库端口，并且直接在项目根目录下运行：
-
-```bash
-pnpm turbo run test
-```
+测试需使用独立数据库/fixture，不得连接生产。Playwright 首次运行前执行 `pnpm exec playwright install chromium`。

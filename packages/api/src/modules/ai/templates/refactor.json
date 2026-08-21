@@ -1,0 +1,17 @@
+{
+  "id": "refactor",
+  "version": "1.0.0",
+  "purpose": "code-review",
+  "description": "Tutor-guided refactoring advice",
+  "system": "You are an expert refactoring mentor. Explain safe, incremental improvements and tradeoffs using only the bounded context envelope. Cite evidence as [n], label inference, and disclose insufficient evidence.\n\nContext envelope:\n{{contextEnvelope}}",
+  "user": "{{content}}",
+  "inputSchema": {
+    "type": "object",
+    "required": ["content", "contextEnvelope"],
+    "properties": {
+      "content": { "type": "string" },
+      "contextEnvelope": { "type": "string" }
+    },
+    "additionalProperties": true
+  }
+}

@@ -1,103 +1,55 @@
-# 数据库设计 (Database Design)
+# 数据库设计
 
-LG-Agent 核心使用 **PostgreSQL** 作为业务数据持久层，并通过 **Prisma ORM** 进行管理。
-本页面描述了系统中的核心实体及其关系。
+数据库基线是 `packages/api/prisma/schema.prisma` 与版本化 migration；禁止用 `prisma db push` 替代 migration。PostgreSQL 16 + pgvector 同时承载业务数据、执行事件、权限 registry、审计和结构化混合检索。
 
-## 核心实体关系图 (ER Diagram)
-
-以下 Mermaid 实体关系图基于我们最新的 `schema.prisma` 生成。
+## 领域数据组
 
 ```mermaid
 erDiagram
-    ORGANIZATION {
-        uuid id PK
-        varchar name
-        varchar code "UNIQUE"
-        smallint status
-        datetime created_at
-    }
-
-    USER {
-        uuid id PK
-        uuid organization_id FK
-        varchar username "UNIQUE"
-        varchar password
-        varchar nickname
-        enum role "ADMIN, MENTOR, TRAINEE"
-        datetime created_at
-    }
-
-    COURSE {
-        uuid id PK
-        uuid organization_id FK
-        uuid created_by FK
-        varchar title
-        varchar version
-        smallint status "0: Draft, 1: Published"
-    }
-
-    TASK {
-        uuid id PK
-        uuid course_id FK
-        varchar title
-        integer stage
-        jsonb env_config
-        jsonb sandbox_config
-        jsonb test_config
-    }
-
-    SUBMISSION {
-        uuid id PK
-        uuid task_id FK
-        uuid user_id FK
-        varchar status "PENDING, PASSED, FAILED"
-        smallint score
-        text logs
-    }
-
-    LLM_REQUEST_LOG {
-        uuid id PK
-        uuid user_id FK
-        varchar provider "OpenAI, DeepSeek..."
-        varchar model
-        integer total_tokens
-        float estimated_cost
-        datetime created_at
-    }
-
-    %% Relationships
-    ORGANIZATION ||--o{ USER : "包含"
-    ORGANIZATION ||--o{ COURSE : "拥有"
-    USER ||--o{ COURSE : "创建 (Mentor)"
-    COURSE ||--o{ TASK : "包含多个"
-    USER ||--o{ SUBMISSION : "提交作业 (Trainee)"
-    TASK ||--o{ SUBMISSION : "关联"
-    USER ||--o{ LLM_REQUEST_LOG : "发起 AI 请求"
+  ORGANIZATION ||--o{ USER : owns
+  ORGANIZATION ||--o{ COURSE : owns
+  COURSE ||--o{ TASK : contains
+  USER ||--o{ WORKSPACE : edits
+  TASK ||--o{ WORKSPACE : materializes
+  WORKSPACE ||--o{ WORKSPACE_FILE : contains
+  WORKSPACE ||--o{ WORKSPACE_VERSION : versions
+  USER ||--o{ SUBMISSION : creates
+  TASK ||--o{ SUBMISSION : assesses
+  SUBMISSION ||--o{ EXECUTION_EVENT : emits
+  ORGANIZATION ||--o{ AUTHORIZATION_ROLE : defines
+  AUTHORIZATION_ROLE ||--o{ ROLE_PERMISSION : grants
+  USER ||--o{ USER_ROLE : receives
+  ORGANIZATION ||--o{ KNOWLEDGE_SOURCE : owns
+  KNOWLEDGE_SOURCE ||--o{ DOCUMENT_VERSION : versions
+  DOCUMENT_VERSION ||--o{ DOCUMENT_NODE : structures
+  DOCUMENT_NODE ||--o{ DOCUMENT_CHUNK : indexes
+  ORGANIZATION ||--o{ CODE_REPOSITORY : owns
+  CODE_REPOSITORY ||--o{ REPOSITORY_SNAPSHOT : snapshots
+  REPOSITORY_SNAPSHOT ||--o{ CODE_SYMBOL : indexes
 ```
 
-## 核心表结构解析
+## 多租户与授权
 
-### 1. 组织与多租户 (Organization)
+Organization 是租户 seam。组织级 repository 操作必须携带 authenticated tenant actor，并在查询中同时约束资源 id 与 `organizationId`。`users.role` 只作为旧数据兼容桥；实际授权由 `permissions`、`authorization_roles`、`role_permissions`、`user_roles` 与 `permission_registry_state` 组成。发布前 reconcile 必须使 registry version/digest 与代码 manifest 一致，否则 readiness fail-closed。
 
-平台在设计之初考虑了多租户 (Multi-tenancy)。每个 `User` 和 `Course` 必须归属于某一个 `Organization`。这允许不同的企业级客户在同一个平台上相互隔离。
+## Authoring Workspace
 
-### 2. 用户与权限 (User & Role)
+`Workspace` 唯一约束为 `(userId, taskId)`，包含 baseline、metadata 与版本号；`WorkspaceFile` 保存路径、内容、语言和 dirty 状态；`WorkspaceVersion` 保存可恢复快照。默认最多 50 个版本、保留 90 天，实际值由环境变量覆盖。
 
-`User` 表包含一个枚举字段 `role`：
+## Submission 与执行
 
-- **`ADMIN`**: 租户管理员，负责管理组织内的其他用户。
-- **`MENTOR`**: 导师，能够创建 `Course` 并管理其中的 `Task` 配置。
-- **`TRAINEE`**: 学员，只能查阅课程、使用 CLI 提交 `Submission` 以及与 AI 导师对话。
+`Submission` 支持 `PENDING/RUNNING/PASSED/FAILED/ERROR/CANCELLED`，包含幂等键、attempt、租约 owner/heartbeat/expiry、retry、dead letter 与取消时间。`ExecutionEvent` 以 `(submissionId, sequence)` 唯一，供 durable 日志与 `Last-Event-ID` replay 使用。大日志可按 `SUBMISSION_ARCHIVE_THRESHOLD_BYTES` 策略归档。
 
-### 3. 课程与任务 (Course & Task)
+## AI、对话与检索
 
-一个课程 (`Course`) 包含多个按阶段 (`stage`) 排序的任务 (`Task`)。
-任务是系统的配置重灾区。`Task` 表大量使用了 `jsonb` 字段，以便灵活存储复杂嵌套的 Schema 校验配置，例如所需的镜像环境 (`env_config`) 和验证脚本 (`test_config`)。
+- `LlmRequestLog` 保存 provider、model、token、成本、trace、prompt hash、rule hits 与 fallback，不保存原始 Prompt。
+- `LlmAuditLog` 保存脱敏后的规则审计。
+- 文档检索使用 `KnowledgeSource → DocumentVersion → DocumentNode → DocumentChunk`。
+- 代码检索使用 `CodeRepository → RepositorySnapshot → CodeFile/CodeSymbol/CodeRelation`。
+- `RetrievalTrace` 与 `RetrievalEvidence` 保存可解释证据；`ConversationSummary` 支持长对话压缩。
 
-### 4. 提交记录 (Submission)
+## 生命周期与索引
 
-记录学员每一次通过 CLI 推送的验证请求。沙盒引擎异步执行完毕后，会将状态 (`status`)、评分 (`score`) 和终端输出日志 (`logs`) 更新回该表。
+默认保留：Workspace version 90 天、Conversation 365 天、LLM request 180 天、LLM audit 365 天、AuditEvent 2555 天、ClientLog 30 天、ClientMetric 90 天。`DataLifecycleModule` 分批清理，生产变更必须同时更新 `.env.example`、运行手册与备份策略。
 
-### 5. AI 请求日志 (LlmRequestLog)
-
-对于平台成本控制至关重要。每一次转发给外部供应商的请求，其消耗的 `promptTokens` 和 `completionTokens` 均会记录在此。配合 `MonitoringModule`，可以实现针对个人或组织的月度配额控制。
+CI 会验证 Prisma schema、空库升级、前一 migration 升级、并发 migration、schema drift、关键查询计划，以及逻辑备份恢复后的约束、pgvector、权限表和检索表。

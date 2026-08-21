@@ -8,7 +8,7 @@ export default defineConfig({
   timeout: 30 * 1000,
   expect: {
     timeout: 5000,
-    toHaveScreenshot: { maxDiffPixelRatio: 0.05 }
+    toHaveScreenshot: { maxDiffPixelRatio: 0.05 },
   },
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
@@ -25,22 +25,17 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'Smoke',
+      name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-      },
-    },
-    {
-      name: 'Regression',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
-    },
-    {
-      name: 'Visual-Regression',
-      use: {
-        ...devices['Desktop Chrome'],
+        channel: process.env['CI'] ? undefined : 'chrome',
       },
     },
   ],
+  webServer: {
+    command: 'node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 8081',
+    url: 'http://localhost:8081',
+    reuseExistingServer: !process.env['CI'],
+    timeout: 120_000,
+  },
 });

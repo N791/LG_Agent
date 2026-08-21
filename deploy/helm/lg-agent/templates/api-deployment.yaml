@@ -1,43 +1,66 @@
+{{- if .Values.api.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "lg-agent.fullname" . }}-api
   labels:
-    app: {{ include "lg-agent.name" . }}-api
+    {{- include "lg-agent.componentLabels" (dict "root" . "component" "api") | nindent 4 }}
 spec:
   replicas: {{ .Values.api.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
-      app: {{ include "lg-agent.name" . }}-api
+      app.kubernetes.io/name: {{ include "lg-agent.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: api
   template:
     metadata:
       labels:
-        app: {{ include "lg-agent.name" . }}-api
+        {{- include "lg-agent.componentLabels" (dict "root" . "component" "api") | nindent 8 }}
     spec:
+      automountServiceAccountToken: false
+      {{- include "lg-agent.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: api
-          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
+          image: "{{ required "api.image.repository is required" .Values.api.image.repository }}:{{ include "lg-agent.imageTag" (dict "root" . "image" .Values.api.image) }}"
           imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           ports:
             - name: http
-              containerPort: 3000
+              containerPort: {{ .Values.api.service.port }}
               protocol: TCP
           envFrom:
             - configMapRef:
                 name: {{ include "lg-agent.fullname" . }}-api-config
             - secretRef:
-                name: {{ include "lg-agent.fullname" . }}-api-secret
+                name: {{ include "lg-agent.secretName" . }}
           livenessProbe:
             httpGet:
-              path: /health
+              path: {{ .Values.api.probes.livenessPath }}
               port: http
             initialDelaySeconds: 15
             periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /health
+              path: {{ .Values.api.probes.readinessPath }}
               port: http
             initialDelaySeconds: 5
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
           resources:
             {{- toYaml .Values.api.resources | nindent 12 }}
+{{- end }}

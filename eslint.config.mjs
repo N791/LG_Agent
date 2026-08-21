@@ -8,7 +8,10 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ['packages/api/scripts/benchmark-authorization.d.ts'],
+          defaultProject: 'packages/api/tsconfig.json',
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },

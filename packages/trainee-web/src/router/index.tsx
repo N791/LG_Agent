@@ -4,6 +4,7 @@ import AuthGuard from './AuthGuard';
 import { PageLoader } from '../components/PageLoader';
 import { RouteError } from '../components/RouteError';
 import type { Router } from '@remix-run/router';
+import { PERMISSIONS } from '@lg-agent/contracts';
 
 const MissionHub = React.lazy(() => import('../pages/MissionHub'));
 const WorkspacePage = React.lazy(() => import('../pages/Workspace'));
@@ -37,18 +38,22 @@ export const router: Router = createBrowserRouter([
       {
         path: '/dashboard',
         element: withSuspense(Dashboard),
+        handle: { permission: PERMISSIONS.TRAINING_READ },
       },
       {
         path: '/mission-hub/:courseId',
         element: withSuspense(MissionHub),
+        handle: { permission: PERMISSIONS.COURSE_READ },
       },
       {
         path: '/course/:courseId/workspace/:taskId',
         element: withSuspense(WorkspacePage),
+        handle: { permission: PERMISSIONS.WORKSPACE_USE },
       },
       {
         path: '/settings',
         element: withSuspense(Settings as React.FC),
+        handle: { permission: PERMISSIONS.PROFILE_READ },
       },
     ],
   },

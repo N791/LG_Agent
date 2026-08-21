@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { DiscussionsService } from './discussions.service';
 import { PrismaService } from '../../common/prisma.service';
 import { NOTIFICATION_PUBLISHER } from '../notifications/notification-publisher.interface';
+import { TenantScopeService } from '../../common/tenant/tenant-scope.service';
+import { Role } from '@prisma/client';
 
 describe('DiscussionsService', () => {
   let service: DiscussionsService;
@@ -10,12 +12,13 @@ describe('DiscussionsService', () => {
     discussion: {
       create: jest.Mock;
       findMany: jest.Mock;
-      findUnique: jest.Mock;
+      findFirst: jest.Mock;
       update: jest.Mock;
     };
     discussionComment: {
       create: jest.Mock;
     };
+    user: { findFirst: jest.Mock };
   };
   let notificationPublisher: { publish: jest.Mock };
 
@@ -24,11 +27,18 @@ describe('DiscussionsService', () => {
       discussion: {
         create: jest.fn(),
         findMany: jest.fn(),
-        findUnique: jest.fn(),
+        findFirst: jest.fn(),
         update: jest.fn(),
       },
       discussionComment: {
         create: jest.fn(),
+      },
+      user: {
+        findFirst: jest.fn().mockResolvedValue({
+          id: 'mentor-1',
+          username: 'mentor',
+          nickname: 'Mentor',
+        }),
       },
     };
     notificationPublisher = {
@@ -40,6 +50,16 @@ describe('DiscussionsService', () => {
         DiscussionsService,
         { provide: PrismaService, useValue: prisma },
         { provide: NOTIFICATION_PUBLISHER, useValue: notificationPublisher },
+        {
+          provide: TenantScopeService,
+          useValue: {
+            discussion: jest.fn().mockReturnValue({}),
+            workspace: jest.fn().mockReturnValue({}),
+            submission: jest.fn().mockReturnValue({}),
+            assertTask: jest.fn(),
+            assertUser: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -51,7 +71,7 @@ describe('DiscussionsService', () => {
   });
 
   it('should persist mentions and internal notes when adding a comment', async () => {
-    prisma.discussion.findUnique.mockResolvedValue({
+    prisma.discussion.findFirst.mockResolvedValue({
       id: 'discussion-1',
       status: 'OPEN',
       userId: 'user-1',
@@ -65,7 +85,7 @@ describe('DiscussionsService', () => {
 
     await service.addComment(
       'discussion-1',
-      { id: 'mentor-1', username: 'mentor', nickname: 'Mentor', role: 'MENTOR' } as any,
+      { id: 'mentor-1', organizationId: 'org-1', role: Role.MENTOR },
       {
         content: 'Please review @alice and share feedback',
         isInternal: true,
@@ -85,7 +105,7 @@ describe('DiscussionsService', () => {
   });
 
   it('should assign a discussion to a mentor and stamp the assignment time', async () => {
-    prisma.discussion.findUnique.mockResolvedValue({
+    prisma.discussion.findFirst.mockResolvedValue({
       id: 'discussion-1',
       status: 'OPEN',
       userId: 'user-1',
@@ -95,7 +115,11 @@ describe('DiscussionsService', () => {
       updatedAt: new Date(),
     });
 
-    await service.assignDiscussion('discussion-1', 'mentor-1');
+    await service.assignDiscussion('discussion-1', 'mentor-1', {
+      id: 'mentor-1',
+      organizationId: 'org-1',
+      role: Role.MENTOR,
+    });
 
     expect(prisma.discussion.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -109,7 +133,7 @@ describe('DiscussionsService', () => {
   });
 
   it('should resolve discussions and expose analytics', async () => {
-    prisma.discussion.findUnique.mockResolvedValue({
+    prisma.discussion.findFirst.mockResolvedValue({
       id: 'discussion-1',
       status: 'IN_PROGRESS',
       userId: 'user-1',
@@ -120,7 +144,8 @@ describe('DiscussionsService', () => {
     });
     prisma.discussion.update.mockResolvedValue({});
 
-    await service.resolveDiscussion('discussion-1');
+    const actor = { id: 'mentor-1', organizationId: 'org-1', role: Role.MENTOR };
+    await service.resolveDiscussion('discussion-1', actor);
 
     expect(prisma.discussion.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -140,7 +165,7 @@ describe('DiscussionsService', () => {
       },
     ]);
 
-    const analytics = await service.getDiscussionAnalytics('user-1');
+    const analytics = await service.getDiscussionAnalytics(actor);
     expect(analytics.totalDiscussions).toBe(1);
     expect(analytics.overdueCount).toBeGreaterThanOrEqual(0);
   });
@@ -169,7 +194,11 @@ describe('DiscussionsService', () => {
       },
     ]);
 
-    const discussions = await service.getDiscussions('user-1');
+    const discussions = await service.getDiscussions({
+      id: 'user-1',
+      organizationId: 'org-1',
+      role: Role.TRAINEE,
+    });
 
     expect(discussions[0]?.id).toBe('discussion-1');
     expect(discussions[0]?.priority).toBe('URGENT');

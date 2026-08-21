@@ -1,0 +1,27 @@
+{
+  "version": "query-router-golden.v1",
+  "cases": [
+    {
+      "query": "Where is the vacation policy documented?",
+      "expectedRoute": "DOCUMENT"
+    },
+    {
+      "query": "Find the function that calls UserRepository",
+      "expectedRoute": "CODE"
+    },
+    {
+      "query": "Which function implements this document requirement?",
+      "expectedRoute": "MIXED"
+    },
+    {
+      "query": "What remains in this task?",
+      "taskState": "implementation",
+      "expectedRoute": "TASK_STATE"
+    },
+    {
+      "query": "What did we decide earlier?",
+      "recentConversation": "We selected bounded retries.",
+      "expectedRoute": "CONVERSATION"
+    }
+  ]
+}

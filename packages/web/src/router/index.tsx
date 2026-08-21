@@ -12,7 +12,10 @@ import { GenerateTaskPage } from '../pages/Tasks/GenerateTaskPage';
 import Submissions from '../pages/Submissions';
 import Observability from '../pages/Observability';
 import AiSettings from '../pages/AiSettings';
+import Retrieval from '../pages/Retrieval';
 import NotFound from '../pages/NotFound';
+import Authorization from '../pages/Authorization';
+import { PERMISSIONS } from '@lg-agent/contracts';
 
 /*
   Temporary Workaround
@@ -37,52 +40,62 @@ export const router: any = createBrowserRouter([
           {
             index: true,
             element: <Dashboard />,
-            handle: { roles: ['ADMIN', 'MENTOR'] },
+            handle: { permission: PERMISSIONS.ANALYTICS_READ },
           },
           {
             path: 'organizations',
             element: <Organizations />,
-            handle: { roles: ['ADMIN'] },
+            handle: { permission: PERMISSIONS.PLATFORM_ORGANIZATION_MANAGE },
           },
           {
             path: 'users',
             element: <Users />,
-            handle: { roles: ['ADMIN', 'MENTOR'] },
+            handle: { permission: PERMISSIONS.USER_READ },
           },
           {
             path: 'courses',
             element: <Courses />,
-            handle: { roles: ['ADMIN', 'MENTOR'] },
+            handle: { permission: PERMISSIONS.COURSE_READ },
           },
           {
             path: 'courses/:courseId/tasks',
             element: <Tasks />,
-            handle: { roles: ['ADMIN', 'MENTOR'] },
+            handle: { permission: PERMISSIONS.TASK_READ },
           },
           {
             path: 'courses/:courseId/tasks/:taskId/edit',
             element: <TaskEditorPage />,
-            handle: { roles: ['ADMIN', 'MENTOR'] },
+            handle: { permission: PERMISSIONS.TASK_MANAGE },
           },
           {
             path: 'courses/:courseId/tasks/generate',
             element: <GenerateTaskPage />,
-            handle: { roles: ['ADMIN', 'MENTOR'] },
+            handle: { permission: PERMISSIONS.AI_TASK_GENERATE },
           },
           {
             path: 'submissions',
             element: <Submissions />,
-            handle: { roles: ['ADMIN', 'MENTOR'] },
+            handle: { permission: PERMISSIONS.SUBMISSION_READ },
           },
           {
             path: 'observability',
             element: <Observability />,
-            handle: { roles: ['ADMIN'] },
+            handle: { permission: PERMISSIONS.OBSERVABILITY_READ },
           },
           {
             path: 'ai-settings',
             element: <AiSettings />,
-            handle: { roles: ['ADMIN'] },
+            handle: { permission: PERMISSIONS.SYSTEM_CONFIG_READ },
+          },
+          {
+            path: 'retrieval',
+            element: <Retrieval />,
+            handle: { permission: PERMISSIONS.AI_RETRIEVAL_READ },
+          },
+          {
+            path: 'authorization',
+            element: <Authorization />,
+            handle: { permission: PERMISSIONS.ROLE_READ },
           },
           {
             path: '*',

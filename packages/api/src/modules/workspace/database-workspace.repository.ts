@@ -15,17 +15,23 @@ export class DatabaseWorkspaceRepository implements WorkspaceRepository {
     metadata?: Record<string, unknown>;
   }> {
     // Attempt to load workspace from database
-    const workspace = await this.prisma.workspace.findUnique({
-      where: {
-        userId_taskId: {
-          userId,
-          taskId,
-        },
-      },
-      include: {
-        files: true,
-      },
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { organizationId: true },
     });
+    const workspace = user
+      ? await this.prisma.workspace.findFirst({
+          where: {
+            userId,
+            taskId,
+            user: { organizationId: user.organizationId },
+            task: { course: { organizationId: user.organizationId } },
+          },
+          include: {
+            files: true,
+          },
+        })
+      : null;
 
     if (!workspace) {
       throw new NotFoundException({ message: 'errors.workspace.initRequired', args: { taskId } });

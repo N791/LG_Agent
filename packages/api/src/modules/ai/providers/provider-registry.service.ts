@@ -31,7 +31,10 @@ export class ProviderRegistry {
     const defaultName = await this.config.getDefaultProvider();
     if (defaultName) {
       const provider = this.providers.get(defaultName);
-      if (provider) return provider;
+      if (provider) {
+        await this.assertSelectable(provider);
+        return provider;
+      }
     }
 
     // 2. Production fallback chain: OpenAI -> DeepSeek -> Ollama
@@ -46,10 +49,20 @@ export class ProviderRegistry {
     // 3. If mock is the ONLY one available (development mode)
     const mockProvider = this.providers.get('mock');
     if (mockProvider) {
-      this.logger.warn('No production providers available. Falling back to Mock Provider.');
+      await this.assertSelectable(mockProvider);
       return mockProvider;
     }
 
     throw new Error('No LLM Provider available to process the request.');
+  }
+
+  private async assertSelectable(provider: ILLMProvider): Promise<void> {
+    if (provider.name !== 'mock') return;
+    const mock = await this.config.getMockConfig();
+    if (!mock.enabled) {
+      throw new Error(
+        'AI_PROVIDER_NOT_CONFIGURED: Mock Provider is restricted to unit/E2E fixtures. Configure a production LLM provider.',
+      );
+    }
   }
 }

@@ -1,24 +1,17 @@
 import React from 'react';
-import { useWorkspaceStore } from '../../store/workspaceStore';
-import { workspaceService } from '../../services/workspace/WorkspaceService';
+import { useWorkspaceSession, workspaceSessionCommands } from '../../modules/workspace-session';
 import { FileOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 export const RecentFiles: React.FC = () => {
   const { t } = useTranslation('workspace');
-  const recentFiles = useWorkspaceStore((state) => state.recentFiles);
-  const openFile = useWorkspaceStore((state) => state.openFile);
-  const activeFile = useWorkspaceStore((state) => state.activeFile);
+  const recentFiles = useWorkspaceSession((state) => state.recentFiles);
+  const activeFile = useWorkspaceSession((state) => state.activeFile);
 
   if (recentFiles.length === 0) return null;
 
   const handleOpen = (path: string) => {
-    try {
-      const content = workspaceService.readFile(path);
-      openFile(path, content);
-    } catch (err) {
-      console.error('Failed to read file:', err);
-    }
+    workspaceSessionCommands.open(path);
   };
 
   return (

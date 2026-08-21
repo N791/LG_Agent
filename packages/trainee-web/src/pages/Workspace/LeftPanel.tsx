@@ -33,7 +33,7 @@ import { ExecutionState } from './ExecutionCenterPanel';
 import { useTranslation } from 'react-i18next';
 
 interface LeftPanelProps {
-  setExecutionState?: React.Dispatch<React.SetStateAction<ExecutionState>>;
+  setExecutionState?: React.Dispatch<React.SetStateAction<ExecutionState | null>>;
 }
 
 export const LeftPanel: React.FC<LeftPanelProps> = React.memo(({ setExecutionState }) => {
@@ -218,7 +218,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = React.memo(({ setExecutionSta
     <div
       className="h-full bg-white flex flex-col left-panel-activity-bar"
       role="region"
-      aria-label="Workspace left panel"
+      aria-label={t('aria.leftPanel')}
     >
       <Tabs
         activeKey={leftPanelTab}

@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { UserMenu } from './UserMenu';
 import { NotificationBell } from './NotificationBell';
 import { useTranslation } from 'react-i18next';
+import lgAgentMark from '../assets/lg-agent-mark.svg';
 
 const { Header } = Layout;
 
@@ -20,9 +21,18 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({ title, status, actions }) 
   return (
     <Header className="bg-slate-900 px-6 flex items-center justify-between shadow-md z-10 relative">
       <div className="flex items-center space-x-4">
-        <div className="text-white font-bold text-xl tracking-wider flex items-center cursor-pointer">
-          <Link to="/dashboard" className="text-white hover:text-white flex items-center">
-            <span className="text-blue-400 mr-2">✦</span> Antigravity
+        <div className="flex items-center">
+          <Link
+            to="/dashboard"
+            aria-label="LG Agent 首页"
+            className="group flex items-center gap-2.5 text-white hover:text-white"
+          >
+            <img
+              src={lgAgentMark}
+              alt=""
+              className="h-9 w-9 transition-transform duration-200 group-hover:-translate-y-0.5"
+            />
+            <span className="hidden text-lg font-semibold tracking-tight sm:inline">LG Agent</span>
           </Link>
         </div>
         {title && (
@@ -47,14 +57,14 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({ title, status, actions }) 
             to={`/mission-hub/${courseId}`}
             className="text-gray-300 hover:text-white text-sm font-medium transition-colors mr-4"
           >
-            {t('nav.missionHub', 'Mission Hub')}
+            {t('nav.missionHub')}
           </Link>
         )}
         <Link
           to="/dashboard"
           className="text-gray-300 hover:text-white text-sm font-medium transition-colors"
         >
-          {t('nav.dashboard', 'Dashboard')}
+          {t('nav.dashboard')}
         </Link>
 
         <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-gray-700">

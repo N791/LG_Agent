@@ -21,13 +21,13 @@ const WORKSPACE_FILE = '.lg-agent-workspace.json';
 
 export function getGlobalConfig(): AgentConfig {
   if (!fs.existsSync(CONFIG_FILE)) {
-    return { baseUrl: 'http://localhost:3000/api/v1' };
+    return { baseUrl: 'http://localhost:4000/api/v1' };
   }
   try {
     const data = fs.readFileSync(CONFIG_FILE, 'utf-8');
     return JSON.parse(data) as AgentConfig;
   } catch (_e) {
-    return { baseUrl: 'http://localhost:3000/api/v1' };
+    return { baseUrl: 'http://localhost:4000/api/v1' };
   }
 }
 

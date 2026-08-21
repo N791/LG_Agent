@@ -1,3 +1,7 @@
+DO $migration$
+BEGIN
+IF to_regclass('public.system_configs') IS NULL THEN
+
 -- CreateTable
 CREATE TABLE "system_configs" (
     "key" VARCHAR NOT NULL,
@@ -7,3 +11,7 @@ CREATE TABLE "system_configs" (
 
     CONSTRAINT "system_configs_pkey" PRIMARY KEY ("key")
 );
+
+END IF;
+END;
+$migration$;

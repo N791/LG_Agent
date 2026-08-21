@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
-import { UserOutlined, LockOutlined, RocketOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { setCredentials } from '../../store/authSlice';
 import { useTranslation } from 'react-i18next';
+import lgAgentMark from '../../assets/lg-agent-mark.svg';
 
 const { Title, Text } = Typography;
 
@@ -32,7 +33,7 @@ const Login: React.FC = () => {
       const tokens = await authService.login(values.username, values.password);
 
       if (!tokens.access_token) {
-        throw new Error('Token not found in response');
+        throw new Error(t('tokenMissing'));
       }
 
       const decoded = authService.decodeToken(tokens.access_token);
@@ -72,8 +73,13 @@ const Login: React.FC = () => {
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-10 shadow-2xl">
           <div className="text-center mb-8 flex flex-col items-center">
-            <div className="w-16 h-16 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg mb-4">
-              <RocketOutlined className="text-3xl text-white" />
+            <img
+              src={lgAgentMark}
+              alt="LG Agent"
+              className="mb-4 h-16 w-16 drop-shadow-[0_16px_24px_rgba(56,189,248,0.18)]"
+            />
+            <div className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-sky-300">
+              LG Agent
             </div>
             <Title level={2} className="!text-white !mb-2">
               {t('title')}

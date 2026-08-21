@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Select, Typography, Space, Card } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Select, Typography, Space, Card, Alert } from 'antd';
 import { CodeEditor } from '../common/CodeEditor';
 import { aiService } from '../../services/ai';
-import { ModelInfoDTO } from '@lg-agent/contracts';
+import { schemasService } from '../../services/schemas';
+import { ModelInfoDTO, SCHEMA_IDS } from '@lg-agent/contracts';
+import Ajv, { type ErrorObject, type ValidateFunction } from 'ajv';
+import { useTranslation } from 'react-i18next';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -20,8 +23,11 @@ interface PromptEditorProps {
 }
 
 export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) => {
+  const { t } = useTranslation('admin');
   const [models, setModels] = useState<ModelInfoDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const [schemaValidator, setSchemaValidator] = useState<ValidateFunction | null>(null);
+  const [schemaLoadFailed, setSchemaLoadFailed] = useState(false);
 
   useEffect(() => {
     const fetchModels = async () => {
@@ -37,6 +43,28 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
     void fetchModels();
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    const loadPromptSchema = async () => {
+      try {
+        const schema = await schemasService.getSchema(SCHEMA_IDS.prompt);
+        const validator = new Ajv({ allErrors: true, strict: false }).compile(schema);
+        if (active) setSchemaValidator(() => validator);
+      } catch (_error) {
+        if (active) setSchemaLoadFailed(true);
+      }
+    };
+    void loadPromptSchema();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const schemaErrors = useMemo<ErrorObject[]>(() => {
+    if (!schemaValidator) return [];
+    return schemaValidator(value ?? {}) ? [] : [...(schemaValidator.errors ?? [])];
+  }, [schemaValidator, value]);
+
   const handleChange = (field: string, fieldValue: unknown) => {
     onChange?.({
       ...value,
@@ -45,13 +73,36 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
   };
 
   return (
-    <Card title="AI Prompt Configuration">
+    <Card title={t('promptEditor.title')}>
       <Space direction="vertical" style={{ width: '100%' }} size="large">
+        {schemaLoadFailed && (
+          <Alert
+            type="error"
+            showIcon
+            message={t('promptEditor.schemaUnavailable')}
+            description={t('promptEditor.schemaUnavailableDetail')}
+          />
+        )}
+        {schemaErrors.length > 0 && (
+          <Alert
+            type="error"
+            showIcon
+            message={t('promptEditor.invalid')}
+            description={schemaErrors
+              .map((error) =>
+                t('promptEditor.invalidItem', {
+                  path: error.instancePath || '/',
+                  message: error.message ?? t('promptEditor.invalidValue'),
+                }),
+              )
+              .join('; ')}
+          />
+        )}
         <div>
-          <Text strong>AI Model</Text>
+          <Text strong>{t('promptEditor.model')}</Text>
           <Select
             style={{ width: '100%', marginTop: 8 }}
-            placeholder="Select AI Model"
+            placeholder={t('promptEditor.selectModel')}
             loading={loading}
             value={value?.model}
             onChange={(val) => {
@@ -69,7 +120,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
         </div>
 
         <div>
-          <Text strong>System Prompt</Text>
+          <Text strong>{t('promptEditor.systemPrompt')}</Text>
           <div
             style={{
               marginTop: 8,
@@ -91,7 +142,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({ value, onChange }) =
         </div>
 
         <div>
-          <Text strong>User Prompt Template</Text>
+          <Text strong>{t('promptEditor.userPromptTemplate')}</Text>
           <div
             style={{
               marginTop: 8,

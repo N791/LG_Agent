@@ -1,37 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../common/prisma.service';
-import { ClsService } from 'nestjs-cls';
+import { Inject, Injectable } from '@nestjs/common';
+import { AUDIT_WRITER, type AuditWriter } from '../../../common/audit';
 import { AuditProvider, AuditEventPayload } from '../interfaces/audit-provider.interface';
 
+/** Compatibility adapter. The shared AuditModule owns persistence and context. */
 @Injectable()
 export class PrismaAuditProvider implements AuditProvider {
-  private readonly logger = new Logger(PrismaAuditProvider.name);
-
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly cls: ClsService,
-  ) {}
+  constructor(@Inject(AUDIT_WRITER) private readonly writer: AuditWriter) {}
 
   async recordEvent(payload: AuditEventPayload): Promise<void> {
-    const traceId = this.cls.get<string | undefined>('traceId');
-    
-    try {
-      await this.prisma.auditEvent.create({
-        data: {
-          action: payload.action,
-          actorId: payload.actorId,
-          resourceId: payload.resourceId,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-          metadata: (payload.metadata ?? {}) as any,
-          ipAddress: payload.ipAddress,
-          userAgent: payload.userAgent,
-          traceId,
-        },
-      });
-    } catch (error) {
-      // We must not crash the main application if audit logging fails,
-      // but we need to record this critically in the standard logs.
-      this.logger.error(`Failed to persist audit event for action: ${payload.action}`, error);
-    }
+    await this.writer.recordEvent(payload);
   }
 }

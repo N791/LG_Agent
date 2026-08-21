@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Tree, Input, Dropdown, MenuProps, Modal, message } from 'antd';
+import { Tree, Input, Dropdown, Modal, message } from 'antd';
+import type { MenuProps } from 'antd';
 import type { DataNode } from 'antd/es/tree';
-import { workspaceService } from '../../services/workspace/WorkspaceService';
 import { WorkspaceTreeService } from '../../services/workspace/WorkspaceTreeService';
-import { useWorkspaceStore } from '../../store/workspaceStore';
 import { useParams } from 'react-router-dom';
-import { WorkspaceFileDTO } from '@lg-agent/contracts';
+import type { WorkspaceFileDTO } from '@lg-agent/contracts';
 import { RecentFiles } from './RecentFiles';
 import { useTranslation } from 'react-i18next';
+import { useWorkspaceSession, workspaceSessionCommands } from '../../modules/workspace-session';
 
 const { Search } = Input;
 
@@ -25,27 +25,18 @@ export const FileTree: React.FC = React.memo(() => {
   const [targetPath, setTargetPath] = useState<string>('');
   const [inputValue, setInputValue] = useState('');
 
-  const openFile = useWorkspaceStore((state) => state.openFile);
-  const closeFile = useWorkspaceStore((state) => state.closeFile);
-  const activeFile = useWorkspaceStore((state) => state.activeFile);
-
-  const fetchTree = () => {
-    const files = workspaceService.currentWorkspace?.workspace.files ?? [];
-    const nodes = WorkspaceTreeService.buildTree(files);
-    setTreeData(nodes);
-  };
+  const activeFile = useWorkspaceSession((state) => state.activeFile);
+  const draft = useWorkspaceSession((state) => state.draft);
+  const fileMetadata = useWorkspaceSession((state) => state.fileMetadata);
 
   useEffect(() => {
-    if (!taskId) return;
-    workspaceService
-      .loadWorkspace(taskId)
-      .then(() => {
-        fetchTree();
-      })
-      .catch((err: unknown) => {
-        console.error(err);
-      });
-  }, [taskId]);
+    const files = Object.entries(draft).map(([path, content]) => ({
+      ...fileMetadata[path],
+      path,
+      content,
+    }));
+    setTreeData(WorkspaceTreeService.buildTree(files));
+  }, [draft, fileMetadata]);
 
   const onSelect = (
     _selectedKeys: React.Key[],
@@ -53,12 +44,7 @@ export const FileTree: React.FC = React.memo(() => {
   ) => {
     if (info.node.isLeaf) {
       const path = info.node.key as string;
-      try {
-        const content = workspaceService.readFile(path);
-        openFile(path, content);
-      } catch (err) {
-        console.error('Failed to read file:', err);
-      }
+      workspaceSessionCommands.open(path);
     }
   };
 
@@ -76,24 +62,15 @@ export const FileTree: React.FC = React.memo(() => {
         if (modalAction === 'new_folder') {
           // Folder is implicit, we create a dummy file to hold the folder if needed,
           // or just create a file like newPath + "/.keep"
-          await workspaceService.updateFiles(taskId, [{ path: `${newPath}/.keep`, content: '' }]);
+          await workspaceSessionCommands.createFile(`${newPath}/.keep`);
         } else {
-          await workspaceService.updateFiles(taskId, [{ path: newPath, content: '' }]);
-          openFile(newPath, '');
+          await workspaceSessionCommands.createFile(newPath);
         }
       } else if (modalAction === 'rename') {
         const parent = getParentPath(targetPath);
         const newPath = parent ? `${parent}/${inputValue}` : inputValue;
-        const content = workspaceService.readFile(targetPath);
-
-        await workspaceService.updateFiles(taskId, [{ path: newPath, content }]);
-        await workspaceService.deleteFile(taskId, targetPath);
-        closeFile(targetPath);
-        openFile(newPath, content);
+        await workspaceSessionCommands.renameFile(targetPath, newPath);
       }
-      // Reload from backend to get full sync
-      await workspaceService.loadWorkspace(taskId);
-      fetchTree();
     } catch (_err) {
       message.error(t('fileTree.messages.actionFailed', { action: modalAction ?? 'action' }));
     }
@@ -110,10 +87,7 @@ export const FileTree: React.FC = React.memo(() => {
       onOk: async () => {
         if (!taskId) return;
         try {
-          await workspaceService.deleteFile(taskId, path);
-          closeFile(path);
-          await workspaceService.loadWorkspace(taskId);
-          fetchTree();
+          await workspaceSessionCommands.deleteFile(path);
           message.success(t('fileTree.messages.deleteSuccess'));
         } catch (_err) {
           message.error(t('fileTree.messages.deleteFailed'));
@@ -225,7 +199,7 @@ export const FileTree: React.FC = React.memo(() => {
     <div
       className="h-full bg-white flex flex-col"
       role="region"
-      aria-label="Workspace file explorer"
+      aria-label={t('aria.fileExplorer')}
     >
       <div className="flex-shrink-0 p-4 border-b border-gray-100 bg-gray-50/50">
         <h2 className="text-sm font-semibold text-gray-800 m-0">{t('fileTree.title')}</h2>
@@ -237,7 +211,7 @@ export const FileTree: React.FC = React.memo(() => {
           style={{ marginBottom: 8 }}
           placeholder={t('fileTree.searchPlaceholder')}
           onChange={onChange}
-          aria-label="Search workspace files"
+          aria-label={t('aria.searchFiles')}
         />
       </div>
       <div className="p-2 flex-1 overflow-y-auto">
@@ -282,10 +256,10 @@ export const FileTree: React.FC = React.memo(() => {
           value={inputValue}
           aria-label={
             modalAction === 'rename'
-              ? 'Rename item'
+              ? t('fileTree.modal.newName')
               : modalAction === 'new_folder'
-                ? 'New folder name'
-                : 'New file name'
+                ? t('fileTree.modal.nameFolder')
+                : t('fileTree.modal.nameFile')
           }
           onChange={(e) => {
             setInputValue(e.target.value);

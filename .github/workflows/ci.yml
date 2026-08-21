@@ -12,6 +12,286 @@ env:
   NODE_OPTIONS: '--max-old-space-size=4096'
 
 jobs:
+  api-governance:
+    name: OpenAPI & Contract Governance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared contracts and generate OpenAPI
+        run: |
+          pnpm --filter @lg-agent/contracts build
+          OPENAPI_OUTPUT="$RUNNER_TEMP/openapi.json" \
+            pnpm --filter @lg-agent/api openapi:generate
+
+      - name: Reject stale or breaking API contracts
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          cmp packages/contracts/schemas/openapi.json "$RUNNER_TEMP/openapi.json"
+          if [ -n "$BASE_REF" ] && git show "origin/$BASE_REF:packages/contracts/schemas/openapi.json" \
+            > "$RUNNER_TEMP/openapi-base.json"; then
+            node packages/api/scripts/check-openapi-breaking.mjs \
+              "$RUNNER_TEMP/openapi-base.json" "$RUNNER_TEMP/openapi.json"
+          else
+            node packages/api/scripts/check-openapi-breaking.mjs \
+              packages/contracts/schemas/openapi.json "$RUNNER_TEMP/openapi.json"
+          fi
+
+      - name: Validate endpoint map and consumer versions
+        run: |
+          node packages/api/scripts/check-endpoint-map.mjs \
+            "Design_docs/Design/08_8._核心_API_设计（Core_API_Design）.md" \
+            "$RUNNER_TEMP/openapi.json"
+          node packages/api/scripts/check-contract-versions.mjs
+          node packages/api/scripts/check-authorization-registry.mjs
+
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lg-agent-openapi
+          path: ${{ runner.temp }}/openapi.json
+
+  database-governance:
+    name: Migration & Recovery
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: epic70_empty
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate Prisma schema and migration-only release policy
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epic70_empty
+        run: |
+          pnpm --filter @lg-agent/api exec prisma validate
+          if grep -R "prisma db"" push" .github deploy package.json packages/*/package.json; then
+            echo "Production workflows must use versioned Prisma migrations."
+            exit 1
+          fi
+          node packages/api/scripts/check-authorization-migration-safety.mjs
+
+      - name: Upgrade an empty database
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epic70_empty
+          PGPASSWORD: postgres
+        run: |
+          pnpm --filter @lg-agent/api exec prisma migrate deploy
+          psql "$DATABASE_URL" -f packages/api/prisma/tests/epic70-contract.sql
+
+      - name: Reconcile and verify the permission registry
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epic70_empty
+        run: |
+          pnpm --filter @lg-agent/contracts build
+          RELEASE_VERSION=ci-contract pnpm --filter @lg-agent/api authorization:reconcile &
+          first_reconcile=$!
+          RELEASE_VERSION=ci-contract pnpm --filter @lg-agent/api authorization:reconcile &
+          second_reconcile=$!
+          wait "$first_reconcile"
+          wait "$second_reconcile"
+          psql "$DATABASE_URL" -f packages/api/prisma/tests/epic80-contract.sql
+          psql "$DATABASE_URL" -f packages/api/prisma/tests/epic81-contract.sql
+
+      - name: Reject migration/schema drift
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epic70_empty
+          PGPASSWORD: postgres
+        run: |
+          createdb -h localhost -U postgres epic70_shadow
+          pnpm --filter @lg-agent/api exec prisma migrate diff \
+            --from-migrations prisma/migrations \
+            --to-schema-datamodel prisma/schema.prisma \
+            --shadow-database-url postgresql://postgres:postgres@localhost:5432/epic70_shadow \
+            --exit-code
+
+      - name: Upgrade from the previous migration
+        env:
+          PGPASSWORD: postgres
+        run: |
+          createdb -h localhost -U postgres epic70_upgrade
+          mkdir -p /tmp/epic70-prisma/migrations
+          cp packages/api/prisma/schema.prisma /tmp/epic70-prisma/schema.prisma
+          latest_migration="$(find packages/api/prisma/migrations -mindepth 1 -maxdepth 1 -type d \
+            -printf '%f\n' | sort | tail -n 1)"
+          find packages/api/prisma/migrations -mindepth 1 -maxdepth 1 -type d \
+            ! -name "$latest_migration" -exec cp -R {} /tmp/epic70-prisma/migrations/ \;
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/epic70_upgrade \
+            pnpm --filter @lg-agent/api exec prisma migrate deploy \
+            --schema /tmp/epic70-prisma/schema.prisma
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/epic70_upgrade \
+            pnpm --filter @lg-agent/api exec prisma migrate deploy
+          psql postgresql://postgres:postgres@localhost:5432/epic70_upgrade \
+            -f packages/api/prisma/tests/epic70-contract.sql
+
+      - name: Verify repeat and concurrent migration locking
+        env:
+          PGPASSWORD: postgres
+        run: |
+          createdb -h localhost -U postgres epic82_concurrent
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/epic82_concurrent \
+            pnpm --filter @lg-agent/api exec prisma migrate deploy &
+          first_migration=$!
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/epic82_concurrent \
+            pnpm --filter @lg-agent/api exec prisma migrate deploy &
+          second_migration=$!
+          wait "$first_migration"
+          wait "$second_migration"
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/epic82_concurrent \
+            pnpm --filter @lg-agent/api exec prisma migrate deploy
+          psql postgresql://postgres:postgres@localhost:5432/epic82_concurrent \
+            -Atc "SELECT count(*) FROM _prisma_migrations WHERE finished_at IS NOT NULL" \
+            | grep -Eq '^[1-9][0-9]*$'
+
+      - name: Capture representative query plans
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql postgresql://postgres:postgres@localhost:5432/epic70_empty \
+            -f packages/api/prisma/performance/epic70-explain.sql \
+            > epic70-query-plans.txt
+
+      - name: Exercise logical backup and restore
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql "$DATABASE_URL" -f packages/api/prisma/tests/sprint18-recovery-fixture.sql
+          pg_dump -h localhost -U postgres -Fc epic70_empty -f /tmp/epic70.dump
+          createdb -h localhost -U postgres epic70_restore
+          pg_restore -h localhost -U postgres --exit-on-error \
+            -d epic70_restore /tmp/epic70.dump
+          psql postgresql://postgres:postgres@localhost:5432/epic70_restore \
+            -Atc "SELECT count(*) FROM _prisma_migrations" | grep -Eq '^[1-9][0-9]*$'
+          psql postgresql://postgres:postgres@localhost:5432/epic70_restore \
+            -Atc "SELECT count(*) FROM pg_constraint WHERE conname = 'submissions_status_check'" \
+            | grep -qx '1'
+          psql postgresql://postgres:postgres@localhost:5432/epic70_restore \
+            -Atc "SELECT count(*) FROM pg_extension WHERE extname = 'vector'" | grep -qx '1'
+          psql postgresql://postgres:postgres@localhost:5432/epic70_restore \
+            -Atc "SELECT to_regclass('public.document_chunks') IS NOT NULL \
+              AND to_regclass('public.code_symbols') IS NOT NULL" | grep -qx 't'
+          psql postgresql://postgres:postgres@localhost:5432/epic70_restore \
+            -f packages/api/prisma/tests/epic80-contract.sql
+          psql postgresql://postgres:postgres@localhost:5432/epic70_restore \
+            -f packages/api/prisma/tests/epic81-contract.sql
+          psql postgresql://postgres:postgres@localhost:5432/epic70_restore \
+            -f packages/api/prisma/tests/sprint18-exit-contract.sql
+          psql postgresql://postgres:postgres@localhost:5432/epic70_restore \
+            -Atc "SELECT count(*) FROM user_roles ur JOIN users u ON u.id = ur.user_id \
+              WHERE u.organization_id <> ur.organization_id" | grep -qx '0'
+
+      - name: Exercise retrieval artifact backup and restore
+        run: |
+          mkdir -p /tmp/retrieval-source/object-storage /tmp/retrieval-source/code-index
+          printf 'versioned-document-object' > /tmp/retrieval-source/object-storage/document-v1
+          printf 'repository-symbol-artifact' > /tmp/retrieval-source/code-index/snapshot-v1
+          find /tmp/retrieval-source -type f -exec sha256sum {} \; \
+            | sed 's#/tmp/retrieval-source/##' | sort > /tmp/retrieval-source.sha256
+          tar -C /tmp/retrieval-source -czf /tmp/retrieval-artifacts.tgz .
+          mkdir -p /tmp/retrieval-restore
+          tar -C /tmp/retrieval-restore -xzf /tmp/retrieval-artifacts.tgz
+          find /tmp/retrieval-restore -type f -exec sha256sum {} \; \
+            | sed 's#/tmp/retrieval-restore/##' | sort > /tmp/retrieval-restore.sha256
+          cmp /tmp/retrieval-source.sha256 /tmp/retrieval-restore.sha256
+
+      - name: Upload query plans
+        uses: actions/upload-artifact@v4
+        with:
+          name: epic70-query-plans
+          path: epic70-query-plans.txt
+
+  helm-governance:
+    name: Helm lint, template & production policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.17.3
+      - name: Lint and render the production chart
+        run: |
+          helm lint deploy/helm/lg-agent -f deploy/helm/lg-agent/values.production.yaml
+          helm template lg-agent deploy/helm/lg-agent \
+            -f deploy/helm/lg-agent/values.production.yaml \
+            > "${RUNNER_TEMP}/lg-agent-production.yaml"
+          helm template lg-agent deploy/helm/lg-agent \
+            -f deploy/helm/lg-agent/values.production.yaml \
+            --set api.enabled=true \
+            --set adminWeb.enabled=false \
+            --set traineeWeb.enabled=false \
+            --set release.runMigration=true \
+            > "${RUNNER_TEMP}/phase-api.yaml"
+          helm template lg-agent deploy/helm/lg-agent \
+            -f deploy/helm/lg-agent/values.production.yaml \
+            --set api.enabled=true \
+            --set adminWeb.enabled=true \
+            --set traineeWeb.enabled=false \
+            --set release.runMigration=false \
+            > "${RUNNER_TEMP}/phase-admin.yaml"
+          helm template lg-agent deploy/helm/lg-agent \
+            -f deploy/helm/lg-agent/values.production.yaml \
+            --set api.enabled=true \
+            --set adminWeb.enabled=true \
+            --set traineeWeb.enabled=true \
+            --set release.runMigration=false \
+            > "${RUNNER_TEMP}/phase-trainee.yaml"
+      - name: Reject missing secrets, probes and floating images
+        run: |
+          node deploy/scripts/check-helm-policy.mjs \
+            "${RUNNER_TEMP}/lg-agent-production.yaml" \
+            deploy/helm/lg-agent/values.production.yaml
+          node deploy/scripts/check-release-phases.mjs \
+            "${RUNNER_TEMP}/phase-api.yaml" \
+            "${RUNNER_TEMP}/phase-admin.yaml" \
+            "${RUNNER_TEMP}/phase-trainee.yaml" \
+            deploy/scripts/release-transaction.sh
+
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
@@ -52,6 +332,12 @@ jobs:
       - name: ESLint
         run: pnpm run lint
 
+      - name: Module dependency architecture
+        run: pnpm run architecture:check
+
+      - name: Design documents 01-09 consistency
+        run: pnpm run design:check
+
       - name: Type Check
         run: pnpm run typecheck
 
@@ -61,12 +347,14 @@ jobs:
       - name: Unit & Integration Tests
         run: npx turbo run test
 
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
-        working-directory: packages/e2e
-        continue-on-error: true # Might fail if e2e is not fully set up yet
+      - name: Retrieval quality, security and rollout regression gate
+        run: pnpm --filter @lg-agent/api test:retrieval-gate
 
-      - name: Playwright Smoke Test
-        run: pnpm run test:smoke
-        working-directory: packages/e2e
-        continue-on-error: true # Might fail if e2e is not fully set up yet
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Web E2E
+        run: pnpm --filter @lg-agent/web test:e2e
+
+      - name: Trainee Web E2E
+        run: pnpm --filter @lg-agent/trainee-web test:e2e

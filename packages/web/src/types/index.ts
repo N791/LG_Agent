@@ -63,8 +63,4 @@ export interface Submission {
   user?: User;
 }
 
-export interface ApiResponse<T = unknown> {
-  code: number;
-  message: string;
-  data: T;
-}
+export type ApiResponse<T = unknown> = import('@lg-agent/contracts').ApiSuccessEnvelopeDTO<T>;

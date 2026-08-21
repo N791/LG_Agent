@@ -9,6 +9,7 @@ export const deleteUser = (id: string) => request.delete(`/users/${id}`);
 
 // Organizations
 export const getOrganizations = () => request.get('/organizations');
+export const getCurrentOrganization = () => request.get('/organizations/current');
 export const createOrganization = (data: Record<string, unknown>) =>
   request.post('/organizations', data);
 export const updateOrganization = (id: string, data: Record<string, unknown>) =>

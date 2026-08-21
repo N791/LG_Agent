@@ -1,0 +1,40 @@
+{
+  "id": "task_generation",
+  "version": "1.0.0",
+  "purpose": "task-generation",
+  "description": "Generate a structured coding task draft from source material",
+  "system": "You are an expert curriculum designer and software engineering mentor. Generate a realistic coding task from the supplied document. Return only one JSON object matching the output schema, without Markdown fences. If no technology is specified, use Node.js.",
+  "user": "{{document}}",
+  "inputSchema": {
+    "type": "object",
+    "required": ["document"],
+    "properties": {
+      "document": { "type": "string", "minLength": 1 }
+    },
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": [
+      "title",
+      "summary",
+      "description",
+      "taskType",
+      "difficulty",
+      "envConfig",
+      "sandboxConfig",
+      "testConfig"
+    ],
+    "properties": {
+      "title": { "type": "string" },
+      "summary": { "type": "string" },
+      "description": { "type": "string" },
+      "taskType": { "enum": ["MANDATORY", "ELECTIVE"] },
+      "difficulty": { "enum": ["BEGINNER", "INTERMEDIATE", "ADVANCED"] },
+      "envConfig": { "type": "object" },
+      "sandboxConfig": { "type": "object" },
+      "testConfig": { "type": "object" }
+    },
+    "additionalProperties": false
+  }
+}

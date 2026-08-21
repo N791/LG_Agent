@@ -8,6 +8,7 @@ import dashboardZhCN from './locales/zh-CN/dashboard.json';
 import aiZhCN from './locales/zh-CN/ai.json';
 import submissionsZhCN from './locales/zh-CN/submissions.json';
 import observabilityZhCN from './locales/zh-CN/observability.json';
+import adminZhCN from './locales/zh-CN/admin.json';
 
 import submissionsEnUS from './locales/en-US/submissions.json';
 import observabilityEnUS from './locales/en-US/observability.json';
@@ -25,6 +26,7 @@ const resources = {
     ai: aiZhCN,
     submissions: submissionsZhCN,
     observability: observabilityZhCN,
+    admin: adminZhCN,
   },
 };
 
@@ -32,7 +34,7 @@ void i18n.use(initReactI18next).init({
   resources,
   lng: 'zh-CN', // Default language
   fallbackLng: 'zh-CN', // Fallback language
-  ns: ['common', 'navigation', 'auth', 'dashboard', 'ai', 'submissions', 'observability'],
+  ns: ['common', 'navigation', 'auth', 'dashboard', 'ai', 'submissions', 'observability', 'admin'],
   defaultNS: 'common',
   interpolation: {
     escapeValue: false, // React already escapes values to prevent XSS

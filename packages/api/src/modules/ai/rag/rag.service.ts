@@ -1,7 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { MarkdownChunker } from './markdown-chunker';
-import { MemoryVectorStore } from './memory-vector.store';
-import { SearchResult } from './interfaces';
+import { VECTOR_STORE } from './interfaces';
+import type { IVectorStore, SearchResult } from './interfaces';
 import { LLMGatewayService } from '../gateway/llm-gateway.service';
 import { AiConfigService } from '../ai-config.service';
 
@@ -11,7 +11,7 @@ export class RagService {
 
   constructor(
     private readonly chunker: MarkdownChunker,
-    private readonly vectorStore: MemoryVectorStore,
+    @Inject(VECTOR_STORE) private readonly vectorStore: IVectorStore,
     private readonly gateway: LLMGatewayService,
     private readonly aiConfig: AiConfigService,
   ) {}
@@ -29,6 +29,7 @@ export class RagService {
     const vectors = await this.gateway.embed(textsToEmbed);
 
     // 3. Store in Vector Database
+    await this.vectorStore.deleteBySource(source);
     await this.vectorStore.addDocuments(chunks, vectors);
 
     this.logger.log(`Successfully indexed ${String(chunks.length)} chunks from ${source}`);
@@ -54,5 +55,9 @@ export class RagService {
 
     // 2. Search Vector Database
     return this.vectorStore.search(firstQueryVector, effectiveTopK);
+  }
+
+  resetIndex(): Promise<void> {
+    return this.vectorStore.reset();
   }
 }

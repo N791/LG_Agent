@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Typography, Spin, Alert } from 'antd';
 import { CodeOutlined, SyncOutlined } from '@ant-design/icons';
-import { AiReviewDTO } from '@lg-agent/contracts';
-import { useWorkspaceStore } from '../../store/workspaceStore';
+import type { AiReviewDTO } from '@lg-agent/contracts';
+import { workspaceSessionCommands } from '../../modules/workspace-session';
 import { store } from '../../store';
 import { useTranslation } from 'react-i18next';
 
@@ -25,8 +25,6 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({
     !initialReview && (status === 'FAILED' || status === 'ERROR'),
   );
   const [error, setError] = useState<string | null>(null);
-
-  const updateFileContent = useWorkspaceStore((state) => state.updateFileContent);
 
   useEffect(() => {
     if (initialReview) {
@@ -91,7 +89,7 @@ export const AIReviewTab: React.FC<AIReviewTabProps> = ({
   }, [submissionId, initialReview, status, loading]);
 
   const handleApplyFix = (file: string, content: string) => {
-    updateFileContent(file, content);
+    void workspaceSessionCommands.edit(file, content);
   };
 
   if (loading) {

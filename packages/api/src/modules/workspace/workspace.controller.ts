@@ -1,16 +1,36 @@
-import { Controller, Post, Get, Put, Delete, Body, Param, UseGuards, Request, Query } from '@nestjs/common';
-import { WorkspaceService } from './workspace.service';
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  Query,
+} from '@nestjs/common';
+import { AuthoringWorkspaceService } from './authoring-workspace.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { WorkspaceDTO, WorkspaceFileDTO, WorkspaceVersionDTO } from '@lg-agent/contracts';
+import {
+  CreateWorkspaceVersionRequestDTO,
+  InitWorkspaceRequestDTO,
+  UpdateWorkspaceFilesRequestDTO,
+  WorkspaceDTO,
+  WorkspaceVersionDTO,
+  PERMISSIONS,
+} from '@lg-agent/contracts';
+import { RequirePermission } from '../authorization';
 
 @Controller('workspaces')
 @UseGuards(JwtAuthGuard)
+@RequirePermission(PERMISSIONS.WORKSPACE_USE)
 export class WorkspaceController {
-  constructor(private readonly workspaceService: WorkspaceService) {}
+  constructor(private readonly workspaceService: AuthoringWorkspaceService) {}
 
   @Post('init')
   async initWorkspace(
-    @Body() body: { taskId: string },
+    @Body() body: InitWorkspaceRequestDTO,
     @Request() req: { user: { id: string } },
   ): Promise<WorkspaceDTO> {
     return this.workspaceService.initWorkspace(body.taskId, req.user.id);
@@ -27,7 +47,7 @@ export class WorkspaceController {
   @Put(':taskId/files')
   async updateFiles(
     @Param('taskId') taskId: string,
-    @Body() body: { files: Pick<WorkspaceFileDTO, 'path' | 'content'>[] },
+    @Body() body: UpdateWorkspaceFilesRequestDTO,
     @Request() req: { user: { id: string } },
   ): Promise<WorkspaceDTO> {
     return this.workspaceService.updateFiles(taskId, req.user.id, body.files);
@@ -45,7 +65,7 @@ export class WorkspaceController {
   @Post(':taskId/versions')
   async createVersion(
     @Param('taskId') taskId: string,
-    @Body() body: { trigger: 'RUN' | 'SUBMIT' | 'MANUAL' },
+    @Body() body: CreateWorkspaceVersionRequestDTO,
     @Request() req: { user: { id: string } },
   ): Promise<WorkspaceVersionDTO> {
     return this.workspaceService.createVersion(taskId, req.user.id, body.trigger);

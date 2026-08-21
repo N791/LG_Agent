@@ -1,0 +1,67 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: lg-agent-release-window
+  labels:
+    app.kubernetes.io/name: lg-agent
+spec:
+  groups:
+    - name: lg-agent.release-window
+      rules:
+        - alert: LgAgentApi5xxReleaseRegression
+          expr: |
+            (
+              sum(rate(lg_http_requests_total{status=~"5.."}[5m]))
+              /
+              clamp_min(sum(rate(lg_http_requests_total[5m])), 0.001)
+            ) > 0.02
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: LG-Agent API 5xx ratio exceeds 2% in the release window
+        - alert: LgAgentAuthorizationDenialBaselineShift
+          expr: |
+            sum(rate(lg_http_requests_total{status=~"403|404"}[10m]))
+              > 2 * clamp_min(sum(rate(lg_http_requests_total{status=~"403|404"}[1h] offset 1h)), 0.01)
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: Authorization 403/404 rate is more than twice the pre-release baseline
+        - alert: LgAgentAuthorizationResolutionP95High
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum by (le) (rate(lg_authorization_resolution_duration_seconds_bucket[10m]))
+            ) > 0.1
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: Permission resolution P95 exceeds 100ms
+        - alert: LgAgentAuditPersistenceFailure
+          expr: increase(lg_audit_persistence_failures_total[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: A required audit event failed to persist
+        - alert: LgAgentPodRestartDuringRelease
+          expr: |
+            increase(kube_pod_container_status_restarts_total{
+              namespace="lg-agent-prod",
+              container=~"api|admin-web|trainee-web"
+            }[15m]) > 2
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: LG-Agent pods are restarting during the release observation window
+        - alert: LgAgentPermissionRegistryNotReady
+          expr: probe_success{job="lg-agent-registry-readiness"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: /api/v1/health/ready reports a registry version mismatch or database failure

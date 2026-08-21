@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { RootState } from '../store';
 import { logout } from '../store/authSlice';
 import type { MenuProps } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 /**
  * UserMenu dropdown displaying user info and logout action.
@@ -15,6 +16,7 @@ export const UserMenu: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   const handleLogout = () => {
     dispatch(logout());
@@ -26,8 +28,14 @@ export const UserMenu: React.FC = () => {
       key: 'user-info',
       label: (
         <div className="px-1 py-1">
-          <div className="font-semibold text-gray-800">{user?.name ?? 'User'}</div>
-          <div className="text-xs text-gray-500">{user?.role ?? 'TRAINEE'}</div>
+          <div className="font-semibold text-gray-800">
+            {user?.name ?? t('userMenu.defaultUser')}
+          </div>
+          <div className="text-xs text-gray-500">
+            {user?.role === 'TRAINEE'
+              ? t('userMenu.trainee')
+              : (user?.role ?? t('userMenu.trainee'))}
+          </div>
         </div>
       ),
       disabled: true,
@@ -40,7 +48,11 @@ export const UserMenu: React.FC = () => {
       icon: <TeamOutlined />,
       label: (
         <span className="text-gray-600 text-sm">
-          Org: {user?.organizationId ? user.organizationId.substring(0, 8) + '...' : 'N/A'}
+          {t('userMenu.organization', {
+            id: user?.organizationId
+              ? `${user.organizationId.substring(0, 8)}...`
+              : t('userMenu.notAvailable'),
+          })}
         </span>
       ),
       disabled: true,
@@ -50,13 +62,15 @@ export const UserMenu: React.FC = () => {
     },
     {
       key: 'settings',
-      label: 'Settings',
-      onClick: () => { navigate('/settings'); },
+      label: t('userMenu.settings'),
+      onClick: () => {
+        navigate('/settings');
+      },
     },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Sign Out',
+      label: t('userMenu.signOut'),
       danger: true,
       onClick: handleLogout,
     },

@@ -8,18 +8,21 @@ export default defineConfig({
   workers: process.env['CI'] ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5273',
     trace: 'on-first-retry',
   },
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: process.env['CI'] ? undefined : 'chrome',
+      },
     },
   ],
   webServer: {
-    command: 'pnpm run dev',
-    url: 'http://localhost:5173',
+    command: 'node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5273',
+    url: 'http://localhost:5273',
     reuseExistingServer: !process.env['CI'],
     timeout: 120_000,
   },

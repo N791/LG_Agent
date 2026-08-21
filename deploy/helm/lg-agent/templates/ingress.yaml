@@ -33,9 +33,23 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "lg-agent.fullname" $ }}-{{ trimPrefix "lg-agent-" .backend.serviceName }}
+                {{- if eq .component "api" }}
+                name: {{ include "lg-agent.fullname" $ }}-api
+                {{- else if eq .component "adminWeb" }}
+                name: {{ include "lg-agent.fullname" $ }}-admin-web
+                {{- else if eq .component "traineeWeb" }}
+                name: {{ include "lg-agent.fullname" $ }}-trainee-web
+                {{- else }}
+                {{- fail (printf "unsupported ingress component %q" .component) }}
+                {{- end }}
                 port:
-                  number: {{ .backend.servicePort }}
+                  {{- if eq .component "api" }}
+                  number: {{ $.Values.api.service.port }}
+                  {{- else if eq .component "adminWeb" }}
+                  number: {{ $.Values.adminWeb.service.port }}
+                  {{- else }}
+                  number: {{ $.Values.traineeWeb.service.port }}
+                  {{- end }}
           {{- end }}
     {{- end }}
 {{- end }}

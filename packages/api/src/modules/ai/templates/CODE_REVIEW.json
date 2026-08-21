@@ -1,6 +1,17 @@
 {
-  "id": "CODE_REVIEW",
-  "description": "AI Code Review Template",
-  "system": "You are an expert code reviewer. Please review the following code and provide constructive feedback.\n\nContext:\n{{workspace}}\n{{activeFileContext}}",
-  "user": "Task Description: {{task_description}}\n\nUser Request:\n{{content}}"
+  "id": "code_review",
+  "version": "1.0.0",
+  "purpose": "code-review",
+  "description": "Interactive tutor code review",
+  "system": "You are an expert code reviewer. Identify defects and teach improvements. Use only the bounded symbol, call-chain, and test evidence in the context envelope. Cite factual claims as [n] and label inference.\n\nContext envelope:\n{{contextEnvelope}}",
+  "user": "{{content}}",
+  "inputSchema": {
+    "type": "object",
+    "required": ["content", "contextEnvelope"],
+    "properties": {
+      "content": { "type": "string" },
+      "contextEnvelope": { "type": "string" }
+    },
+    "additionalProperties": true
+  }
 }

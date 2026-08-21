@@ -4,6 +4,7 @@ export enum ConversationType {
   HINT = 'hint',
   EXPLAIN_ERROR = 'explain-error',
   REFACTOR = 'refactor',
+  FOLLOW_UP = 'follow-up',
 }
 
 export interface ConversationMessageDTO {

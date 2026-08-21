@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { PERMISSIONS } from '@lg-agent/contracts';
+import { RequirePermission } from '../authorization';
+import { TogglePreferenceRequestDTO } from '@lg-agent/contracts';
 
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
@@ -19,7 +21,7 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Get()
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.NOTIFICATION_READ)
   async list(
     @Request() req: { user: { id: string } },
     @Query('status') status?: string,
@@ -34,56 +36,46 @@ export class NotificationController {
   }
 
   @Get('unread-count')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.NOTIFICATION_READ)
   async getUnreadCount(@Request() req: { user: { id: string } }) {
     const count = await this.notificationService.getUnreadCount(req.user.id);
     return { count };
   }
 
   @Patch(':id/read')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
-  async markAsRead(
-    @Request() req: { user: { id: string } },
-    @Param('id') id: string,
-  ) {
+  @RequirePermission(PERMISSIONS.NOTIFICATION_UPDATE)
+  async markAsRead(@Request() req: { user: { id: string } }, @Param('id') id: string) {
     await this.notificationService.markAsRead(req.user.id, id);
     return { success: true };
   }
 
   @Patch('read-all')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.NOTIFICATION_UPDATE)
   async markAllAsRead(@Request() req: { user: { id: string } }) {
     await this.notificationService.markAllAsRead(req.user.id);
     return { success: true };
   }
 
   @Patch(':id/archive')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
-  async archive(
-    @Request() req: { user: { id: string } },
-    @Param('id') id: string,
-  ) {
+  @RequirePermission(PERMISSIONS.NOTIFICATION_UPDATE)
+  async archive(@Request() req: { user: { id: string } }, @Param('id') id: string) {
     await this.notificationService.archive(req.user.id, id);
     return { success: true };
   }
 
   @Get('preferences')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.NOTIFICATION_READ)
   async getPreferences(@Request() req: { user: { id: string } }) {
     return this.notificationService.getPreferences(req.user.id);
   }
 
   @Put('preferences/:type')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.NOTIFICATION_UPDATE)
   async updatePreference(
     @Request() req: { user: { id: string } },
     @Param('type') type: string,
-    @Body() body: { enabled: boolean },
+    @Body() body: TogglePreferenceRequestDTO,
   ) {
-    return this.notificationService.updatePreference(
-      req.user.id,
-      type,
-      body.enabled,
-    );
+    return this.notificationService.updatePreference(req.user.id, type, body.enabled);
   }
 }

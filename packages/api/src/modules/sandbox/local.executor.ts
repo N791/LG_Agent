@@ -1,45 +1,47 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IExecutor } from './interfaces/executor.interface';
-import { exec } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
+import { execFile } from 'child_process';
 import * as util from 'util';
-import { ExecutionEventDTO, ExecutionEventType, WorkspaceDTO } from '@lg-agent/contracts';
+import {
+  ExecutionEventDTO,
+  ExecutionEventType,
+  SandboxAction,
+  WorkspaceDTO,
+} from '@lg-agent/contracts';
+import { ExecutionWorkspaceService } from './execution-workspace.service';
+import type { RuntimeEnvironmentDTO } from '@lg-agent/contracts';
+import { RuntimeProfileRegistry } from './runtime-profile.registry';
 
-const execPromise = util.promisify(exec);
+const execFilePromise = util.promisify(execFile);
 
 @Injectable()
 export class LocalExecutor implements IExecutor {
   private readonly logger = new Logger(LocalExecutor.name);
 
+  constructor(
+    private readonly executionWorkspaceService: ExecutionWorkspaceService,
+    private readonly runtimeProfiles: RuntimeProfileRegistry,
+  ) {}
+
   async *execute(
-    taskId: string,
-    userId: string,
+    _taskId: string,
+    _userId: string,
     workspaceDto: WorkspaceDTO,
-    config: { testScript?: string; env?: { node?: boolean } },
+    config: {
+      testScript?: string | null;
+      env?: { node?: boolean } | null;
+      action?: SandboxAction;
+      executionId?: string;
+      runtime?: Partial<RuntimeEnvironmentDTO> | null;
+      queuedAtMs?: number;
+    },
   ): AsyncGenerator<ExecutionEventDTO, void, unknown> {
-    const workspaceId = `ws_${userId}_${taskId}_${Date.now().toString()}`;
-    const workspacePath = path.join(process.cwd(), 'temp_workspaces', workspaceId);
+    const executionWorkspace = this.executionWorkspaceService.createExecutionWorkspace();
 
     try {
-      // 1. Create Workspace
-      fs.mkdirSync(workspacePath, { recursive: true });
-
-      // 2. Write User Code
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (workspaceDto.workspace.files) {
-        for (const file of workspaceDto.workspace.files) {
-          const filePath = path.join(workspacePath, file.path);
-          const dir = path.dirname(filePath);
-          if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-          }
-          fs.writeFileSync(
-            filePath,
-            file.content,
-            (file.encoding as BufferEncoding | undefined) ?? 'utf-8',
-          );
-        }
+      this.executionWorkspaceService.stageAuthoringWorkspace(executionWorkspace, workspaceDto);
+      if (config.testScript) {
+        this.executionWorkspaceService.writeFile(executionWorkspace, 'test.js', config.testScript);
       }
 
       yield {
@@ -48,29 +50,36 @@ export class LocalExecutor implements IExecutor {
         message: 'Sandbox environment starting...',
       };
 
-      // 3. Write Test Code (if any provided in config)
-      let testFile = '';
-      if (config.testScript) {
-        testFile = path.join(workspacePath, 'test.js');
-        fs.writeFileSync(testFile, config.testScript);
-      }
+      const action = config.action ?? 'run';
+      const entryPoint = this.executionWorkspaceService.validateEntryPoint(
+        config.testScript
+          ? 'test.js'
+          : (config.runtime?.entry ?? workspaceDto.workspace.entry ?? 'index.js'),
+      );
+      const resolved = this.runtimeProfiles.resolve(
+        config.runtime ?? workspaceDto.workspace.runtime,
+        action,
+        entryPoint,
+      );
+      this.executionWorkspaceService.assertActionInputs(workspaceDto, action, resolved.environment);
 
-      // 4. Execute via child_process
-      let cmd = `node index.js`;
-      if (testFile) {
-        cmd = `node test.js`;
-      } else if (workspaceDto.workspace.entry) {
-        cmd = `node ${workspaceDto.workspace.entry}`;
-      }
+      this.logger.warn(
+        `Local executor is for development/test only; starting ${executionWorkspace.executionWorkspaceId}`,
+      );
 
-      this.logger.log(`Execution starting in ${workspaceId}`);
+      const { stdout, stderr } = await execFilePromise(
+        resolved.command.executable,
+        resolved.command.args,
+        {
+          cwd: resolved.command.workdir
+            ? `${executionWorkspace.path}/${resolved.command.workdir}`
+            : executionWorkspace.path,
+          env: { ...process.env, ...resolved.command.env },
+          timeout: 5000,
+        },
+      );
 
-      const { stdout, stderr } = await execPromise(cmd, {
-        cwd: workspacePath,
-        timeout: 5000,
-      });
-
-      this.logger.log(`Execution success in ${workspaceId}`);
+      this.logger.log(`Execution success in ${executionWorkspace.executionWorkspaceId}`);
 
       if (stdout) {
         yield {
@@ -99,7 +108,10 @@ export class LocalExecutor implements IExecutor {
         stderr?: Buffer | string;
         message: string;
       };
-      this.logger.error(`Execution failed in ${workspaceId}`, execError.message);
+      this.logger.error(
+        `Execution failed in ${executionWorkspace.executionWorkspaceId}`,
+        execError.message,
+      );
 
       if (execError.stdout) {
         yield {
@@ -123,10 +135,7 @@ export class LocalExecutor implements IExecutor {
         timestamp: new Date().toISOString(),
       };
     } finally {
-      // Clean up workspace
-      if (fs.existsSync(workspacePath)) {
-        fs.rmSync(workspacePath, { recursive: true, force: true });
-      }
+      this.executionWorkspaceService.cleanupExecutionWorkspace(executionWorkspace);
       yield {
         type: ExecutionEventType.COMPLETE,
         timestamp: new Date().toISOString(),

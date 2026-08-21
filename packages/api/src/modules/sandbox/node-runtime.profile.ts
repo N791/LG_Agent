@@ -1,22 +1,30 @@
+import {
+  SandboxRuntimeErrorCode,
+  type RuntimeCommandDTO,
+  type SandboxAction,
+} from '@lg-agent/contracts';
 import { IRuntimeProfile } from './interfaces/runtime-profile.interface';
 
 export class NodeRuntimeProfile implements IRuntimeProfile {
-  getBuildCmd(): string {
-    return 'npm install --no-audit --no-fund && npm run build --if-present';
-  }
+  readonly language = 'node' as const;
+  readonly runtime = 'node';
+  readonly versions = ['20'] as const;
+  readonly allowedExecutables = ['node', 'npm', 'npx'] as const;
+  readonly defaultVersion = '20';
+  readonly defaultEntry = 'index.js';
 
-  getLintCmd(): string {
-    return 'npm install --no-audit --no-fund && npm run lint --if-present';
-  }
-
-  getTestCmd(): string {
-    return 'npm install --no-audit --no-fund && npm run test --if-present';
-  }
-
-  getRunCmd(entryPoint = 'index.js'): string {
-    if (entryPoint.endsWith('.ts')) {
-      return `npm install --no-audit --no-fund && npx -y tsx ${entryPoint}`;
+  command(action: SandboxAction, entryPoint: string): RuntimeCommandDTO {
+    if (action === 'run') {
+      if (/\.(?:ts|mts|cts)$/.test(entryPoint)) {
+        throw new Error(
+          `${SandboxRuntimeErrorCode.TYPESCRIPT_RUNNER_UNAVAILABLE}: Node 20 cannot execute TypeScript without a pinned task runner.`,
+        );
+      }
+      return {
+        executable: 'node',
+        args: [entryPoint],
+      };
     }
-    return `npm install --no-audit --no-fund && node ${entryPoint}`;
+    return { executable: 'npm', args: ['run', action] };
   }
 }

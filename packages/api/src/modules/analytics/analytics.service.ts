@@ -1,33 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
 
 @Injectable()
 export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getRampUpFunnel(courseId?: string) {
+  async getRampUpFunnel(actor: TenantActor, courseId?: string) {
     // Determine the tasks in order of stage
     const tasks = await this.prisma.task.findMany({
-      where: courseId ? { courseId } : undefined,
+      where: {
+        ...(courseId ? { courseId } : {}),
+        course: { organizationId: actor.organizationId },
+      },
       orderBy: { stage: 'asc' },
       select: { id: true, stage: true, title: true },
     });
 
     if (!tasks.length) return [];
 
+    const passed = await this.prisma.submission.groupBy({
+      by: ['taskId'],
+      where: {
+        taskId: { in: tasks.map(({ id }) => id) },
+        status: 'PASSED',
+        user: { organizationId: actor.organizationId },
+      },
+      _count: { id: true },
+    });
+    const passedByTask = new Map(passed.map((entry) => [entry.taskId, entry._count.id]));
     const funnel = [];
     let previousCount = 0;
 
     for (let i = 0; i < tasks.length; i++) {
       const task = tasks[i];
       if (!task) continue;
-      // Count how many users have a PASSED submission for this task
-      const passedCount = await this.prisma.submission.count({
-        where: {
-          taskId: task.id,
-          status: 'PASSED',
-        },
-      });
+      const passedCount = passedByTask.get(task.id) ?? 0;
 
       const dropOff = i === 0 ? 0 : previousCount - passedCount;
       const conversionRate =
@@ -47,12 +55,17 @@ export class AnalyticsService {
     return funnel;
   }
 
-  async getTopBottlenecks(courseId?: string) {
+  async getTopBottlenecks(actor: TenantActor, courseId?: string) {
+    const taskScope = {
+      ...(courseId ? { courseId } : {}),
+      course: { organizationId: actor.organizationId },
+    };
     // Find tasks with the highest failure rates (FAILED submissions)
     const stats = await this.prisma.submission.groupBy({
       by: ['taskId'],
       where: {
-        task: courseId ? { courseId } : undefined,
+        task: taskScope,
+        user: { organizationId: actor.organizationId },
       },
       _count: {
         id: true,
@@ -62,7 +75,8 @@ export class AnalyticsService {
     const failedStats = await this.prisma.submission.groupBy({
       by: ['taskId'],
       where: {
-        task: courseId ? { courseId } : undefined,
+        task: taskScope,
+        user: { organizationId: actor.organizationId },
         status: 'FAILED',
       },
       _count: {
@@ -71,7 +85,7 @@ export class AnalyticsService {
     });
 
     const tasks = await this.prisma.task.findMany({
-      where: courseId ? { courseId } : undefined,
+      where: taskScope,
       select: { id: true, title: true },
     });
     const taskMap = new Map(tasks.map((t) => [t.id, t.title]));
@@ -95,12 +109,14 @@ export class AnalyticsService {
     return bottlenecks.sort((a, b) => parseFloat(b.failRate) - parseFloat(a.failRate)).slice(0, 10);
   }
 
-  async getPerformanceStats(_courseId?: string) {
+  async getPerformanceStats(actor: TenantActor, _courseId?: string) {
     // Mock performance stats for MVP
     return {
       averageCompletionTimeDays: 14.5,
       overallPassRate: '78%',
-      activeTrainees: await this.prisma.user.count({ where: { role: 'TRAINEE' } }),
+      activeTrainees: await this.prisma.user.count({
+        where: { role: 'TRAINEE', organizationId: actor.organizationId },
+      }),
     };
   }
 }

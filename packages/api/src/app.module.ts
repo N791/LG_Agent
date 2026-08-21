@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './common/prisma.module';
@@ -14,8 +14,9 @@ import { SandboxModule } from './modules/sandbox/sandbox.module';
 import { TrainingModule } from './modules/training/training.module';
 import { AiModule } from './modules/ai/ai.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
-import { RolesGuard } from './modules/auth/guards/roles.guard';
+import { AuthorizationModule, PermissionGuard } from './modules/authorization';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { HttpReleaseMetricsInterceptor } from './common/interceptors/http-release-metrics.interceptor';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 import { SchemasModule } from './modules/schemas/schemas.module';
 import { SubmissionsModule } from './modules/submissions/submissions.module';
@@ -33,6 +34,12 @@ import { DiscussionsModule } from './modules/discussions/discussions.module';
 import { SystemConfigModule } from './modules/platform/config/config.module';
 import { I18nModule, AcceptLanguageResolver, HeaderResolver } from 'nestjs-i18n';
 import * as path from 'path';
+import { AuthConfigModule } from './modules/auth/auth-config.module';
+import { TenantSecurityModule } from './common/tenant/tenant-security.module';
+import { DataLifecycleModule } from './modules/data-lifecycle/data-lifecycle.module';
+import { MobileModule } from './modules/mobile';
+import { ApiExceptionFilter } from './common/filters/api-exception.filter';
+import './common/contract-metadata';
 
 @Module({
   imports: [
@@ -60,12 +67,17 @@ import * as path from 'path';
         path: path.join(__dirname, '/i18n/'),
         watch: true,
       },
-      resolvers: [new HeaderResolver(['x-custom-lang', 'accept-language']), AcceptLanguageResolver],
+      resolvers: [new HeaderResolver(['x-custom-lang']), AcceptLanguageResolver],
     }),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: [path.resolve(process.cwd(), '.env'), path.resolve(__dirname, '../../../.env')],
       validationSchema: configValidationSchema,
     }),
+    AuthConfigModule,
+    TenantSecurityModule,
+    DataLifecycleModule,
+    MobileModule,
     PrismaModule,
     OrganizationsModule,
     UsersModule,
@@ -75,6 +87,7 @@ import * as path from 'path';
     SystemConfigModule,
     TrainingModule,
     AuthModule,
+    AuthorizationModule,
     AiModule,
     StatisticsModule,
     SchemasModule,
@@ -96,11 +109,19 @@ import * as path from 'path';
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useClass: PermissionGuard,
     },
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HttpReleaseMetricsInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ApiExceptionFilter,
     },
   ],
 })

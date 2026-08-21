@@ -7,5 +7,11 @@
   "success": "成功",
   "error": "错误",
   "loading": "加载中...",
-  "confirm": "确定"
+  "confirm": "确定",
+  "unknown": "未知",
+  "system": "系统",
+  "consoleTitle": "LG Agent 管理控制台",
+  "getStarted": "开始使用",
+  "requestFailed": "请求失败",
+  "networkError": "网络错误"
 }

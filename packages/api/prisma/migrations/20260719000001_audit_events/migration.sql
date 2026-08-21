@@ -1,3 +1,7 @@
+DO $migration$
+BEGIN
+IF to_regclass('public.audit_events') IS NULL THEN
+
 -- CreateTable
 CREATE TABLE "audit_events" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -24,3 +28,7 @@ CREATE INDEX "audit_events_created_at_idx" ON "audit_events"("created_at");
 
 -- AddForeignKey
 ALTER TABLE "audit_events" ADD CONSTRAINT "audit_events_actor_id_fkey" FOREIGN KEY ("actor_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+END IF;
+END;
+$migration$;

@@ -1,0 +1,80 @@
+{{- if and .Values.api.enabled .Values.release.runMigration }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "lg-agent.fullname" . }}-migration
+  labels:
+    {{- include "lg-agent.componentLabels" (dict "root" . "component" "migration") | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: 0
+  completions: 1
+  parallelism: 1
+  activeDeadlineSeconds: {{ .Values.release.hookTimeoutSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "lg-agent.componentLabels" (dict "root" . "component" "migration") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      {{- include "lg-agent.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrate-and-reconcile
+          image: "{{ required "api.image.repository is required" .Values.api.image.repository }}:{{ include "lg-agent.imageTag" (dict "root" . "image" .Values.api.image) }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          envFrom:
+            - secretRef:
+                name: {{ include "lg-agent.secretName" . }}
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.global.env | quote }}
+            - name: RELEASE_VERSION
+              value: {{ .Values.global.releaseVersion | quote }}
+            - name: LLM_PROVIDER
+              value: {{ .Values.api.env.LLM_PROVIDER | quote }}
+            - name: SANDBOX_EXECUTOR
+              value: {{ .Values.api.env.SANDBOX_EXECUTOR | quote }}
+            - name: REQUIRED_DEPLOYMENT_ENV
+              {{- if eq .Values.api.env.LLM_PROVIDER "deepseek" }}
+              value: >-
+                DATABASE_URL,JWT_SECRET,REDIS_URL,MINIO_ENDPOINT,
+                MINIO_ACCESS_KEY,MINIO_SECRET_KEY,DEEPSEEK_API_KEY,
+                SANDBOX_IMAGE_PULL_SECRET
+              {{- else }}
+              value: >-
+                DATABASE_URL,JWT_SECRET,REDIS_URL,MINIO_ENDPOINT,
+                MINIO_ACCESS_KEY,MINIO_SECRET_KEY,OPENAI_API_KEY,
+                SANDBOX_IMAGE_PULL_SECRET
+              {{- end }}
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              node packages/api/dist/release/validate-deployment-env.js
+              node packages/api/node_modules/prisma/build/index.js migrate status \
+                --schema packages/api/prisma/schema.prisma \
+                || echo "Migration status reports pending changes; migrate deploy will resolve them."
+              node packages/api/node_modules/prisma/build/index.js migrate deploy \
+                --schema packages/api/prisma/schema.prisma
+              node packages/api/dist/release/verify-deployment-database.js migrations
+              node packages/api/dist/release/reconcile-authorization.js
+              node packages/api/dist/release/verify-deployment-database.js registry
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+{{- end }}

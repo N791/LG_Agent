@@ -1,36 +1,50 @@
-# 数据备份与恢复 (Backup & Restore)
+# 数据备份与恢复
 
-为了保障业务的连续性，平台管理员必须配置可靠的数据备份策略。LG-Agent 的核心状态保存在 PostgreSQL 和 MinIO（对象存储）中。
+## PostgreSQL
 
-## 1. PostgreSQL 备份策略
+PostgreSQL 是主要 durable source，必须覆盖：
 
-核心业务数据（用户、组织架构、任务、学习报告及 AI 交互日志）均存储在 PostgreSQL 中。
+- Organization/User/Course/Task；
+- Authoring Workspace 文件与版本；
+- Submission、ExecutionEvent、租约与日志；
+- permission registry、role、audit；
+- conversation、AI audit、文档/代码检索索引与 trace。
 
-### 备份方案
+建议至少保留 7 个日备、4 个周备、12 个月备；需要分钟级 RPO 时启用 base backup + WAL/PITR。具体保留必须匹配法规、数据生命周期与成本政策。
 
-由于 LG-Agent 依赖云原生基础设施，建议利用云提供商的托管服务能力：
+### 隔离恢复演练
 
-- **RDS 自动备份**: 开启自动增量备份与全量快照，保留周期建议至少 30 天。
-- **冷备份 (自行管理)**: 如果在自建 Kubernetes 中运行 PostgreSQL，推荐使用 **pgBackRest** 或 **Velero** 等工具将数据库快照导出到冷存储 S3 中。
+```bash
+pg_dump -Fc "$DATABASE_URL" -f lg-agent.dump
+createdb lg_agent_restore_drill
+pg_restore --exit-on-error -d lg_agent_restore_drill lg-agent.dump
+psql -d lg_agent_restore_drill -c 'SELECT count(*) FROM _prisma_migrations'
+```
 
-### 数据恢复 (Disaster Recovery)
+恢复到新实例后验证：
 
-在遇到误删数据或硬件故障时：
+- `_prisma_migrations` 与关键 Submission 约束；
+- pgvector extension；
+- permission registry/role/member 的 Organization 一致性；
+- document/code retrieval 表与抽样 evidence；
+- Workspace、Submission、AuditEvent 抽样记录。
 
-1. 从快照中恢复出新的 RDS 实例。
-2. 更新 Kubernetes 集群中存放 `DATABASE_URL` 的 Secret。
-3. 重启所有的 `@lg-agent/api` Pods 以使新的数据库连接生效。
+CI 会做逻辑备份/恢复和检索 artifact checksum，但这不是生产恢复演练。生产至少每季度演练，记录备份点、实际 RPO、从恢复到 smoke 通过的 RTO、校验结果与负责人。发布必须引用最近成功记录 `BACKUP_VERIFICATION_ID`。
 
-## 2. MinIO (S3) 备份策略
+## 对象存储
 
-MinIO 中存储了大型的非结构化数据，例如导师上传的课程知识库文件 (RAG PDF/Markdown)、学员提交的代码快照，以及可能的日志归档。
+MinIO/S3 是部署 Secret 契约和未来归档/对象 adapter 的位置，但当前核心 Workspace、Submission 与检索元数据主要在 PostgreSQL；不要假定“备份 bucket 即完成平台备份”。
 
-### 备份方案
+若环境启用了对象存储 adapter，应开启 versioning/immutable retention，并备份 bucket policy、object version、checksum 和数据库引用。恢复顺序是对象到新 bucket → checksum → 数据库到新实例 → 引用一致性 → smoke。
 
-- **异地灾备同步**: 使用 MinIO 的多站点复制 (Multi-Site Replication) 功能，或者利用 `mc mirror` 命令每天定时将主集群的桶 (Buckets) 镜像到廉价的冰川存储 (Glacier) 或另一个可用区的对象存储中。
-- **版本控制 (Versioning)**: 建议在存放 RAG 知识库的 Bucket 上开启版本控制，防止导师误覆盖文件。
+## Redis
 
-## 3. Redis 说明
+Redis 当前不是 session、JWT blacklist 或业务 durable source。可按平台缓存策略备份，但灾难恢复应允许清空/重建，不能用 Redis 备份替代 PostgreSQL 恢复。
 
-- Redis 仅用于短期的缓存（如会话状态、速率限制计数器、JWT 黑名单）。
-- **不需要备份**: 平台被设计为可以容忍 Redis 数据的丢失。如果 Redis 重启或清空，影响仅限于所有的登录会话失效（要求用户重新登录），不会造成永久性数据损坏。
+## 故障恢复原则
+
+常规应用回滚不恢复数据库，也不执行 destructive down migration。仅在确认数据损坏并双人批准后切换至新恢复实例；禁止覆盖原实例。保存 DNS/Secret 切换、回切方案和审计记录。
+
+## Starter Workspace 对账恢复
+
+Sprint 19 的 Starter Workspace 对账只允许精确占位指纹。执行前保存 dry-run JSON；执行时系统为每个目标 Workspace 创建 `trigger=RECONCILE` 的旧文件快照并写入旧/新 hash 审计。若需撤回，按精确 workspace/version 恢复该快照，不删除 Submission、Discussion 或其他 WorkspaceVersion，也不得通过数据库批量写入覆盖未知内容。

@@ -43,7 +43,7 @@ export const Dashboard: React.FC = () => {
         setStats(statsData);
         setRecent(recentData);
       } catch (err) {
-        setError(t('errors.loadFailed', 'Failed to load dashboard data.'));
+        setError(t('errors.loadFailed'));
         console.error(err);
       } finally {
         setLoading(false);
@@ -71,7 +71,7 @@ export const Dashboard: React.FC = () => {
         <div className="flex-1 flex items-center justify-center">
           <Result
             status="500"
-            title={t('errors.oops', 'Oops, something went wrong!')}
+            title={t('errors.oops')}
             subTitle={error}
             extra={
               <Button
@@ -80,7 +80,7 @@ export const Dashboard: React.FC = () => {
                   window.location.reload();
                 }}
               >
-                {t('errors.tryAgain', 'Try Again')}
+                {t('errors.tryAgain')}
               </Button>
             }
           />
@@ -97,11 +97,9 @@ export const Dashboard: React.FC = () => {
         {/* Welcome Section */}
         <div>
           <Title level={2} className="!mb-1">
-            {t('welcomeTitle', 'Welcome back, Learner!')}
+            {t('welcomeTitle')}
           </Title>
-          <Text className="text-gray-500 text-lg">
-            {t('welcomeSubtitle', 'Pick up where you left off or start a new adventure.')}
-          </Text>
+          <Text className="text-gray-500 text-lg">{t('welcomeSubtitle')}</Text>
         </div>
 
         {/* Global Statistics */}
@@ -114,9 +112,7 @@ export const Dashboard: React.FC = () => {
                     <TrophyOutlined className="text-xl" />
                   </div>
                   <div>
-                    <Text className="text-gray-400 text-xs block">
-                      {t('stats.totalPoints', 'Total Points')}
-                    </Text>
+                    <Text className="text-gray-400 text-xs block">{t('stats.totalPoints')}</Text>
                     <Text className="text-2xl font-bold text-gray-800">{stats.totalPoints}</Text>
                   </div>
                 </div>
@@ -129,9 +125,7 @@ export const Dashboard: React.FC = () => {
                     <CheckCircleOutlined className="text-xl" />
                   </div>
                   <div>
-                    <Text className="text-gray-400 text-xs block">
-                      {t('stats.successRate', 'Success Rate')}
-                    </Text>
+                    <Text className="text-gray-400 text-xs block">{t('stats.successRate')}</Text>
                     <Text className="text-2xl font-bold text-gray-800">{stats.successRate}%</Text>
                   </div>
                 </div>
@@ -144,9 +138,7 @@ export const Dashboard: React.FC = () => {
                     <ThunderboltOutlined className="text-xl" />
                   </div>
                   <div>
-                    <Text className="text-gray-400 text-xs block">
-                      {t('stats.aiUsage', 'AI Usage')}
-                    </Text>
+                    <Text className="text-gray-400 text-xs block">{t('stats.aiUsage')}</Text>
                     <Text className="text-2xl font-bold text-gray-800">{stats.aiUsage}</Text>
                   </div>
                 </div>
@@ -159,9 +151,7 @@ export const Dashboard: React.FC = () => {
                     <CalendarOutlined className="text-xl" />
                   </div>
                   <div>
-                    <Text className="text-gray-400 text-xs block">
-                      {t('stats.activeDays', 'Active Days')}
-                    </Text>
+                    <Text className="text-gray-400 text-xs block">{t('stats.activeDays')}</Text>
                     <Text className="text-2xl font-bold text-gray-800">{stats.activeDays}</Text>
                   </div>
                 </div>
@@ -175,7 +165,7 @@ export const Dashboard: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex justify-between items-end">
               <Title level={4} className="!mb-0">
-                <BookOutlined className="mr-2" /> {t('courses.title', 'My Courses')}
+                <BookOutlined className="mr-2" /> {t('courses.title')}
               </Title>
             </div>
 
@@ -196,27 +186,26 @@ export const Dashboard: React.FC = () => {
                       {course.title}
                     </Text>
                     {course.status === 'COMPLETED' && (
-                      <Tag color="green">{t('courses.status.completed', 'Completed')}</Tag>
+                      <Tag color="green">{t('courses.status.completed')}</Tag>
                     )}
                     {course.status === 'ENROLLED' && (
-                      <Tag color="blue">{t('courses.status.inProgress', 'In Progress')}</Tag>
+                      <Tag color="blue">{t('courses.status.inProgress')}</Tag>
                     )}
                     {course.status === 'AVAILABLE' && (
-                      <Tag color="default">{t('courses.status.available', 'Available')}</Tag>
+                      <Tag color="default">{t('courses.status.available')}</Tag>
                     )}
                     {course.status === 'LOCKED' && (
-                      <Tag color="red">{t('courses.status.locked', 'Locked')}</Tag>
+                      <Tag color="red">{t('courses.status.locked')}</Tag>
                     )}
                   </div>
                   <Paragraph className="text-gray-500 text-sm h-10 overflow-hidden line-clamp-2 mb-4">
-                    {course.description ||
-                      t('courses.noDescription', 'No description available for this course.')}
+                    {course.description || t('courses.noDescription')}
                   </Paragraph>
 
                   {course.status !== 'LOCKED' ? (
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs text-gray-500">
-                        <span>{t('courses.progress', 'Progress')}</span>
+                        <span>{t('courses.progress')}</span>
                         <span>{course.progressPercentage}%</span>
                       </div>
                       <Progress
@@ -228,10 +217,7 @@ export const Dashboard: React.FC = () => {
                     </div>
                   ) : (
                     <div className="pt-2 text-xs text-red-500 font-medium">
-                      {t('courses.requiresPoints', {
-                        points: course.requiredPoints,
-                        defaultValue: `Requires ${String(course.requiredPoints)} points to unlock`,
-                      })}
+                      {t('courses.requiresPoints', { points: course.requiredPoints })}
                     </div>
                   )}
                 </Card>
@@ -242,22 +228,25 @@ export const Dashboard: React.FC = () => {
           {/* Sidebar: Recent Activity */}
           <div className="space-y-6">
             <Title level={4} className="!mb-0">
-              <HistoryOutlined className="mr-2" /> {t('recent.title', 'Recent Activity')}
+              <HistoryOutlined className="mr-2" /> {t('recent.title')}
             </Title>
             {recent ? (
               <Card className="shadow-sm border-blue-100 bg-blue-50/30">
                 <Text className="text-xs text-blue-500 uppercase font-bold tracking-wider mb-2 block">
-                  {t('recent.resumeLearning', 'Resume Learning')}
+                  {t('recent.resumeLearning')}
                 </Text>
                 <Title level={5} className="!mt-0 !mb-1">
                   {recent.taskTitle}
                 </Title>
                 <Text className="text-gray-500 text-sm block mb-4">
-                  {t('recent.lastActive', 'Last active:')}{' '}
-                  {new Date(recent.lastAccessTime).toLocaleDateString()} at{' '}
-                  {new Date(recent.lastAccessTime).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
+                  {t('recent.lastActive', {
+                    time: new Intl.DateTimeFormat('zh-CN', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }).format(new Date(recent.lastAccessTime)),
                   })}
                 </Text>
                 <Button
@@ -268,18 +257,14 @@ export const Dashboard: React.FC = () => {
                     navigate(`/course/${recent.courseId}/workspace/${recent.taskId}`);
                   }}
                 >
-                  {t('recent.continueWorkspace', 'Continue Workspace')}
+                  {t('recent.continueWorkspace')}
                 </Button>
               </Card>
             ) : (
               <Card className="shadow-sm bg-gray-50 border-gray-100 text-center py-6">
-                <Text className="text-gray-400">
-                  {t('recent.noActivity', 'No recent activity found.')}
-                </Text>
+                <Text className="text-gray-400">{t('recent.noActivity')}</Text>
                 <br />
-                <Text className="text-gray-400 text-sm">
-                  {t('recent.startCourse', 'Start a course to see your progress here.')}
-                </Text>
+                <Text className="text-gray-400 text-sm">{t('recent.startCourse')}</Text>
               </Card>
             )}
           </div>

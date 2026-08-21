@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { SCHEMA_IDS } from '@lg-agent/contracts';
 import { IChangeEvent } from '@rjsf/core';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Tabs, Button, message, Layout, Typography, Spin, Space } from 'antd';
@@ -7,6 +8,7 @@ import { JsonSchemaEditor } from '../../components/common/JsonSchemaEditor';
 import { PromptEditor } from '../../components/TaskEditor/PromptEditor';
 import { tasksService } from '../../services/tasks';
 import { Task } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 const { Content, Header } = Layout;
 const { Title } = Typography;
@@ -14,6 +16,7 @@ const { Title } = Typography;
 export const TaskEditorPage: React.FC = () => {
   const { courseId, taskId } = useParams<{ courseId: string; taskId: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation('admin');
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -37,7 +40,7 @@ export const TaskEditorPage: React.FC = () => {
         setTestConfig(data.testConfig);
         setPromptConfig(data.promptConfig);
       } catch (_error) {
-        void message.error('Failed to load task details');
+        void message.error(t('taskEditor.loadFailed'));
       } finally {
         setLoading(false);
       }
@@ -56,9 +59,9 @@ export const TaskEditorPage: React.FC = () => {
         testConfig,
         promptConfig,
       });
-      void message.success('Task saved successfully');
+      void message.success(t('taskEditor.saveSuccess'));
     } catch (_error) {
-      void message.error('Failed to save task');
+      void message.error(t('taskEditor.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -73,16 +76,16 @@ export const TaskEditorPage: React.FC = () => {
   }
 
   if (!task) {
-    return <div>Task not found</div>;
+    return <div>{t('taskEditor.notFound')}</div>;
   }
 
   const items = [
     {
       key: '1',
-      label: 'Basic Info',
+      label: t('taskEditor.basicInfo'),
       children: (
         <div style={{ padding: '24px 0' }}>
-          <Title level={5}>Task Description</Title>
+          <Title level={5}>{t('taskEditor.description')}</Title>
           <MarkdownEditor
             value={description}
             onChange={(val) => {
@@ -94,30 +97,30 @@ export const TaskEditorPage: React.FC = () => {
     },
     {
       key: '2',
-      label: 'Environment & Sandbox',
+      label: t('taskEditor.environmentSandbox'),
       children: (
         <div style={{ padding: '24px 0' }}>
-          <Title level={5}>Environment Config</Title>
+          <Title level={5}>{t('taskEditor.environmentConfig')}</Title>
           <JsonSchemaEditor
-            schemaName="lg-agent:schema:env"
+            schemaName={SCHEMA_IDS.env}
             formData={envConfig}
             onChange={(e: IChangeEvent<Record<string, unknown>>) => {
               if (e.formData) setEnvConfig(e.formData);
             }}
             onSubmit={() => {
-              void message.success('Env config valid');
+              void message.success(t('taskEditor.environmentValid'));
             }}
           />
           <div style={{ marginTop: 24 }} />
-          <Title level={5}>Sandbox Config</Title>
+          <Title level={5}>{t('taskEditor.sandboxConfig')}</Title>
           <JsonSchemaEditor
-            schemaName="lg-agent:schema:sandbox"
+            schemaName={SCHEMA_IDS.sandbox}
             formData={sandboxConfig}
             onChange={(e: IChangeEvent<Record<string, unknown>>) => {
               if (e.formData) setSandboxConfig(e.formData);
             }}
             onSubmit={() => {
-              void message.success('Sandbox config valid');
+              void message.success(t('taskEditor.sandboxValid'));
             }}
           />
         </div>
@@ -125,18 +128,18 @@ export const TaskEditorPage: React.FC = () => {
     },
     {
       key: '3',
-      label: 'Testing',
+      label: t('taskEditor.testing'),
       children: (
         <div style={{ padding: '24px 0' }}>
-          <Title level={5}>Test Config</Title>
+          <Title level={5}>{t('taskEditor.testConfig')}</Title>
           <JsonSchemaEditor
-            schemaName="lg-agent:schema:test"
+            schemaName={SCHEMA_IDS.test}
             formData={testConfig}
             onChange={(e: IChangeEvent<Record<string, unknown>>) => {
               if (e.formData) setTestConfig(e.formData);
             }}
             onSubmit={() => {
-              void message.success('Test config valid');
+              void message.success(t('taskEditor.testValid'));
             }}
           />
         </div>
@@ -144,7 +147,7 @@ export const TaskEditorPage: React.FC = () => {
     },
     {
       key: '4',
-      label: 'AI Prompt',
+      label: t('taskEditor.aiPrompt'),
       children: (
         <div style={{ padding: '24px 0' }}>
           <PromptEditor value={promptConfig} onChange={setPromptConfig} />
@@ -165,7 +168,7 @@ export const TaskEditorPage: React.FC = () => {
         }}
       >
         <Title level={3} style={{ margin: 0 }}>
-          Edit Task: {task.title}
+          {t('taskEditor.editTitle', { title: task.title })}
         </Title>
         <Space>
           <Button
@@ -173,10 +176,10 @@ export const TaskEditorPage: React.FC = () => {
               navigate(`/courses/${courseId ?? ''}/tasks`);
             }}
           >
-            Cancel
+            {t('taskEditor.cancel')}
           </Button>
           <Button type="primary" loading={saving} onClick={() => void handleSave()}>
-            Save Changes
+            {t('taskEditor.saveChanges')}
           </Button>
         </Space>
       </Header>

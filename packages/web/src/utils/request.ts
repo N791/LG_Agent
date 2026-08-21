@@ -2,6 +2,7 @@ import axios from 'axios';
 import { message } from 'antd';
 import { store } from '../store';
 import { clearAuth } from '../store/slices/authSlice';
+import i18n from '../i18n';
 
 const request = axios.create({
   baseURL: '/api/v1',
@@ -27,8 +28,8 @@ request.interceptors.response.use(
       data,
     } = response.data as { code: number; message?: string; data: unknown };
     if (code !== 200 && code !== 201) {
-      message.error(msg ?? 'Request failed');
-      return Promise.reject(new Error(msg ?? 'Error'));
+      message.error(msg ?? i18n.t('common:requestFailed'));
+      return Promise.reject(new Error(msg ?? i18n.t('common:error')));
     }
     /*
       Temporary Workaround
@@ -47,7 +48,7 @@ request.interceptors.response.use(
         window.location.href = '/login';
       }
     } else if (error.response?.status !== 403) {
-      void message.error(error.response?.data.message ?? 'Network Error');
+      void message.error(error.response?.data.message ?? i18n.t('common:networkError'));
     }
     return Promise.reject(error instanceof Error ? error : new Error(String(error)));
   },

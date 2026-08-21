@@ -49,6 +49,19 @@
     "unsupportedAction": "不支持的操作: {{action}}",
     "actionRequired": "action 和 content 不能为空"
   },
+  "authorization": {
+    "permissionDenied": "你没有执行此操作的权限。",
+    "permissionDeclarationMissing": "此接口尚未声明授权策略。",
+    "roleNameRequired": "角色名称不能为空。",
+    "roleNotFound": "未找到角色。",
+    "memberNotFound": "一个或多个成员不属于当前组织。",
+    "systemRoleImmutable": "内置角色不可修改，请先复制角色。",
+    "unknownPermission": "请求包含未知权限。",
+    "platformPermissionForbidden": "组织角色不能获得平台级权限。",
+    "platformRoleAssignmentForbidden": "组织管理员不能分配平台级角色。",
+    "registryNotSynchronized": "权限注册表尚未同步。",
+    "confirmationMismatch": "请输入角色名称以确认此高风险变更。"
+  },
   "sandbox": {
     "executionNotFound": "找不到执行记录 {{id}}，或已完成。"
   }

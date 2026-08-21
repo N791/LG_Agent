@@ -8,6 +8,8 @@ import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { NotificationDTO } from '@lg-agent/contracts';
 import * as jwt from 'jsonwebtoken';
+import { Inject } from '@nestjs/common';
+import { AUTH_CONFIG, type AuthConfig } from '../auth/auth-config.module';
 
 @WebSocketGateway({
   namespace: '/notifications',
@@ -16,6 +18,7 @@ import * as jwt from 'jsonwebtoken';
   },
 })
 export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(@Inject(AUTH_CONFIG) private readonly authConfig: AuthConfig) {}
   @WebSocketServer()
   server!: Server;
 
@@ -31,8 +34,13 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
         return;
       }
 
-      const secret = process.env['JWT_SECRET'] ?? 'default-secret';
-      const decoded = jwt.verify(token, secret) as { sub: string };
+      const decoded = jwt.verify(token, this.authConfig.secret, {
+        algorithms: [this.authConfig.algorithm],
+      }) as { sub: string; tokenType?: string; mustChangePassword?: boolean };
+      if (decoded.tokenType !== 'access' || decoded.mustChangePassword) {
+        client.disconnect();
+        return;
+      }
       const userId = decoded.sub;
 
       if (!userId) {

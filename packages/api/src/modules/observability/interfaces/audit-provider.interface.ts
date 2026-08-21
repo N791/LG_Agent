@@ -1,17 +1,6 @@
+import type { AuditEventPayload, AuditWriter } from '../../../common/audit';
+
+/** @deprecated Import AUDIT_WRITER from common/audit for new consumers. */
 export const AUDIT_PROVIDER = 'AUDIT_PROVIDER';
-
-export interface AuditEventPayload {
-  action: string;
-  actorId?: string;
-  resourceId?: string;
-  metadata?: Record<string, unknown>;
-  ipAddress?: string;
-  userAgent?: string;
-}
-
-export interface AuditProvider {
-  /**
-   * Records an auditable business event (e.g. login, export, permission change).
-   */
-  recordEvent(payload: AuditEventPayload): Promise<void>;
-}
+export type { AuditEventPayload };
+export type AuditProvider = AuditWriter;

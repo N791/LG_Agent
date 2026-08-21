@@ -144,7 +144,7 @@ export default function Observability() {
       title: t('columns.actorId'),
       dataIndex: 'actorId',
       key: 'actorId',
-      render: (id: string) => <Text copyable>{id || 'System'}</Text>,
+      render: (id: string) => <Text copyable>{id || t('common:system')}</Text>,
       width: 150,
     },
     {

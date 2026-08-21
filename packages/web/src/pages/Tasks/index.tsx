@@ -14,10 +14,12 @@ import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { getTasks, createTask, updateTask, deleteTask } from '../../services/api';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Task } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 const { TextArea } = Input;
 
 const Tasks: React.FC = () => {
+  const { t } = useTranslation('admin');
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -298,7 +300,7 @@ const Tasks: React.FC = () => {
 
             <Form.Item
               name="promptConfig"
-              label="AI Prompt 设定 (JSON)"
+              label={t('taskEditor.promptSettings')}
               rules={[{ validator: validateJson }]}
             >
               <TextArea rows={6} className="font-mono text-sm" />

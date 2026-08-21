@@ -50,17 +50,17 @@ LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化�
 
 ## 💻 技术栈 (Tech Stack)
 
-| 核心层级       | 技术选型                                                         |
-| -------------- | ---------------------------------------------------------------- |
-| **Monorepo**   | Turborepo, pnpm workspace, Changesets                            |
-| **后端 API**   | NestJS, Prisma, PostgreSQL, `@nestjs/swagger`                    |
-| **前端 Web**   | React 18, Vite, Ant Design, Monaco Editor, xterm.js              |
-| **CLI 工具**   | Node.js, TypeScript, Commander.js _(已废弃, 请使用 Web 工作区)_  |
-| **AI 引擎**    | OpenAI / DeepSeek / Qwen 适配, Sensitive Filter Rule Engine      |
-| **沙盒执行**   | 自动化 Docker Runner                                             |
-| **缓存与存储** | Redis, MinIO (S3 Compatible)                                     |
-| **部署观测**   | Helm Charts, Multi-stage Dockerfiles, Pino, Prometheus, Terminus |
-| **质量工程**   | Vitest, Playwright, Strict ESLint                                |
+| 核心层级       | 技术选型                                                                                           |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| **Monorepo**   | Turborepo, pnpm workspace, Changesets                                                              |
+| **后端 API**   | NestJS, Prisma, PostgreSQL, `@nestjs/swagger`                                                      |
+| **前端 Web**   | React 18, Vite, Ant Design, Monaco Editor, xterm.js                                                |
+| **CLI 工具**   | Node.js, TypeScript, Commander.js _(已废弃, 请使用 Web 工作区)_                                    |
+| **AI 引擎**    | OpenAI / DeepSeek adapters; Qwen via OpenAI-compatible configuration; Sensitive Filter Rule Engine |
+| **沙盒执行**   | 自动化 Docker Runner                                                                               |
+| **缓存与存储** | Redis, MinIO (S3 Compatible)                                                                       |
+| **部署观测**   | Helm Charts, Multi-stage Dockerfiles, Pino, Prometheus, Terminus                                   |
+| **质量工程**   | Vitest, Playwright, Strict ESLint                                                                  |
 
 ---
 
@@ -68,7 +68,7 @@ LG Agent 是一个面向企业的 AI 驱动新人培训平台。通过自动化�
 
 ### 1. 前置环境
 
-- Node.js ≥ 20.0.0
+- Node.js ≥ 20.6.0
 - pnpm ≥ 9.0.0
 - Docker & Docker Compose
 - 推荐使用 Linux 或 macOS 环境进行本地开发。
@@ -94,17 +94,23 @@ _注意：请在 `.env` 中正确配置相关的 PostgreSQL 和 Redis 连接信�
 启动本地依赖的中间件（PostgreSQL, Redis 等）：
 
 ```bash
-docker-compose up -d
+docker compose up -d --wait
 ```
 
 ### 4. 数据库初始化
 
-生成 Prisma 客户端并同步数据表结构：
+在仓库根目录执行一键、幂等的数据库初始化：
 
 ```bash
-pnpm --filter @lg-agent/api exec prisma generate
-pnpm --filter @lg-agent/api exec prisma db push
+pnpm db:init
 ```
+
+该命令会校验环境与 Schema、生成 Prisma Client、执行 `migrate deploy`、
+对齐权限注册表与系统角色，并检查最终 migration 状态。它会自动读取
+仓库根目录的 `.env`，可安全重复执行；
+不会自动导入演示数据或创建管理员。不要在首次部署时直接使用
+`pnpm --filter @lg-agent/api exec prisma ...`，因为该命令在 `packages/api` 中运行，
+不会自动读取仓库根目录的 `.env`；CI/生产环境则可继续显式注入 `DATABASE_URL`。
 
 ### 5. 本地构建与启动
 
@@ -116,7 +122,7 @@ pnpm run dev
 
 - **Web 管理后台**: `http://localhost:8081/dashboard` （请以实际控制台输出端口为准）
 - **Trainee Web 闯关工作区**: `http://localhost:8080/`
-- **API 接口文档 (Swagger)**: `http://localhost:3000/api/docs`
+- **API 接口文档 (Swagger)**: `http://localhost:4000/api/docs`
 
 > [!TIP]
 > 系统的各项功能配置，包含大语言模型配置、RAG 设置以及 Sandbox 状态，均可以在 Web 管理后台的对应页面进行动态调整。

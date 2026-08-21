@@ -2,40 +2,36 @@ name: Release Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  release:
+    types: [published]
+
+env:
+  IMAGE_REGISTRY: ${{ vars.IMAGE_REGISTRY || 'ghcr.io' }}
+  IMAGE_NAMESPACE: ${{ vars.IMAGE_NAMESPACE || github.repository_owner }}
 
 permissions:
   contents: write
   pull-requests: write
-  packages: write
 
 jobs:
-  release:
-    name: Release & Publish
+  version-packages:
+    if: github.event_name == 'push'
+    name: Version packages
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v3
         with:
           version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Create Release Pull Request or Publish
-        id: changesets
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Create release pull request or GitHub release
         uses: changesets/action@v1
         with:
           publish: pnpm run release
@@ -44,13 +40,126 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Docker Images
-        if: steps.changesets.outputs.published == 'true'
+  build-sign-scan:
+    if: github.event_name == 'release'
+    name: Build, sign and scan ${{ matrix.component }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      security-events: write
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - component: api
+            dockerfile: packages/api/Dockerfile
+            image: lg-agent-api
+          - component: admin-web
+            dockerfile: packages/web/Dockerfile
+            image: lg-agent-web
+          - component: trainee-web
+            dockerfile: packages/trainee-web/Dockerfile
+            image: lg-agent-trainee-web
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate immutable release tag
+        shell: bash
         run: |
-          echo "Images would be built and pushed here."
-          # Registry Agnostic build steps
-          # export IMAGE_REGISTRY=${{ vars.IMAGE_REGISTRY || 'ghcr.io' }}
-          # export IMAGE_NAMESPACE=${{ vars.IMAGE_NAMESPACE || github.repository_owner }}
-          # docker build -t $IMAGE_REGISTRY/$IMAGE_NAMESPACE/lg-agent-api:latest -f packages/api/Dockerfile .
-          # docker push $IMAGE_REGISTRY/$IMAGE_NAMESPACE/lg-agent-api:latest
-          # (Add corresponding steps for vX.Y.Z and Git SHA tags)
+          [[ "${{ github.event.release.tag_name }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push immutable image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:${{ github.event.release.tag_name }}
+            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ github.event.release.tag_name }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          provenance: mode=max
+          sbom: true
+          cache-from: type=gha,scope=${{ matrix.component }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.component }}
+      - name: Scan immutable image digest
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}@${{ steps.build.outputs.digest }}
+          format: sarif
+          output: trivy-${{ matrix.component }}.sarif
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          ignore-unfixed: true
+      - name: Upload vulnerability report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.component }}.sarif
+      - uses: sigstore/cosign-installer@v3.8.2
+      - name: Keyless-sign image digest
+        env:
+          IMAGE_REF: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}@${{ steps.build.outputs.digest }}
+        run: cosign sign --yes "$IMAGE_REF"
+      - name: Record release evidence
+        shell: bash
+        run: |
+          printf '%s@%s\n' \
+            "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}" \
+            "${{ steps.build.outputs.digest }}" > digest-${{ matrix.component }}.txt
+          find packages/api/prisma/migrations -mindepth 1 -maxdepth 1 -type d \
+            -printf '%f\n' | sort > migrations-${{ matrix.component }}.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence-${{ matrix.component }}
+          path: |
+            digest-${{ matrix.component }}.txt
+            migrations-${{ matrix.component }}.txt
+            trivy-${{ matrix.component }}.sarif
+
+  release-evidence:
+    if: github.event_name == 'release'
+    name: Assemble release evidence
+    needs: build-sign-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-evidence-*
+          merge-multiple: true
+          path: release-evidence
+      - name: Add version changes and canonical migration manifest
+        shell: bash
+        run: |
+          git log --format='%h %s' \
+            "$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || git rev-list --max-parents=0 HEAD)"..HEAD \
+            > release-evidence/changes.txt
+          find packages/api/prisma/migrations -mindepth 1 -maxdepth 1 -type d \
+            -printf '%f\n' | sort > release-evidence/migrations.txt
+          cat release-evidence/digest-*.txt | sort > release-evidence/image-digests.txt
+          (cd release-evidence && zip -r ../release-evidence.zip .)
+      - name: Attach evidence to the immutable GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" release-evidence.zip --clobber
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lg-agent-${{ github.event.release.tag_name }}-release-evidence
+          path: |
+            release-evidence
+            release-evidence.zip

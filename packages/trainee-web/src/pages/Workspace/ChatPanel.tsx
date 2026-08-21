@@ -4,8 +4,11 @@ import { SendOutlined, RobotOutlined, UserOutlined, FileTextOutlined } from '@an
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useWorkspaceStore } from '../../store/workspaceStore';
+import { useWorkspaceSession, workspaceSessionSelectors } from '../../modules/workspace-session';
 import { aiService } from '../../services/aiService';
 import { useTranslation } from 'react-i18next';
+import type { CitationDTO, EvidenceSupportDTO } from '@lg-agent/contracts';
+import { CitationList } from './CitationList';
 
 interface ChatPanelProps {
   taskId: string;
@@ -27,7 +30,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ taskId }) => {
   const history = useWorkspaceStore((state) => state.aiHistory);
   const loading = useWorkspaceStore((state) => state.aiLoading);
   const feedback = useWorkspaceStore((state) => state.aiFeedback);
-  const activeFile = useWorkspaceStore((state) => state.activeFile);
+  const activeFile = useWorkspaceSession(workspaceSessionSelectors.activeFile);
   const setAiHistory = useWorkspaceStore((state) => state.setAiHistory);
 
   // Scroll to bottom when history or feedback changes
@@ -109,6 +112,15 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ taskId }) => {
                   <div className="prose prose-sm dark:prose-invert max-w-none text-gray-800">
                     <Markdown remarkPlugins={[remarkGfm]}>{msg.content}</Markdown>
                   </div>
+                  {!isUser ? (
+                    <CitationList
+                      citations={(msg.metadata?.['citations'] as CitationDTO[] | undefined) ?? []}
+                      evidenceSupport={
+                        msg.metadata?.['evidenceSupport'] as EvidenceSupportDTO | undefined
+                      }
+                      degraded={msg.metadata?.['degraded'] === true}
+                    />
+                  ) : null}
                 </div>
               </div>
             </div>

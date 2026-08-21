@@ -1,6 +1,13 @@
 {
   "title": "工作区 - {{taskId}}",
   "initializing": "正在初始化工作区...",
+  "aria": {
+    "layout": "工作区布局",
+    "leftPanel": "工作区左侧面板",
+    "executionPanel": "执行与输出面板",
+    "fileExplorer": "工作区文件资源管理器",
+    "searchFiles": "搜索工作区文件"
+  },
   "status": {
     "saving": "保存中...",
     "unsaved": "未保存",
@@ -127,7 +134,7 @@
   "submissionsPanel": {
     "title": "提交记录",
     "emptyStateTitle": "暂无提交记录",
-    "emptyStateDesc": "在顶部导航栏点击“Submit”即可提交代码并自动运行 CI 验证。",
+    "emptyStateDesc": "在顶部导航栏点击“提交”即可提交代码并自动运行持续集成验证。",
     "score": "分数: {{score}}",
     "noScore": "分数: -",
     "viewLogs": "查看日志",
@@ -183,7 +190,9 @@
       "resolveFailed": "解决讨论失败",
       "waitSuccess": "已标记为等学员回复",
       "statusFailed": "更新讨论状态失败"
-    }
+    },
+    "analyticsUnavailable": "组织统计数据暂不可用。",
+    "retry": "重试"
   },
   "knowledgePanel": {
     "title": "知识库",
@@ -231,8 +240,8 @@
     "inactiveTab": "非活动标签",
     "switchTheme": "切换主题",
     "themes": {
-      "vsDark": "深色 (VS Dark)",
-      "vs": "浅色 (VS Light)",
+      "vsDark": "深色",
+      "vs": "浅色",
       "hcBlack": "高对比度"
     }
   }

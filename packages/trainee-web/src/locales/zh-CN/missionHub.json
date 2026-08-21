@@ -7,7 +7,9 @@
   },
   "actions": {
     "tryAgain": "重试",
-    "resume": "继续学习"
+    "resume": "继续学习",
+    "reviewMission": "复习任务",
+    "startMission": "开始任务"
   },
   "header": {
     "defaultTitle": "任务大厅",
@@ -18,6 +20,12 @@
     "missions": "任务",
     "successRate": "成功率",
     "totalPoints": "总积分"
+  },
+  "timeline": {
+    "loadFailed": "加载学习时间线失败。",
+    "empty": "该课程暂无任务。",
+    "stage": "阶段 {{stage}}",
+    "completed": "已完成"
   },
   "recent": {
     "title": "最近学习",

@@ -1,52 +1,59 @@
-# 发布与版本管理
+# 发布与回滚
 
-本项目严格遵循 **语义化版本规范 (Semantic Versioning)** 并使用 **Changesets** 和 GitHub Actions 自动化整个发布流程。
+## 版本与镜像
 
-## 1. 版本策略 (Version Strategy)
+功能变更通过 `pnpm changeset` 记录。Release PR 合并后创建 `vX.Y.Z` GitHub Release；`.github/workflows/release.yml` 为 API、Admin Web、Trainee Web 同时生成版本标签和 `sha-<40 hex>` 标签，不发布 `latest`。
 
-开发者绝对不要手动修改 `package.json` 中的版本号。
-相反，当您提交更改时，请生成一个 changeset：
+`release-evidence.zip` 包含三镜像 digest、漏洞扫描结果、migration 清单和版本变更。SBOM/provenance 保存为 registry attestation，镜像 digest 使用 Cosign keyless signing。
 
-```bash
-pnpm changeset
+## 生产门禁
+
+```text
+CI（contract/database/Helm/architecture/design/test/E2E）
+→ 已成功的隔离恢复演练
+→ 构建、扫描、签名
+→ migration
+→ permission registry reconcile
+→ API readiness
+→ Admin Web
+→ Trainee Web
+→ production smoke
+→ 30 分钟观察窗
 ```
 
-按照提示选择受影响的包以及变更的类型 (patch, minor, major)。将生成的 markdown 文件与您的代码一并提交。
+Migration Job 使用目标 API 镜像和同一 `DATABASE_URL`，执行 migration status/deploy、权限表校验、registry reconcile 与 digest 校验。任一步失败时 Helm 原子事务不推进。
 
-## 2. 自动化发布流水线 (Automated Release Pipeline)
+脚本和 CI 证明流程可执行，但不替代具体环境的演练记录。新集群首次发布、跨版本升级、应用回滚与数据库恢复必须分别保存实际证据。
 
-当一个 Pull Request 被合并到 `main` 分支时，会触发 `Release Pipeline`：
+## Production smoke
 
-1. 它会聚合所有未发布的 `.changeset` markdown 文件。
-2. 创建一个新的“Release Pull Request”，名称通常为 `chore(release): version packages`。
-3. 当您合并这个 Release PR 时：
-   - `package.json` 中的版本号将被永久更新。
-   - 会向代码库推送一个 Git Tag (例如：`v1.2.0`)。
-   - 会创建一个包含自动生成的变更日志 (changelog) 的 GitHub Release。
-   - 触发 `Docker Build & Push` 流水线以为该新 Tag 构建镜像。
+`deploy/scripts/production-smoke.mjs` 检查：
 
-## 3. Docker 标签策略 (Docker Tagging Strategy)
+- API/permission registry readiness 与两个 Web；
+- 管理员/目标用户登录和 `/me/permissions`；
+- 角色分配、撤权及 8 次负载均衡读取；
+- 跨 Organization 403/404；
+- authorization audit event。
 
-每次发布都会自动生成多个标签，以保证可追溯性并方便回滚：
+还应由环境 runbook 追加 Submission、SSE 与 Docker Sandbox smoke；仓库脚本当前未覆盖这一段。
 
-- `latest`
-- `vX.Y.Z` (例如: `v1.2.0`)
-- `Git SHA` (例如: `3fa2b8c`)
+## 应用回滚
 
-## 4. 回滚策略 (Rollback Strategy)
+选择已验证的上一 Helm revision：
 
-如果在生产环境中发生灾难性故障：
+```bash
+helm history lg-agent -n lg-agent-prod
+export ROLLBACK_REVISION=17
+export NAMESPACE=lg-agent-prod
+bash deploy/scripts/rollback-release.sh
+```
 
-1. **基础设施回滚 (Infrastructure Rollback)**: 执行 `helm rollback lg-agent 0` 以将 Kubernetes 部署回滚到上一个稳定的修订版本。
-2. **代码回滚 (Code Rollback)**: 由于我们对每个版本都打上了 Tag，您可以将 Git 代码库回退到上一个稳定的 Tag，并可选择通过 changesets 发布一个热修复版本 (hotfix)。
-3. **镜像回滚 (Image Rollback)**: 通过回退到上一稳定镜像标签（例如 `v1.0.0` 或 `v1.0.1`）完成快速恢复，建议在部署前先确认镜像可用性。
+脚本只回滚应用镜像并重新运行 production smoke，不执行 down migration、不删除权限表、不恢复数据库。migration 必须保持前向兼容。
 
-## 5. 发布前检查清单 (Pre-release Checklist)
+只有确认数据损坏、应用回滚无效，并获得 Incident Commander 与数据库负责人批准，才允许从快照/PITR 恢复到**新实例**。记录 RPO、RTO、校验结果、批准人和回切方案。
 
-在正式发布前，建议确认以下事项：
+## Sprint 19 Golden Path gate
 
-- 版本号已通过 Changesets 正确生成。
-- Docker 镜像构建成功且已推送到目标 Registry。
-- Helm Chart 已通过 lint 与模板渲染验证。
-- 发布说明与用户手册已同步更新。
-- 生产环境的环境变量与 Secrets 已准备完毕。
+发布前先以 dry-run 执行 `workspace:reconcile-starter` 并保存 JSON 结果；任何 `unknown-or-user-modified-content` 均不得自动覆盖。经 Security/Backend 审核后，才可携带 `--confirm --actor-id <uuid>` 执行。脚本会在同一事务中创建恢复版本与 AuditEvent。
+
+Staging 必须调用 `/api/v1/health/golden-path-ready`，并验证 Node 20、四个 Schema `$id`、Golden Template hash、Retrieval active version、非 Mock Provider 与 Permission Registry。Retrieval 按 `LEGACY → SHADOW → ACTIVE` 推进，失败时只需回到 `LEGACY`；Workspace 回滚使用自动创建的 `RECONCILE` 版本；Runtime 回滚使用上一不可变 API 镜像。详细证据与签署见 `docs/architecture/sprint-19-exit-report.md`。

@@ -24,6 +24,42 @@ enum TaskDifficulty {
   ADVANCED
 }
 
+enum DocumentVersionStatus {
+  BUILDING
+  READY
+  FAILED
+}
+
+enum RepositorySnapshotStatus {
+  BUILDING
+  READY
+  FAILED
+}
+
+enum CodeRelationType {
+  DEFINES
+  CALLS
+  IMPORTS
+  IMPLEMENTS
+  EXTENDS
+  REFERENCES
+  TESTS
+}
+
+enum RetrievalRoute {
+  DOCUMENT
+  CODE
+  MIXED
+  TASK_STATE
+  CONVERSATION
+}
+
+enum DisclosureLevel {
+  L0
+  L1
+  L2
+}
+
 model Organization {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @db.VarChar
@@ -31,23 +67,39 @@ model Organization {
   status    Int      @default(1) @db.SmallInt
   createdAt DateTime @default(now()) @map("created_at")
 
-  users         User[]
-  courses       Course[]
-  conversations Conversation[]
+  users                 User[]
+  courses               Course[]
+  conversations         Conversation[]
+  knowledgeSources      KnowledgeSource[]
+  documentVersions      DocumentVersion[]
+  documentNodes         DocumentNode[]
+  documentChunks        DocumentChunk[]
+  repositorySnapshots   RepositorySnapshot[]
+  codeRepositories      CodeRepository[]
+  codeFiles             CodeFile[]
+  codeSymbols           CodeSymbol[]
+  codeRelations         CodeRelation[]
+  retrievalTraces       RetrievalTrace[]
+  retrievalEvidence     RetrievalEvidence[]
+  conversationSummaries ConversationSummary[]
+  authorizationRoles    AuthorizationRole[]
+  userRoles             UserRole[]
 
   @@map("organizations")
 }
 
 model User {
-  id             String   @id @default(uuid()) @db.Uuid
-  organizationId String   @map("organization_id") @db.Uuid
-  username       String   @unique @db.VarChar
-  password       String   @db.VarChar
-  nickname       String?  @db.VarChar
-  email          String?  @db.VarChar
-  role           Role     @default(TRAINEE)
-  status         Int      @default(1) @db.SmallInt
-  createdAt      DateTime @default(now()) @map("created_at")
+  id                   String    @id @default(uuid()) @db.Uuid
+  organizationId       String    @map("organization_id") @db.Uuid
+  username             String    @unique @db.VarChar
+  password             String    @db.VarChar
+  nickname             String?   @db.VarChar
+  email                String?   @db.VarChar
+  role                 Role      @default(TRAINEE)
+  legacyRoleMigratedAt DateTime? @map("legacy_role_migrated_at") @db.Timestamptz
+  status               Int       @default(1) @db.SmallInt
+  mustChangePassword   Boolean   @default(false) @map("must_change_password")
+  createdAt            DateTime  @default(now()) @map("created_at")
 
   organization Organization @relation(fields: [organizationId], references: [id])
 
@@ -67,7 +119,9 @@ model User {
   userPreferences         UserPreference[]
   discussions             Discussion[]
   discussionComments      DiscussionComment[]
+  authorizationRoles      UserRole[]
 
+  @@unique([id, organizationId])
   @@map("users")
 }
 
@@ -113,25 +167,59 @@ model Task {
   workspaces    Workspace[]
   discussions   Discussion[]
 
+  @@index([courseId, stage])
   @@map("tasks")
 }
 
 model Submission {
-  id        String   @id @default(uuid()) @db.Uuid
-  taskId    String   @map("task_id") @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  status    String   @default("PENDING") @db.VarChar // PENDING, RUNNING, PASSED, FAILED
-  score     Int      @default(0) @db.SmallInt
-  logs      String?  @db.Text
-  report    Json?    @db.JsonB
-  aiReview  Json?    @map("ai_review") @db.JsonB
-  createdAt DateTime @default(now()) @map("created_at")
+  id                String    @id @default(uuid()) @db.Uuid
+  taskId            String    @map("task_id") @db.Uuid
+  userId            String    @map("user_id") @db.Uuid
+  idempotencyKey    String?   @unique @map("idempotency_key") @db.VarChar
+  attempt           Int       @default(0) @db.Integer
+  status            String    @default("PENDING") @db.VarChar // PENDING, RUNNING, PASSED, FAILED, ERROR, CANCELLED
+  score             Int       @default(0) @db.SmallInt
+  logs              String?   @db.Text
+  report            Json?     @db.JsonB
+  aiReview          Json?     @map("ai_review") @db.JsonB
+  startedAt         DateTime? @map("started_at")
+  finishedAt        DateTime? @map("finished_at")
+  failureReason     String?   @map("failure_reason") @db.Text
+  executionOwner    String?   @map("execution_owner") @db.VarChar
+  heartbeatAt       DateTime? @map("heartbeat_at")
+  leaseExpiresAt    DateTime? @map("lease_expires_at")
+  retryCount        Int       @default(0) @map("retry_count") @db.Integer
+  maxRetries        Int       @default(3) @map("max_retries") @db.Integer
+  nextAttemptAt     DateTime? @map("next_attempt_at")
+  deadLetteredAt    DateTime? @map("dead_lettered_at")
+  cancelRequestedAt DateTime? @map("cancel_requested_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
 
-  task        Task         @relation(fields: [taskId], references: [id])
-  user        User         @relation(fields: [userId], references: [id])
+  task        Task             @relation(fields: [taskId], references: [id])
+  user        User             @relation(fields: [userId], references: [id])
   discussions Discussion[]
+  events      ExecutionEvent[]
 
+  @@index([status, nextAttemptAt])
+  @@index([executionOwner, leaseExpiresAt])
+  @@index([userId, createdAt])
+  @@index([taskId, createdAt])
   @@map("submissions")
+}
+
+model ExecutionEvent {
+  id           String   @id @default(uuid()) @db.Uuid
+  submissionId String   @map("submission_id") @db.Uuid
+  sequence     Int      @db.Integer
+  type         String   @db.VarChar
+  payload      Json     @db.JsonB
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, sequence])
+  @@index([submissionId, createdAt])
+  @@map("execution_events")
 }
 
 model LlmRequestLog {
@@ -141,7 +229,11 @@ model LlmRequestLog {
   model            String   @db.VarChar
   promptHash       String?  @map("prompt_hash") @db.VarChar
   userId           String?  @map("user_id") @db.Uuid
+  organizationId   String?  @map("organization_id") @db.Uuid
   conversationId   String?  @map("conversation_id") @db.Uuid
+  traceId          String?  @map("trace_id") @db.VarChar
+  ruleHits         Json?    @map("rule_hits") @db.JsonB
+  fallbackFrom     String?  @map("fallback_from") @db.VarChar
   requestType      String   @map("request_type") @db.VarChar
   latency          Int      @db.Integer
   promptTokens     Int      @map("prompt_tokens") @db.Integer
@@ -153,7 +245,225 @@ model LlmRequestLog {
 
   user User? @relation(fields: [userId], references: [id])
 
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([traceId])
   @@map("llm_request_logs")
+}
+
+model KnowledgeVector {
+  id        String                @id @db.VarChar
+  source    String                @db.VarChar
+  content   String                @db.Text
+  metadata  Json                  @default("{}") @db.JsonB
+  embedding Unsupported("vector")
+  createdAt DateTime              @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([source])
+  @@map("knowledge_vectors")
+}
+
+model KnowledgeSource {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  externalKey    String   @map("external_key") @db.VarChar
+  title          String   @db.VarChar
+  sourceType     String   @map("source_type") @db.VarChar
+  canonicalUri   String   @map("canonical_uri") @db.Text
+  acl            Json     @default("{}") @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  versions     DocumentVersion[]
+
+  @@unique([organizationId, externalKey])
+  @@index([organizationId, sourceType])
+  @@map("knowledge_sources")
+}
+
+model DocumentVersion {
+  id             String                @id @default(uuid()) @db.Uuid
+  organizationId String                @map("organization_id") @db.Uuid
+  sourceId       String                @map("source_id") @db.Uuid
+  version        Int                   @db.Integer
+  contentHash    String                @map("content_hash") @db.VarChar
+  status         DocumentVersionStatus @default(BUILDING)
+  metadata       Json                  @default("{}") @db.JsonB
+  createdAt      DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  readyAt        DateTime?             @map("ready_at") @db.Timestamptz
+
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  source       KnowledgeSource     @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  nodes        DocumentNode[]
+  chunks       DocumentChunk[]
+  evidence     RetrievalEvidence[]
+
+  @@unique([sourceId, version])
+  @@unique([sourceId, contentHash])
+  @@index([organizationId, status, createdAt(sort: Desc)])
+  @@map("document_versions")
+}
+
+model DocumentNode {
+  id                String  @id @default(uuid()) @db.Uuid
+  organizationId    String  @map("organization_id") @db.Uuid
+  documentVersionId String  @map("document_version_id") @db.Uuid
+  parentId          String? @map("parent_id") @db.Uuid
+  stableKey         String  @map("stable_key") @db.VarChar
+  nodeType          String  @map("node_type") @db.VarChar
+  title             String? @db.Text
+  ordinal           Int     @db.Integer
+  depth             Int     @db.SmallInt
+  metadata          Json    @default("{}") @db.JsonB
+  content           String  @default("") @db.Text
+  sectionPath       Json    @default("[]") @map("section_path") @db.JsonB
+  locator           Json    @default("{}") @db.JsonB
+
+  organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documentVersion DocumentVersion @relation(fields: [documentVersionId], references: [id], onDelete: Cascade)
+  parent          DocumentNode?   @relation("DocumentNodeHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children        DocumentNode[]  @relation("DocumentNodeHierarchy")
+  chunks          DocumentChunk[]
+
+  @@unique([documentVersionId, stableKey])
+  @@index([organizationId, documentVersionId, parentId, ordinal])
+  @@map("document_nodes")
+}
+
+model DocumentChunk {
+  id                String                   @id @default(uuid()) @db.Uuid
+  organizationId    String                   @map("organization_id") @db.Uuid
+  documentVersionId String                   @map("document_version_id") @db.Uuid
+  nodeId            String                   @map("node_id") @db.Uuid
+  ordinal           Int                      @db.Integer
+  content           String                   @db.Text
+  contentHash       String                   @map("content_hash") @db.VarChar
+  tokenCount        Int                      @map("token_count") @db.Integer
+  metadata          Json                     @default("{}") @db.JsonB
+  chunkerVersion    String                   @default("structured-markdown-v1") @map("chunker_version") @db.VarChar
+  searchVector      Unsupported("tsvector")? @map("search_vector")
+  embedding         Unsupported("vector")?
+
+  organization    Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documentVersion DocumentVersion     @relation(fields: [documentVersionId], references: [id], onDelete: Cascade)
+  node            DocumentNode        @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  evidence        RetrievalEvidence[]
+
+  @@unique([documentVersionId, chunkerVersion, nodeId, ordinal])
+  @@index([organizationId, documentVersionId])
+  @@map("document_chunks")
+}
+
+model CodeRepository {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  externalKey    String   @map("external_key") @db.VarChar
+  name           String   @db.VarChar
+  canonicalUri   String   @map("canonical_uri") @db.Text
+  acl            Json     @default("{}") @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  snapshots    RepositorySnapshot[]
+
+  @@unique([organizationId, externalKey])
+  @@index([organizationId, name])
+  @@map("code_repositories")
+}
+
+model RepositorySnapshot {
+  id               String                   @id @default(uuid()) @db.Uuid
+  organizationId   String                   @map("organization_id") @db.Uuid
+  repositoryId     String                   @map("repository_id") @db.VarChar
+  codeRepositoryId String                   @map("code_repository_id") @db.Uuid
+  commitSha        String                   @map("commit_sha") @db.VarChar
+  status           RepositorySnapshotStatus @default(BUILDING)
+  defaultBranch    String?                  @map("default_branch") @db.VarChar
+  acl              Json                     @default("{}") @db.JsonB
+  metadata         Json                     @default("{}") @db.JsonB
+  createdAt        DateTime                 @default(now()) @map("created_at") @db.Timestamptz
+  readyAt          DateTime?                @map("ready_at") @db.Timestamptz
+
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  codeRepository CodeRepository      @relation(fields: [codeRepositoryId], references: [id], onDelete: Cascade)
+  files          CodeFile[]
+  symbols        CodeSymbol[]
+  relations      CodeRelation[]
+  evidence       RetrievalEvidence[]
+
+  @@unique([organizationId, repositoryId, commitSha])
+  @@index([organizationId, repositoryId, status, createdAt(sort: Desc)])
+  @@map("repository_snapshots")
+}
+
+model CodeFile {
+  id                   String  @id @default(uuid()) @db.Uuid
+  organizationId       String  @map("organization_id") @db.Uuid
+  repositorySnapshotId String  @map("repository_snapshot_id") @db.Uuid
+  path                 String  @db.Text
+  language             String  @db.VarChar
+  content              String  @db.Text
+  contentHash          String  @map("content_hash") @db.VarChar
+  parserVersion        String  @map("parser_version") @db.VarChar
+  parseConfidence      Float   @map("parse_confidence") @db.DoublePrecision
+  fallbackReason       String? @map("fallback_reason") @db.VarChar
+  generated            Boolean @default(false)
+  metadata             Json    @default("{}") @db.JsonB
+
+  organization       Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  repositorySnapshot RepositorySnapshot @relation(fields: [repositorySnapshotId], references: [id], onDelete: Cascade)
+
+  @@unique([repositorySnapshotId, path])
+  @@index([organizationId, contentHash, parserVersion])
+  @@map("code_files")
+}
+
+model CodeSymbol {
+  id                   String  @id @default(uuid()) @db.Uuid
+  organizationId       String  @map("organization_id") @db.Uuid
+  repositorySnapshotId String  @map("repository_snapshot_id") @db.Uuid
+  stableKey            String  @map("stable_key") @db.VarChar
+  name                 String  @db.VarChar
+  qualifiedName        String  @map("qualified_name") @db.Text
+  kind                 String  @db.VarChar
+  path                 String  @db.Text
+  startLine            Int     @map("start_line") @db.Integer
+  endLine              Int     @map("end_line") @db.Integer
+  signature            String? @db.Text
+  contentHash          String  @map("content_hash") @db.VarChar
+  metadata             Json    @default("{}") @db.JsonB
+
+  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  repositorySnapshot RepositorySnapshot  @relation(fields: [repositorySnapshotId], references: [id], onDelete: Cascade)
+  outgoingRelations  CodeRelation[]      @relation("CodeRelationSource")
+  incomingRelations  CodeRelation[]      @relation("CodeRelationTarget")
+  evidence           RetrievalEvidence[]
+
+  @@unique([repositorySnapshotId, stableKey])
+  @@index([organizationId, repositorySnapshotId, name])
+  @@map("code_symbols")
+}
+
+model CodeRelation {
+  id                   String           @id @default(uuid()) @db.Uuid
+  organizationId       String           @map("organization_id") @db.Uuid
+  repositorySnapshotId String           @map("repository_snapshot_id") @db.Uuid
+  sourceSymbolId       String           @map("source_symbol_id") @db.Uuid
+  targetSymbolId       String           @map("target_symbol_id") @db.Uuid
+  relationType         CodeRelationType @map("relation_type")
+  metadata             Json             @default("{}") @db.JsonB
+
+  organization       Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  repositorySnapshot RepositorySnapshot @relation(fields: [repositorySnapshotId], references: [id], onDelete: Cascade)
+  sourceSymbol       CodeSymbol         @relation("CodeRelationSource", fields: [sourceSymbolId], references: [id], onDelete: Cascade)
+  targetSymbol       CodeSymbol         @relation("CodeRelationTarget", fields: [targetSymbolId], references: [id], onDelete: Cascade)
+
+  @@unique([repositorySnapshotId, sourceSymbolId, targetSymbolId, relationType])
+  @@index([organizationId, repositorySnapshotId, relationType])
+  @@index([organizationId, repositorySnapshotId, sourceSymbolId, relationType])
+  @@index([organizationId, repositorySnapshotId, targetSymbolId, relationType])
+  @@map("code_relations")
 }
 
 model LlmAuditLog {
@@ -178,12 +488,87 @@ model Conversation {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  organization Organization          @relation(fields: [organizationId], references: [id])
-  user         User                  @relation(fields: [userId], references: [id])
-  task         Task                  @relation(fields: [taskId], references: [id])
-  messages     ConversationMessage[]
+  organization    Organization          @relation(fields: [organizationId], references: [id])
+  user            User                  @relation(fields: [userId], references: [id])
+  task            Task                  @relation(fields: [taskId], references: [id])
+  messages        ConversationMessage[]
+  retrievalTraces RetrievalTrace[]
+  summaries       ConversationSummary[]
 
   @@map("conversations")
+}
+
+model RetrievalTrace {
+  id              String          @id @default(uuid()) @db.Uuid
+  organizationId  String          @map("organization_id") @db.Uuid
+  conversationId  String?         @map("conversation_id") @db.Uuid
+  route           RetrievalRoute
+  disclosureLevel DisclosureLevel @map("disclosure_level")
+  queryHash       String          @map("query_hash") @db.VarChar
+  request         Json            @db.JsonB
+  summary         Json            @default("{}") @db.JsonB
+  durationMs      Int             @map("duration_ms") @db.Integer
+  shadowRead      Boolean         @default(false) @map("shadow_read")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  expiresAt       DateTime        @map("expires_at") @db.Timestamptz
+
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  conversation Conversation?       @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  evidence     RetrievalEvidence[]
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([expiresAt])
+  @@map("retrieval_traces")
+}
+
+model RetrievalEvidence {
+  id                   String   @id @default(uuid()) @db.Uuid
+  organizationId       String   @map("organization_id") @db.Uuid
+  traceId              String   @map("trace_id") @db.Uuid
+  documentVersionId    String?  @map("document_version_id") @db.Uuid
+  documentChunkId      String?  @map("document_chunk_id") @db.Uuid
+  repositorySnapshotId String?  @map("repository_snapshot_id") @db.Uuid
+  codeSymbolId         String?  @map("code_symbol_id") @db.Uuid
+  rank                 Int      @db.Integer
+  score                Float    @db.DoublePrecision
+  citation             Json     @db.JsonB
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
+  expiresAt            DateTime @map("expires_at") @db.Timestamptz
+
+  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  trace              RetrievalTrace      @relation(fields: [traceId], references: [id], onDelete: Cascade)
+  documentVersion    DocumentVersion?    @relation(fields: [documentVersionId], references: [id], onDelete: Restrict)
+  documentChunk      DocumentChunk?      @relation(fields: [documentChunkId], references: [id], onDelete: Restrict)
+  repositorySnapshot RepositorySnapshot? @relation(fields: [repositorySnapshotId], references: [id], onDelete: Restrict)
+  codeSymbol         CodeSymbol?         @relation(fields: [codeSymbolId], references: [id], onDelete: Restrict)
+
+  @@unique([traceId, rank])
+  @@index([organizationId, traceId])
+  @@index([documentVersionId])
+  @@index([repositorySnapshotId])
+  @@index([expiresAt])
+  @@map("retrieval_evidence")
+}
+
+model ConversationSummary {
+  id               String   @id @default(uuid()) @db.Uuid
+  organizationId   String   @map("organization_id") @db.Uuid
+  conversationId   String   @map("conversation_id") @db.Uuid
+  version          Int      @db.Integer
+  throughMessageId String   @map("through_message_id") @db.Uuid
+  content          String   @db.Text
+  tokenCount       Int      @map("token_count") @db.Integer
+  metadata         Json     @default("{}") @db.JsonB
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  expiresAt        DateTime @map("expires_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, version])
+  @@index([organizationId, conversationId, createdAt(sort: Desc)])
+  @@index([expiresAt])
+  @@map("conversation_summaries")
 }
 
 model ConversationMessage {
@@ -198,6 +583,7 @@ model ConversationMessage {
 
   conversation Conversation @relation(fields: [conversationId], references: [id])
 
+  @@index([conversationId, createdAt])
   @@map("conversation_messages")
 }
 
@@ -249,6 +635,8 @@ model WorkspaceVersion {
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
+  @@unique([workspaceId, version])
+  @@index([createdAt])
   @@map("workspace_versions")
 }
 
@@ -348,6 +736,8 @@ model Discussion {
   workspace  Workspace?          @relation(fields: [workspaceId], references: [id])
   comments   DiscussionComment[]
 
+  @@index([taskId, updatedAt])
+  @@index([status, assignedToId, updatedAt])
   @@map("discussions")
 }
 
@@ -412,20 +802,103 @@ model SystemConfig {
 }
 
 model AuditEvent {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  action      String   @db.VarChar
-  actorId     String?  @map("actor_id") @db.Uuid
-  resourceId  String?  @map("resource_id") @db.VarChar
-  metadata    Json?
-  traceId     String?  @map("trace_id") @db.Uuid
-  ipAddress   String?  @map("ip_address") @db.VarChar
-  userAgent   String?  @map("user_agent") @db.VarChar
-  createdAt   DateTime @default(now()) @map("created_at")
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action         String   @db.VarChar
+  actorId        String?  @map("actor_id") @db.Uuid
+  organizationId String?  @map("organization_id") @db.Uuid
+  resourceId     String?  @map("resource_id") @db.VarChar
+  requestId      String?  @map("request_id") @db.VarChar
+  traceId        String?  @map("trace_id") @db.VarChar
+  before         Json?
+  after          Json?
+  metadata       Json?
+  ipAddress      String?  @map("ip_address") @db.VarChar
+  userAgent      String?  @map("user_agent") @db.VarChar
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  actor       User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([actorId])
+  @@index([organizationId, createdAt])
   @@index([action])
   @@index([createdAt])
   @@map("audit_events")
+}
+
+model PermissionRegistryState {
+  id              String   @id @default("permission-registry") @db.VarChar
+  registryVersion Int      @map("registry_version") @db.Integer
+  registryDigest  String   @map("registry_digest") @db.VarChar
+  releaseVersion  String   @map("release_version") @db.VarChar
+  reconciledAt    DateTime @default(now()) @map("reconciled_at") @db.Timestamptz
+
+  @@map("permission_registry_state")
+}
+
+model Permission {
+  id              String    @id @default(uuid()) @db.Uuid
+  key             String    @unique @db.VarChar
+  scope           String    @db.VarChar
+  registryVersion Int       @map("registry_version") @db.Integer
+  description     String    @db.Text
+  risk            String    @default("LOW") @db.VarChar
+  deprecatedAt    DateTime? @map("deprecated_at") @db.Timestamptz
+  replacementKey  String?   @map("replacement_key") @db.VarChar
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  roles RolePermission[]
+
+  @@index([scope, key])
+  @@map("permissions")
+}
+
+model AuthorizationRole {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String?  @map("organization_id") @db.Uuid
+  key            String   @db.VarChar
+  name           String   @db.VarChar
+  description    String?  @db.Text
+  isSystem       Boolean  @default(false) @map("is_system")
+  version        Int      @default(1) @db.Integer
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization?    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  permissions  RolePermission[]
+  users        UserRole[]
+
+  @@unique([organizationId, key])
+  @@index([organizationId, name])
+  @@map("authorization_roles")
+}
+
+model RolePermission {
+  roleId       String   @map("role_id") @db.Uuid
+  permissionId String   @map("permission_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  role       AuthorizationRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission        @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  userId         String   @map("user_id") @db.Uuid
+  roleId         String   @map("role_id") @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  assignedById   String?  @map("assigned_by_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user         User              @relation(fields: [userId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  role         AuthorizationRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId, organizationId])
+  @@index([roleId, organizationId])
+  @@index([organizationId, userId])
+  @@map("user_roles")
 }

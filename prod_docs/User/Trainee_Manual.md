@@ -1,59 +1,46 @@
-# 学员手册 (Trainee Manual)
+# 学员手册
 
-欢迎来到 LG-Agent 平台！本指南将帮助您了解如何浏览培训课程、在本地完成代码编写，并与您的 AI 导师进行交互。
+推荐入口是 Trainee Web；CLI package 仅为兼容保留，不作为新流程。
 
-## 1. 快速入门 (Getting Started)
+## 登录与课程
 
-1. **登录 (Login)**: 访问 Web 控制台，并使用您的导师提供的凭据进行登录。
-2. **仪表盘 (Dashboard)**: 您的仪表盘会显示您当前注册的课程、总体进度以及最近的交互记录。
-3. **进入沉浸式工作区**: 从任务大厅中选择一项任务，点击进入 **Trainee Workspace**（沉浸式学员工作区）。
+1. 打开学员站点并登录。
+2. Dashboard 查看已注册 Course、进度和最近活动。
+3. 在 Mission Hub 选择 Task，进入 `/course/:courseId/workspace/:taskId`。
 
-> **说明**: 最新的 LG-Agent 提供了一站式的在线 Web 开发环境，您可以在浏览器中直接编码、执行测试并获得 AI 指导。
+页面是否可访问由 permission 决定。出现 403 时联系管理员确认 Course enrollment 与 role，不要反复刷新或更换 URL 绕过。
 
-## 2. 认识学员工作区 (Trainee Workspace)
+## Authoring Workspace
 
-Trainee Workspace 是您主要的学习与编码界面。它主要由以下三个核心模块组成：
+Workspace 是你与当前 Task 的持久编辑空间：
 
-### 2.1 任务说明与导师面板 (Left Panel)
+- 远端保存 baseline 与文件；
+- 浏览器保留离线 snapshot；
+- `WorkspaceSession` 统一管理 draft、dirty file、活动文件、版本和执行状态；
+- 自动保存失败时界面会保留 dirty 状态，不代表服务器已保存。
 
-- **任务目标 (Mission Hub)**: 查看当前的题目要求、预期目标和测试用例描述。
-- **AI 导师 (AI Mentor)**: 内置的对话聊天框，您可以随时向 AI 导师提问。
+若远端版本已变化，系统会报告 conflict。先比较本地与远端内容，再选择保留本地、采用远端或手动合并。不要在冲突提示出现时直接关闭页面。
 
-### 2.2 在线代码编辑器 (Code Editor)
+版本面板可创建和恢复 Workspace version。恢复会改变当前文件集合，执行前先确认目标版本。
 
-基于 Monaco Editor 提供与 VS Code 相同的编码体验。
+## Run 与 Submit
 
-- 支持语法高亮、自动补全。
-- 您修改的文件会自动保存在本地缓存中。
+- **Run**：用于当前 Workspace 的练习执行，不创建并行评测生命周期。
+- **Submit**：创建 assessed Submission，拥有持久状态、score、日志、取消和恢复语义。
 
-### 2.3 执行终端 (Execution Center)
+执行使用临时隔离的 Execution Workspace，不会把运行时生成文件自动写回 Authoring Workspace。日志通过 SSE 流式显示；断线后可从最后事件继续。只有 notification 使用 WebSocket。
 
-当您点击“运行代码”或“提交测试”时：
+生产默认只保证平台启用且镜像已验证的语言。遇到“语言未启用”“镜像不允许”或资源限制错误时，联系导师调整 Task，而不是修改系统命令。
 
-- 后台会启动隔离的 Docker 沙盒运行您的代码。
-- 运行日志将通过 WebSocket 实时推送到下方的执行终端中。
-- 测试通过后，您的进度将自动同步给您的导师。
+## AI 导师与引用
 
----
+AI 导师可使用 Task、对话和获授权检索证据生成提示。引用可打开时表示你有该 source 的访问权限；缺少引用或答案不可靠时应回到 Task 与原始资料核对。
 
-## 3. 使用命令行工具 (Using the CLI - 已废弃)
+不要发送凭据、个人隐私或公司机密。系统会执行 masking 和 prompt-injection 规则，但自动过滤不能替代你的判断。AI 输出是学习辅助，不是最终评测结果。
 
-_(注：自 v1.0.0 版本起，CLI 工具已被标记为废弃，我们强烈建议您直接使用 Web 工作区。以下内容仅针对部分特殊本地任务的向后兼容)_
+## 常见问题
 
-为了模拟真实的本地开发环境，您也可以在您的计算机上使用 CLI 完成任务。
-
-```bash
-npx @lg-agent/cli login
-npx @lg-agent/cli pull <task-id>
-npx @lg-agent/cli submit
-```
-
-## 4. 与 AI 导师交互 (Interacting with the AI Tutor)
-
-如果您在学习或编码过程中遇到困难，随时可以在 Workspace 左侧的 **AI Mentor** 面板向 AI 导师寻求帮助。
-
-> **建议**: 在提问时尽量提供您已经尝试过的错误信息、报错日志或相关代码片段，这样 AI 会给出更精准的提示。
-
-- **上下文感知**: AI 导师可以访问您当前拉取的任务对应的专属知识库 (RAG)，因此它的回答会紧扣您正在学习的内容。
-- **启发式教学**: 导师被设计为“苏格拉底式”的教学风格，它会通过提供提示、指出潜在逻辑错误来引导您自己找出答案，而不是直接帮您写出完整的代码。
-- **安全与合规**: **注意**：您与 AI 的所有对话都会被记录以供导师评估您的学习情况。请勿发送企业机密或个人隐私信息，系统内置的安全拦截器会自动脱敏这些数据。
+- **保存后仍显示 dirty**：检查网络，等待重试；若出现 conflict，先完成合并。
+- **日志中断**：重新连接，系统会用最后事件 id replay；不要重复 Submit。
+- **Submit 状态长时间不变**：记录 Submission id，联系导师/平台查看 lease/recovery。
+- **页面功能缺失**：通常是 permission 或 Course enrollment；联系管理员。

@@ -29,12 +29,17 @@ export class AiConfigService {
 
   async getMockConfig() {
     return {
-      enabled: (await this.resolveConfig('MOCK_LLM_ENABLED')) === 'true',
+      enabled:
+        this.envConfig.get<string>('NODE_ENV') === 'test' ||
+        (await this.resolveConfig('ENABLE_MOCK_PROVIDER')) === 'true' ||
+        (await this.resolveConfig('MOCK_LLM_ENABLED')) === 'true',
     };
   }
 
   async getDefaultProvider(): Promise<string> {
-    const provider = await this.resolveConfig('DEFAULT_AI_PROVIDER');
+    const provider =
+      (await this.resolveConfig('LLM_PROVIDER')) ??
+      (await this.resolveConfig('DEFAULT_AI_PROVIDER'));
     return provider ?? 'openai';
   }
 

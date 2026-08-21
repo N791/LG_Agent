@@ -45,4 +45,5 @@ export async function request<T = unknown>(
 export const api = {
   get: <T = unknown>(endpoint: string) => request<T>('GET', endpoint),
   post: <T = unknown>(endpoint: string, body: unknown) => request<T>('POST', endpoint, body),
+  put: <T = unknown>(endpoint: string, body: unknown) => request<T>('PUT', endpoint, body),
 };

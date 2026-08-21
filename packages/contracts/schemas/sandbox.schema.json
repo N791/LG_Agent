@@ -3,10 +3,43 @@
   "$id": "lg-agent:schema:sandbox",
   "title": "Sandbox Configuration",
   "description": "Schema for Task Sandbox execution environment",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "object",
   "properties": {
-    "image": { "type": "string" },
+    "starterTemplate": {
+      "type": "object",
+      "properties": {
+        "version": { "type": "string", "minLength": 1 },
+        "language": { "enum": ["node", "java", "python", "go", "rust"] },
+        "entry": { "type": "string", "minLength": 1 },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "run": { "enum": ["required", "optional", "unsupported"] },
+            "build": { "enum": ["required", "optional", "unsupported"] },
+            "lint": { "enum": ["required", "optional", "unsupported"] },
+            "test": { "enum": ["required", "optional", "unsupported"] }
+          },
+          "required": ["run", "build", "lint", "test"],
+          "additionalProperties": false
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/starterFile" }
+        }
+      },
+      "required": ["version", "language", "entry", "contentHash", "actions", "files"],
+      "additionalProperties": false
+    },
+    "template": {
+      "deprecated": true,
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/starterFile"
+      }
+    },
     "timeout": { "type": "number", "default": 300 },
     "resources": {
       "type": "object",
@@ -16,6 +49,21 @@
       }
     }
   },
-  "required": ["image"],
-  "additionalProperties": true
+  "$defs": {
+    "starterFile": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "content": { "type": "string" },
+        "language": { "type": "string" },
+        "encoding": { "type": "string" },
+        "readonly": { "type": "boolean" },
+        "hidden": { "type": "boolean" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "required": ["path", "content"],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
 }

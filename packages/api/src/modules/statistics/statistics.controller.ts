@@ -1,37 +1,38 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { StatisticsService } from './statistics.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { PERMISSIONS } from '@lg-agent/contracts';
+import { RequirePermission } from '../authorization';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
 
 @Controller('statistics')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@UseGuards(JwtAuthGuard)
+@RequirePermission(PERMISSIONS.ANALYTICS_READ)
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
 
   @Get('overview')
-  async getOverview() {
-    return this.statisticsService.getOverview();
+  async getOverview(@Request() request: { user: TenantActor }) {
+    return this.statisticsService.getOverview(request.user);
   }
 
   @Get('trends')
-  async getLearningTrends() {
-    return this.statisticsService.getLearningTrends();
+  async getLearningTrends(@Request() request: { user: TenantActor }) {
+    return this.statisticsService.getLearningTrends(request.user);
   }
 
   @Get('blockers')
-  async getBlockers() {
-    return this.statisticsService.getBlockers();
+  async getBlockers(@Request() request: { user: TenantActor }) {
+    return this.statisticsService.getBlockers(request.user);
   }
 
   @Get('ai-usage')
-  async getAiUsage() {
-    return this.statisticsService.getAiUsage();
+  async getAiUsage(@Request() request: { user: TenantActor }) {
+    return this.statisticsService.getAiUsage(request.user);
   }
 
   @Get('ai-audit')
-  async getAiAudit() {
-    return this.statisticsService.getAiAudit();
+  async getAiAudit(@Request() request: { user: TenantActor }) {
+    return this.statisticsService.getAiAudit(request.user);
   }
 }

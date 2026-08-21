@@ -1,0 +1,69 @@
+{{- if .Values.traineeWeb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "lg-agent.fullname" . }}-trainee-web
+  labels:
+    {{- include "lg-agent.componentLabels" (dict "root" . "component" "trainee-web") | nindent 4 }}
+spec:
+  replicas: {{ .Values.traineeWeb.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "lg-agent.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: trainee-web
+  template:
+    metadata:
+      labels:
+        {{- include "lg-agent.componentLabels" (dict "root" . "component" "trainee-web") | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      {{- include "lg-agent.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: trainee-web
+          image: "{{ required "traineeWeb.image.repository is required" .Values.traineeWeb.image.repository }}:{{ include "lg-agent.imageTag" (dict "root" . "image" .Values.traineeWeb.image) }}"
+          imagePullPolicy: {{ .Values.traineeWeb.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.traineeWeb.probes.livenessPath }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.traineeWeb.probes.readinessPath }}
+              port: http
+          resources:
+            {{- toYaml .Values.traineeWeb.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "lg-agent.fullname" . }}-trainee-web
+  labels:
+    {{- include "lg-agent.componentLabels" (dict "root" . "component" "trainee-web") | nindent 4 }}
+spec:
+  type: {{ .Values.traineeWeb.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ include "lg-agent.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: trainee-web
+  ports:
+    - name: http
+      port: {{ .Values.traineeWeb.service.port }}
+      targetPort: http
+{{- end }}

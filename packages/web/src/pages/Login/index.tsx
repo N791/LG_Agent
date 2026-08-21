@@ -7,6 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import request from '../../utils/request';
 import { Role } from '../../types';
 import { useTranslation } from 'react-i18next';
+import lgAgentMark from '../../assets/lg-agent-mark.svg';
 
 interface JwtPayload {
   sub: string;
@@ -71,8 +72,11 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">LG Agent</h2>
+      <div className="flex flex-col items-center sm:mx-auto sm:w-full sm:max-w-md">
+        <img src={lgAgentMark} alt="LG Agent" className="block h-16 w-16" />
+        <h2 className="mt-4 text-center text-3xl font-bold tracking-tight text-slate-900">
+          LG Agent
+        </h2>
         <p className="mt-2 text-center text-sm text-gray-600">{t('subtitle')}</p>
       </div>
 

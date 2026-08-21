@@ -7,15 +7,22 @@ import { ResponseSafetyFilter } from './filters/response-safety.filter';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../common/prisma.service';
 import { CostCalculator } from './cost/cost-calculator.service';
+import { AiAuditService } from './audit/ai-audit.service';
+import type { AiRequestAuditRecord } from './audit/ai-audit.service';
+import type { ILLMProvider } from './interfaces/llm-provider.interface';
 
 import { AiConfigService } from './ai-config.service';
 
 describe('LLMGatewayService', () => {
   let gateway: LLMGatewayService;
   let registry: ProviderRegistry;
+  let sensitiveDataFilter: SensitiveDataFilter;
   let responseSafetyFilter: ResponseSafetyFilter;
+  let auditService: jest.Mocked<Pick<AiAuditService, 'record'>>;
+  let filterChunkMock: jest.MockedFunction<(chunk: string) => Promise<string>>;
 
   beforeEach(async () => {
+    filterChunkMock = jest.fn((chunk: string) => Promise.resolve(chunk));
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LLMGatewayService,
@@ -36,7 +43,7 @@ describe('LLMGatewayService', () => {
           provide: ResponseSafetyFilter,
           useValue: {
             filterComplete: jest.fn((content: string) => Promise.resolve(content)),
-            filterChunk: jest.fn((chunk: string) => Promise.resolve(chunk)),
+            filterChunk: filterChunkMock,
           },
         },
         {
@@ -45,10 +52,11 @@ describe('LLMGatewayService', () => {
         },
         {
           provide: PrismaService,
-          useValue: {
-            llmRequestLog: { create: jest.fn() },
-            llmAuditLog: { create: jest.fn() },
-          },
+          useValue: {},
+        },
+        {
+          provide: AiAuditService,
+          useValue: { record: jest.fn().mockResolvedValue(undefined) },
         },
         {
           provide: CostCalculator,
@@ -62,7 +70,9 @@ describe('LLMGatewayService', () => {
 
     gateway = module.get<LLMGatewayService>(LLMGatewayService);
     registry = module.get<ProviderRegistry>(ProviderRegistry);
+    sensitiveDataFilter = module.get<SensitiveDataFilter>(SensitiveDataFilter);
     responseSafetyFilter = module.get<ResponseSafetyFilter>(ResponseSafetyFilter);
+    auditService = module.get<jest.Mocked<Pick<AiAuditService, 'record'>>>(AiAuditService);
 
     // Register Mock Provider manually for tests
     const mockProvider = module.get<MockLLMProvider>(MockLLMProvider);
@@ -83,17 +93,77 @@ describe('LLMGatewayService', () => {
     expect(response.content).toContain('[MOCK RESPONSE]');
     expect(response.usage).toBeDefined();
     expect(response.usage.totalTokens).toBeGreaterThan(0);
+    const audit = lastAuditRecord(auditService);
+    expect(audit.requestType).toBe('chat');
+    expect(audit.provider).toBe('mock');
+    expect(audit.promptHash).toMatch(/^[a-f0-9]{64}$/);
+    expect(typeof audit.traceId).toBe('string');
+  });
+
+  it('audits streaming usage and filters every emitted chunk', async () => {
+    const chunks = [];
+    for await (const event of gateway.stream({
+      messages: [{ role: 'user', content: 'stream this' }],
+      audit: { userId: '00000000-0000-0000-0000-000000000001' },
+    })) {
+      chunks.push(event.content);
+    }
+
+    expect(chunks.join('')).toContain('[MOCK STREAM RESPONSE]');
+    expect(filterChunkMock).toHaveBeenCalled();
+    expect(auditService.record).toHaveBeenCalledWith(
+      expect.objectContaining({ requestType: 'stream', status: 'success' }),
+    );
+  });
+
+  it('audits embeddings through the same gateway contract', async () => {
+    const vectors = await gateway.embed(['NestJS']);
+
+    expect(vectors).toHaveLength(1);
+    const audit = lastAuditRecord(auditService);
+    expect(audit.requestType).toBe('embed');
+    expect(typeof audit.promptTokens).toBe('number');
+  });
+
+  it('records the provider fallback path', async () => {
+    const failingProvider: ILLMProvider = {
+      name: 'failing',
+      chat: () => Promise.reject(new Error('primary unavailable')),
+      stream: async function* () {
+        await Promise.resolve();
+        yield { content: '' };
+      },
+      embed: () => Promise.resolve([]),
+      listModels: () => Promise.resolve([]),
+      healthCheck: () => Promise.resolve(true),
+    };
+    registry.register(failingProvider);
+
+    const response = await gateway.chat(
+      { messages: [{ role: 'user', content: 'fallback' }] },
+      'failing',
+    );
+
+    expect(response.provider).toBe('mock');
+    expect(auditService.record).toHaveBeenCalledWith(
+      expect.objectContaining({ provider: 'mock', fallbackFrom: 'failing' }),
+    );
   });
 
   it('should filter sensitive data in request', async () => {
+    const provider = registry.getProvider('mock');
+    const chatSpy = jest.spyOn(provider, 'chat');
+    jest.spyOn(sensitiveDataFilter, 'filter').mockResolvedValue('My key is [REDACTED]');
     const response = await gateway.chat({
       messages: [{ role: 'user', content: 'My key is sk-123456789012345678901234567890123456' }],
     });
 
-    // We expect the mock provider to receive the filtered content, but the mock provider
-    // just returns a standard string, so we're mostly testing that it didn't throw here.
-    // In a real test, we would spy on the provider's chat method.
     expect(response.content).toContain('Mock processing successful');
+    expect(chatSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        messages: [{ role: 'user', content: 'My key is [REDACTED]' }],
+      }),
+    );
   });
 
   it('should filter unsafe patterns in response', async () => {
@@ -118,3 +188,11 @@ describe('LLMGatewayService', () => {
     expect(filterSpy).toHaveBeenCalled();
   });
 });
+
+function lastAuditRecord(
+  auditService: jest.Mocked<Pick<AiAuditService, 'record'>>,
+): AiRequestAuditRecord {
+  const call = auditService.record.mock.calls.at(-1);
+  if (!call) throw new Error('Expected an AI audit record');
+  return call[0];
+}

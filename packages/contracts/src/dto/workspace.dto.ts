@@ -26,6 +26,7 @@ export interface WorkspaceDTO {
   status?: string;
   workspace: {
     entry?: string;
+    runtime?: import('./sandbox.dto').RuntimeEnvironmentDTO;
     files: WorkspaceFileDTO[];
     metadata?: Record<string, unknown>;
   };

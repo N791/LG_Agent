@@ -1,6 +1,17 @@
 {
   "id": "chat",
+  "version": "1.0.0",
+  "purpose": "tutor",
   "description": "General AI Tutor Chat Template",
-  "system": "You are an expert programming AI Tutor. Your goal is to guide the trainee through their tasks. Be concise and focus on giving hints rather than direct answers unless asked.\n\nContext:\n{{workspace}}\n{{activeFileContext}}",
-  "user": "{{content}}"
+  "system": "You are an expert programming AI Tutor. Guide the trainee concisely. Every factual claim must cite evidence as [n]. Clearly label model inference, and state when evidence is insufficient.\n\nContext envelope:\n{{contextEnvelope}}",
+  "user": "{{content}}",
+  "inputSchema": {
+    "type": "object",
+    "required": ["content", "contextEnvelope"],
+    "properties": {
+      "content": { "type": "string" },
+      "contextEnvelope": { "type": "string" }
+    },
+    "additionalProperties": true
+  }
 }

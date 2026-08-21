@@ -10,18 +10,18 @@ export const RouteError: React.FC = () => {
   const { t } = useTranslation('common');
 
   let status: 403 | 404 | 500 = 500;
-  let title = 'Oops!';
-  let subTitle = 'Sorry, an unexpected error has occurred.';
+  let title = t('errors.title');
+  let subTitle = t('errors.unexpected');
 
   if (isRouteErrorResponse(error)) {
     if (error.status === 404) {
       status = 404;
       title = '404';
-      subTitle = t('errors.notFound', 'Sorry, the page you visited does not exist.');
+      subTitle = t('errors.notFound');
     } else if (error.status === 403) {
       status = 403;
       title = '403';
-      subTitle = t('errors.forbidden', 'Sorry, you are not authorized to access this page.');
+      subTitle = t('errors.forbidden');
     } else {
       status = 500;
       title = error.status.toString();
@@ -33,7 +33,7 @@ export const RouteError: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <TopNavbar title="Error" />
+      <TopNavbar title={t('errors.pageTitle')} />
       <div className="flex-1 flex items-center justify-center">
         <Result
           status={status}
@@ -46,7 +46,7 @@ export const RouteError: React.FC = () => {
                 navigate('/dashboard');
               }}
             >
-              {t('actions.backHome', 'Back to Dashboard')}
+              {t('actions.backHome')}
             </Button>
           }
         />

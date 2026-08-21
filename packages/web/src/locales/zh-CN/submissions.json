@@ -18,5 +18,34 @@
   "buttons": {
     "close": "关闭"
   },
-  "noReport": "此提交没有 AI 评审报告。"
+  "noReport": "此提交没有 AI 评审报告。",
+  "review": {
+    "loading": "正在加载 AI 评审...",
+    "summary": "摘要",
+    "findings": "发现的问题",
+    "noFindings": "暂无有证据支持的问题。",
+    "evidence": "证据：",
+    "suggestion": "建议：",
+    "suggestions": "建议",
+    "retrieval": "检索状态：{{status}}",
+    "noRetrieval": "未附加检索证据。",
+    "executionReport": "执行报告（非 AI 评审）"
+  },
+  "statuses": {
+    "PENDING": "等待中",
+    "RUNNING": "运行中",
+    "PASSED": "已通过",
+    "FAILED": "未通过",
+    "ERROR": "错误",
+    "CANCELLED": "已取消",
+    "UNAVAILABLE": "不可用",
+    "SUPPORTED": "有证据支持"
+  },
+  "severities": {
+    "CRITICAL": "严重",
+    "HIGH": "高",
+    "MEDIUM": "中",
+    "LOW": "低",
+    "INFO": "提示"
+  }
 }

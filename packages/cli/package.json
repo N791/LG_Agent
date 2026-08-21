@@ -13,6 +13,7 @@
     "test": "echo 'No tests yet'"
   },
   "dependencies": {
+    "@lg-agent/contracts": "workspace:^",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "dotenv": "^16.4.5",

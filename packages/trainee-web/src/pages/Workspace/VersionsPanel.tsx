@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Spin, Tag, Typography, message } from 'antd';
 import { HistoryOutlined, UndoOutlined, PlusOutlined } from '@ant-design/icons';
-import { WorkspaceVersionDTO } from '@lg-agent/contracts';
-import { workspaceService } from '../../services/workspace/WorkspaceService';
-import { useWorkspaceStore } from '../../store/workspaceStore';
+import type { WorkspaceVersionDTO } from '@lg-agent/contracts';
+import { useWorkspaceSession, workspaceSessionCommands } from '../../modules/workspace-session';
 import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
@@ -14,15 +13,15 @@ interface VersionsPanelProps {
 
 export const VersionsPanel: React.FC<VersionsPanelProps> = ({ taskId }) => {
   const { t } = useTranslation('workspace');
-  const [versions, setVersions] = useState<WorkspaceVersionDTO[]>([]);
+  const versions = useWorkspaceSession((state) => state.versions);
+  const hasDirtyFiles = useWorkspaceSession((state) => state.dirtyFiles.length > 0);
   const [loading, setLoading] = useState(false);
   const [restoringId, setRestoringId] = useState<string | null>(null);
 
   const fetchVersions = async () => {
     setLoading(true);
     try {
-      const data = await workspaceService.getVersions(taskId);
-      setVersions(data);
+      await workspaceSessionCommands.refreshVersions();
     } catch (err) {
       console.error('Failed to fetch versions', err);
       message.error(t('versionsPanel.messages.loadFailed'));
@@ -41,14 +40,9 @@ export const VersionsPanel: React.FC<VersionsPanelProps> = ({ taskId }) => {
     }
 
     setRestoringId(version.id);
-    workspaceService
-      .restoreVersion(taskId, version.id)
-      .then((workspace) => {
-        // Reload workspace into store
-        workspace.workspace.files.forEach((f) => {
-          useWorkspaceStore.getState().openFile(f.path, f.content);
-          useWorkspaceStore.getState().markFileSaved(f.path);
-        });
+    workspaceSessionCommands
+      .restoreVersion(version.id, hasDirtyFiles ? 'KEEP_LOCAL' : 'DISCARD')
+      .then(() => {
         message.success(
           t('versionsPanel.messages.restoreSuccess', { version: String(version.version) }),
         );
@@ -65,7 +59,7 @@ export const VersionsPanel: React.FC<VersionsPanelProps> = ({ taskId }) => {
   const handleCreateVersion = async () => {
     setLoading(true);
     try {
-      await workspaceService.createVersion(taskId, 'MANUAL');
+      await workspaceSessionCommands.createSnapshot('MANUAL');
       message.success(t('versionsPanel.messages.createSuccess'));
       await fetchVersions();
     } catch (err) {

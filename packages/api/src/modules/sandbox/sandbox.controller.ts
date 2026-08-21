@@ -8,39 +8,32 @@ import {
   Req,
   Res,
   HttpCode,
-  NotFoundException,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
-import { SandboxService } from './sandbox.service';
-import { ExecutionManager } from './execution.manager';
-import { WorkspaceService } from '../workspace/workspace.service';
+import { SandboxFacade } from './sandbox.facade';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import type { ExecutionResponseDTO, ExecuteSandboxDTO } from '@lg-agent/contracts';
+import { ExecuteSandboxDTO, PERMISSIONS } from '@lg-agent/contracts';
+import { RequirePermission } from '../authorization';
+import type { ExecutionResponseDTO } from '@lg-agent/contracts';
 import type { Response } from 'express';
-import { randomUUID } from 'crypto';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
+import { endSse, initializeSse, writeSseEvent } from '../../common/sse';
 
 @Controller('sandbox')
 @UseGuards(JwtAuthGuard)
+@RequirePermission(PERMISSIONS.SANDBOX_EXECUTE)
 export class SandboxController {
   private readonly logger = new Logger(SandboxController.name);
 
-  constructor(
-    private readonly sandboxService: SandboxService,
-    private readonly executionManager: ExecutionManager,
-    private readonly workspaceService: WorkspaceService,
-  ) {}
+  constructor(private readonly sandbox: SandboxFacade) {}
 
   @Post('execute')
-  execute(
+  async execute(
     @Body() body: ExecuteSandboxDTO,
-    @Req() req: { user?: { id?: string; sub?: string } },
-  ): ExecutionResponseDTO {
-    const userId = req.user?.id ?? req.user?.sub;
-    if (!userId) {
-      throw new NotFoundException('errors.auth.userNotFound');
-    }
-
-    const executionId = randomUUID();
+    @Req() req: { user: TenantActor },
+  ): Promise<ExecutionResponseDTO> {
+    const executionId = await this.sandbox.reserve(req.user, body.taskId, body.action);
     this.logger.log(
       `Generated executionId ${executionId} for task ${body.taskId} action ${body.action}`,
     );
@@ -50,52 +43,37 @@ export class SandboxController {
   @Get('executions/:executionId/logs')
   async streamLogs(
     @Param('executionId') executionId: string,
-    @Req() req: { user?: { id?: string; sub?: string }; query?: Record<string, unknown> },
+    @Req() req: { user: TenantActor; query?: Record<string, unknown> },
     @Res() res: Response,
   ) {
-    const userId = req.user?.id ?? req.user?.sub;
-    if (!userId) {
-      res.status(401).send('Unauthorized');
-      return;
-    }
-
     // Since SSE uses GET, we pass taskId and action via query parameters
     const taskId = req.query?.['taskId'] as string;
     const action = req.query?.['action'] as import('@lg-agent/contracts').SandboxAction;
 
     if (!taskId) {
-      res.status(400).send('Missing taskId');
-      return;
+      throw new BadRequestException('Missing taskId');
     }
 
-    const workspaceDto = await this.workspaceService.getWorkspace(taskId, userId);
-    const stream = this.sandboxService.runTask(taskId, userId, workspaceDto, {
-      action,
-      executionId,
-    });
+    const stream = await this.sandbox.run(executionId, req.user, taskId, action);
 
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
+    initializeSse(res);
 
     try {
       for await (const event of stream) {
-        res.write(`data: ${JSON.stringify(event)}\n\n`);
+        writeSseEvent(res, event);
       }
-      res.write('data: [DONE]\n\n');
-      res.end();
+      endSse(res);
     } catch (err: unknown) {
-      res.write(
-        `data: ${JSON.stringify({ type: 'ERROR', message: (err as Error).message, timestamp: new Date().toISOString() })}\n\n`,
-      );
-      res.write('data: [DONE]\n\n');
-      res.end();
+      writeSseEvent(res, { type: 'ERROR', message: (err as Error).message });
+      endSse(res);
+    } finally {
+      this.sandbox.release(executionId);
     }
   }
 
   @Post('executions/:executionId/stop')
   @HttpCode(204)
-  stopExecution(@Param('executionId') executionId: string) {
-    this.executionManager.stop(executionId);
+  stopExecution(@Param('executionId') executionId: string, @Req() req: { user: TenantActor }) {
+    this.sandbox.stop(executionId, req.user);
   }
 }

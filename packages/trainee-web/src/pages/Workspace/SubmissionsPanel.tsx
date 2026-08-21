@@ -20,7 +20,7 @@ interface SubmissionHistory {
 
 interface SubmissionsPanelProps {
   taskId: string;
-  setExecutionState?: React.Dispatch<React.SetStateAction<ExecutionState>>;
+  setExecutionState?: React.Dispatch<React.SetStateAction<ExecutionState | null>>;
 }
 
 export const SubmissionsPanel: React.FC<SubmissionsPanelProps> = ({

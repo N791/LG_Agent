@@ -10,14 +10,13 @@ import { METRICS_PROVIDER } from './interfaces/metrics-provider.interface';
 import { NativeMetricsProvider } from './providers/native-metrics.provider';
 import { LOGGING_PROVIDER } from './interfaces/logging-provider.interface';
 import { NativeLoggingProvider } from './providers/native-logging.provider';
-import { AUDIT_PROVIDER } from './interfaces/audit-provider.interface';
-import { PrismaAuditProvider } from './providers/prisma-audit.provider';
+import { AuditModule } from '../../common/audit';
 import { ALERT_ENGINE, ALERT_CHANNEL } from './interfaces/alert-engine.interface';
 import { NativeAlertEngine, NativeLogAlertChannel } from './providers/native-alert.engine';
 import { MonitoringModule } from '../platform/monitoring/monitoring.module';
 
 @Module({
-  imports: [MonitoringModule],
+  imports: [MonitoringModule, AuditModule],
   controllers: [TelemetryController, AuditController],
   providers: [
     TelemetryService,
@@ -25,17 +24,9 @@ import { MonitoringModule } from '../platform/monitoring/monitoring.module';
     { provide: TRACING_PROVIDER, useClass: NativeTracingProvider },
     { provide: METRICS_PROVIDER, useClass: NativeMetricsProvider },
     { provide: LOGGING_PROVIDER, useClass: NativeLoggingProvider },
-    { provide: AUDIT_PROVIDER, useClass: PrismaAuditProvider },
     { provide: ALERT_CHANNEL, useClass: NativeLogAlertChannel },
     { provide: ALERT_ENGINE, useClass: NativeAlertEngine },
   ],
-  exports: [
-    TelemetryService,
-    TRACING_PROVIDER,
-    METRICS_PROVIDER,
-    LOGGING_PROVIDER,
-    AUDIT_PROVIDER,
-    ALERT_ENGINE,
-  ],
+  exports: [TelemetryService, TRACING_PROVIDER, METRICS_PROVIDER, LOGGING_PROVIDER, ALERT_ENGINE],
 })
 export class ObservabilityModule {}

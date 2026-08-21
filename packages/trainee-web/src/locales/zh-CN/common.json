@@ -7,6 +7,45 @@
   "cancel": "取消",
   "confirm": "确认",
   "run": "运行",
+  "noData": "暂无数据",
+  "requestFailed": "请求失败",
+  "tokenRefreshFailed": "令牌刷新失败",
+  "errors": {
+    "title": "出错了",
+    "unexpected": "应用遇到了意外错误，我们已记录该问题。",
+    "notFound": "抱歉，您访问的页面不存在。",
+    "forbidden": "抱歉，您无权访问此页面。",
+    "pageTitle": "错误"
+  },
+  "actions": {
+    "reload": "重新加载页面",
+    "backHome": "返回控制台"
+  },
+  "permissionSession": {
+    "loading": "正在加载权限...",
+    "serviceUnavailable": "权限服务不可用",
+    "serviceUnavailableDetail": "在确认访问权限之前，工作区将保持锁定。",
+    "updateRequired": "需要更新",
+    "updateRequiredDetail": "当前应用版本无法安全使用服务器权限注册表。",
+    "unauthorized": "会话未授权",
+    "signInAgain": "请重新登录后继续。",
+    "restoring": "正在恢复会话..."
+  },
+  "notifications": {
+    "title": "通知",
+    "markAllRead": "全部标为已读",
+    "empty": "暂无通知",
+    "high": "高优先级",
+    "loadMore": "加载更多"
+  },
+  "userMenu": {
+    "defaultUser": "用户",
+    "trainee": "学员",
+    "organization": "组织：{{id}}",
+    "notAvailable": "暂无",
+    "settings": "设置",
+    "signOut": "退出登录"
+  },
   "nav": {
     "missionHub": "任务中心",
     "dashboard": "控制台"

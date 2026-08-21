@@ -6,7 +6,7 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
-  getOrganizations,
+  getCurrentOrganization,
 } from '../../services/api';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -26,12 +26,11 @@ const Courses: React.FC = () => {
   const navigate = useNavigate();
 
   const userRole = useSelector((state: RootState) => state.auth.user?.role);
-  const userOrgId = useSelector((state: RootState) => state.auth.user?.organizationId); // Assuming we added it to JWT and store, but we can rely on backend fallback if missing.
 
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const res = await getCourses(userRole === 'ADMIN' ? {} : { organizationId: userOrgId });
+      const res = await getCourses();
       setData(res as unknown as Course[]);
     } catch (_e) {
       // Handled globally
@@ -43,8 +42,9 @@ const Courses: React.FC = () => {
   const fetchOrgs = async () => {
     if (userRole !== 'ADMIN') return;
     try {
-      const res = await getOrganizations();
-      setOrganizations(res as unknown as Organization[]);
+      const organization = (await getCurrentOrganization()) as unknown as Organization;
+      setOrganizations([organization]);
+      form.setFieldValue('organizationId', organization.id);
     } catch (_e) {
       // Handled globally
     }
@@ -62,7 +62,7 @@ const Courses: React.FC = () => {
     } else {
       setEditingId(null);
       form.resetFields();
-      form.setFieldsValue({ version: 'v1.0.0' });
+      form.setFieldsValue({ version: 'v1.0.0', organizationId: organizations[0]?.id });
     }
     setIsModalVisible(true);
   };
@@ -240,7 +240,7 @@ const Courses: React.FC = () => {
               label="所属企业"
               rules={[{ required: !editingId, message: '请选择所属企业' }]}
             >
-              <Select placeholder="选择企业 (仅Admin可见)">
+              <Select placeholder="当前企业" disabled={organizations.length === 1}>
                 {organizations.map((org) => (
                   <Option key={org.id} value={org.id}>
                     {org.name}

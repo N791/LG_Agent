@@ -1,34 +1,46 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
 
 @Injectable()
 export class CourseProgressService {
   constructor(private prisma: PrismaService) {}
 
-  async getProgress(userId: string, courseIdQuery?: string) {
+  async getProgress(actor: TenantActor, courseIdQuery?: string) {
     // 1. Resolve courseId
     let courseId = courseIdQuery;
     if (!courseId) {
       const enrollment = await this.prisma.courseEnrollment.findFirst({
-        where: { userId },
+        where: {
+          userId: actor.id,
+          course: { organizationId: actor.organizationId },
+        },
         orderBy: { lastAccessedAt: 'desc' },
       });
       if (enrollment) {
         courseId = enrollment.courseId;
       } else {
-        const course = await this.prisma.course.findFirst();
+        const course = await this.prisma.course.findFirst({
+          where: { organizationId: actor.organizationId },
+        });
         if (!course) throw new Error('errors.course.notAvailable');
         courseId = course.id;
       }
     }
 
+    const scopedCourse = await this.prisma.course.findFirst({
+      where: { id: courseId, organizationId: actor.organizationId },
+      select: { id: true },
+    });
+    if (!scopedCourse) throw new Error('errors.course.notAvailable');
+
     // 2. Lazy Enroll
     let enrollment = await this.prisma.courseEnrollment.findUnique({
-      where: { userId_courseId: { userId, courseId } },
+      where: { userId_courseId: { userId: actor.id, courseId } },
     });
     if (!enrollment) {
       enrollment = await this.prisma.courseEnrollment.create({
-        data: { userId, courseId },
+        data: { userId: actor.id, courseId },
       });
     } else {
       enrollment = await this.prisma.courseEnrollment.update({
@@ -41,11 +53,11 @@ export class CourseProgressService {
     const [tasks, submissions, allSubmissionsForStats] = await Promise.all([
       this.prisma.task.findMany({ where: { courseId } }),
       this.prisma.submission.findMany({
-        where: { userId, task: { courseId } },
+        where: { userId: actor.id, task: { courseId } },
         select: { taskId: true, status: true, score: true, aiReview: true, createdAt: true },
       }),
       this.prisma.submission.findMany({
-        where: { userId, task: { courseId } },
+        where: { userId: actor.id, task: { courseId } },
         select: { status: true, score: true, aiReview: true, createdAt: true },
       }),
     ]);

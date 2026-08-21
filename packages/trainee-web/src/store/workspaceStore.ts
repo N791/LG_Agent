@@ -1,6 +1,6 @@
 import { create } from 'zustand';
+import type { ConversationMessageDTO } from '@lg-agent/contracts';
 
-// ---- localStorage helper keys ----
 const EDITOR_PREFS_KEY = 'lg_editor_preferences';
 
 interface EditorPreferences {
@@ -11,15 +11,14 @@ interface EditorPreferences {
 function loadEditorPreferences(): Partial<EditorPreferences> {
   try {
     const raw = localStorage.getItem(EDITOR_PREFS_KEY);
-    if (raw) return JSON.parse(raw) as Partial<EditorPreferences>;
+    return raw ? (JSON.parse(raw) as Partial<EditorPreferences>) : {};
   } catch {
-    // ignore
+    return {};
   }
-  return {};
 }
 
-function saveEditorPreferences(prefs: EditorPreferences): void {
-  localStorage.setItem(EDITOR_PREFS_KEY, JSON.stringify(prefs));
+function saveEditorPreferences(preferences: EditorPreferences): void {
+  localStorage.setItem(EDITOR_PREFS_KEY, JSON.stringify(preferences));
 }
 
 function loadCursorPositions(
@@ -27,242 +26,101 @@ function loadCursorPositions(
 ): Record<string, { lineNumber: number; column: number }> {
   try {
     const raw = localStorage.getItem(`lg_cursor_positions_${taskId}`);
-    if (raw) return JSON.parse(raw) as Record<string, { lineNumber: number; column: number }>;
+    return raw ? (JSON.parse(raw) as Record<string, { lineNumber: number; column: number }>) : {};
   } catch {
-    // ignore
+    return {};
   }
-  return {};
 }
 
-function saveCursorPositions(
-  taskId: string,
-  positions: Record<string, { lineNumber: number; column: number }>,
-): void {
-  localStorage.setItem(`lg_cursor_positions_${taskId}`, JSON.stringify(positions));
-}
-
-import { ConversationMessageDTO } from '@lg-agent/contracts';
-import { offlineWorkspaceService } from '../services/offlineWorkspaceService';
-
-// ---- Store Interface ----
-interface WorkspaceState {
+interface WorkspaceUiState {
   taskId: string | null;
   setTaskId: (taskId: string | null) => void;
-  activeFile: string | null;
-  openFiles: string[];
-  recentFiles: string[];
-  fileContents: Record<string, string>;
-  unsavedChanges: Record<string, boolean>;
-  setActiveFile: (path: string | null) => void;
-  openFile: (path: string, content: string) => void;
-  closeFile: (path: string) => void;
-  updateFileContent: (path: string, content: string) => void;
-  markFileSaved: (path: string) => void;
   leftPanelTab:
     'explorer' | 'objective' | 'mentor' | 'versions' | 'submissions' | 'knowledge' | 'mentor-human';
-  setLeftPanelTab: (
-    tab:
-      | 'explorer'
-      | 'objective'
-      | 'mentor'
-      | 'versions'
-      | 'submissions'
-      | 'knowledge'
-      | 'mentor-human',
-  ) => void;
+  setLeftPanelTab: (tab: WorkspaceUiState['leftPanelTab']) => void;
   aiFeedback: string;
   aiLoading: boolean;
   aiHistory: ConversationMessageDTO[];
-  setAiFeedback: (feedback: string | ((prev: string) => string)) => void;
+  setAiFeedback: (feedback: string | ((previous: string) => string)) => void;
   setAiLoading: (loading: boolean) => void;
   setAiHistory: (history: ConversationMessageDTO[]) => void;
   appendAiMessage: (message: ConversationMessageDTO) => void;
-
-  // Epic 43: Editor Enhancement
   editorTheme: string;
   setEditorTheme: (theme: string) => void;
   cursorPositions: Record<string, { lineNumber: number; column: number }>;
   setCursorPosition: (path: string, position: { lineNumber: number; column: number }) => void;
-  editorLayoutSizes: { leftPanel: number; fileTree: number; editor: number; logs: number };
-  setEditorLayoutSizes: (
-    sizes: Partial<{ leftPanel: number; fileTree: number; editor: number; logs: number }>,
-  ) => void;
-  reorderOpenFiles: (fromIndex: number, toIndex: number) => void;
-
+  editorLayoutSizes: EditorPreferences['editorLayoutSizes'];
+  setEditorLayoutSizes: (sizes: Partial<EditorPreferences['editorLayoutSizes']>) => void;
   clearWorkspace: () => void;
 }
 
-// Load persisted preferences
-const savedPrefs = loadEditorPreferences();
+const savedPreferences = loadEditorPreferences();
 
-export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
+export const useWorkspaceStore = create<WorkspaceUiState>((set, get) => ({
   taskId: null,
   setTaskId: (taskId) => {
-    const cursors = taskId ? loadCursorPositions(taskId) : {};
-    set({ taskId, cursorPositions: cursors });
+    set({ taskId, cursorPositions: taskId ? loadCursorPositions(taskId) : {} });
   },
-  activeFile: null,
-  openFiles: [],
-  recentFiles: [],
-  fileContents: {},
-  unsavedChanges: {},
   leftPanelTab: 'explorer',
+  setLeftPanelTab: (leftPanelTab) => {
+    set({ leftPanelTab });
+  },
   aiFeedback: '',
   aiLoading: false,
   aiHistory: [],
-
-  // Epic 43: Editor state
-  editorTheme: savedPrefs.editorTheme ?? 'vs-dark',
-  cursorPositions: {},
-  editorLayoutSizes: savedPrefs.editorLayoutSizes ?? {
-    leftPanel: 20,
-    fileTree: 15,
-    editor: 65,
-    logs: 25,
-  },
-
-  setEditorTheme: (theme) => {
-    set({ editorTheme: theme });
-    const state = get();
-    saveEditorPreferences({
-      editorTheme: theme,
-      editorLayoutSizes: state.editorLayoutSizes,
-    });
-  },
-  setCursorPosition: (path, position) => {
-    set((state) => {
-      const newPositions = { ...state.cursorPositions, [path]: position };
-      if (state.taskId) {
-        saveCursorPositions(state.taskId, newPositions);
-      }
-      return { cursorPositions: newPositions };
-    });
-  },
-  setEditorLayoutSizes: (sizes) => {
-    set((state) => {
-      const newSizes = { ...state.editorLayoutSizes, ...sizes };
-      saveEditorPreferences({
-        editorTheme: state.editorTheme,
-        editorLayoutSizes: newSizes,
-      });
-      return { editorLayoutSizes: newSizes };
-    });
-  },
-  reorderOpenFiles: (fromIndex, toIndex) => {
-    set((state) => {
-      const newFiles = [...state.openFiles];
-      const [moved] = newFiles.splice(fromIndex, 1);
-      if (moved !== undefined) {
-        newFiles.splice(toIndex, 0, moved);
-      }
-      return { openFiles: newFiles };
-    });
-  },
-
-  setLeftPanelTab: (tab) => {
-    set({ leftPanelTab: tab });
-  },
   setAiFeedback: (feedback) => {
     set((state) => ({
       aiFeedback: typeof feedback === 'function' ? feedback(state.aiFeedback) : feedback,
     }));
   },
-  setAiLoading: (loading) => {
-    set({ aiLoading: loading });
+  setAiLoading: (aiLoading) => {
+    set({ aiLoading });
   },
-  setAiHistory: (history) => {
-    set({ aiHistory: history });
+  setAiHistory: (aiHistory) => {
+    set({ aiHistory });
   },
   appendAiMessage: (message) => {
     set((state) => ({ aiHistory: [...state.aiHistory, message] }));
   },
-  setActiveFile: (path) => {
-    set({ activeFile: path });
+  editorTheme: savedPreferences.editorTheme ?? 'vs-dark',
+  setEditorTheme: (editorTheme) => {
+    set({ editorTheme });
+    saveEditorPreferences({ editorTheme, editorLayoutSizes: get().editorLayoutSizes });
   },
-  openFile: (path, content) => {
+  cursorPositions: {},
+  setCursorPosition: (path, position) => {
     set((state) => {
-      const newRecent = [path, ...state.recentFiles.filter((p) => p !== path)].slice(0, 5);
-
-      if (state.openFiles.includes(path)) {
-        return { activeFile: path, recentFiles: newRecent };
-      }
-      return {
-        openFiles: [...state.openFiles, path],
-        fileContents: { ...state.fileContents, [path]: content },
-        activeFile: path,
-        recentFiles: newRecent,
-      };
-    });
-  },
-  closeFile: (path) => {
-    set((state) => {
-      const newOpenFiles = state.openFiles.filter((p) => p !== path);
-      const newActiveFile =
-        state.activeFile === path
-          ? newOpenFiles.length > 0
-            ? newOpenFiles[newOpenFiles.length - 1]
-            : null
-          : state.activeFile;
-      const { [path]: _, ...newFileContents } = state.fileContents;
-      const { [path]: __, ...newUnsavedChanges } = state.unsavedChanges;
-      return {
-        openFiles: newOpenFiles,
-        activeFile: newActiveFile,
-        fileContents: newFileContents,
-        unsavedChanges: newUnsavedChanges,
-      };
-    });
-  },
-  updateFileContent: (path, content) => {
-    set((state) => {
-      const newContents = { ...state.fileContents, [path]: content };
-      const newUnsaved = { ...state.unsavedChanges, [path]: true };
-
+      const cursorPositions = { ...state.cursorPositions, [path]: position };
       if (state.taskId) {
-        localStorage.setItem(`lg_workspace_recovery_${state.taskId}`, JSON.stringify(newContents));
-        void offlineWorkspaceService.saveSnapshot(state.taskId, {
-          activeFile: state.activeFile,
-          openFiles: state.openFiles,
-          fileContents: newContents,
-          unsavedChanges: newUnsaved,
-        });
+        localStorage.setItem(
+          `lg_cursor_positions_${state.taskId}`,
+          JSON.stringify(cursorPositions),
+        );
       }
-
-      return {
-        fileContents: newContents,
-        unsavedChanges: newUnsaved,
-      };
+      return { cursorPositions };
     });
   },
-  markFileSaved: (path) => {
+  editorLayoutSizes: savedPreferences.editorLayoutSizes ?? {
+    leftPanel: 20,
+    fileTree: 15,
+    editor: 65,
+    logs: 25,
+  },
+  setEditorLayoutSizes: (sizes) => {
     set((state) => {
-      const newUnsaved = { ...state.unsavedChanges, [path]: false };
-
-      // If no files have unsaved changes, clear local recovery cache
-      if (state.taskId && !Object.values(newUnsaved).some(Boolean)) {
-        localStorage.removeItem(`lg_workspace_recovery_${state.taskId}`);
-        void offlineWorkspaceService.clearSnapshot(state.taskId);
-      }
-
-      return {
-        unsavedChanges: newUnsaved,
-      };
+      const editorLayoutSizes = { ...state.editorLayoutSizes, ...sizes };
+      saveEditorPreferences({ editorTheme: state.editorTheme, editorLayoutSizes });
+      return { editorLayoutSizes };
     });
   },
   clearWorkspace: () => {
     set({
       taskId: null,
-      activeFile: null,
-      openFiles: [],
-      recentFiles: [],
-      fileContents: {},
-      unsavedChanges: {},
       cursorPositions: {},
       leftPanelTab: 'explorer',
       aiFeedback: '',
       aiLoading: false,
       aiHistory: [],
-      // Note: editorTheme and editorLayoutSizes are NOT reset — they are user preferences
     });
   },
 }));

@@ -1,6 +1,7 @@
 import React, { ErrorInfo } from 'react';
 import { Result, Button } from 'antd';
 import { telemetry } from '../utils/telemetry';
+import i18n from '../i18n';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -33,11 +34,16 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
           <Result
             status="500"
-            title="Something went wrong."
-            subTitle="The application encountered an unexpected error. Our team has been notified."
+            title={i18n.t('common:errors.title')}
+            subTitle={i18n.t('common:errors.unexpected')}
             extra={
-              <Button type="primary" onClick={() => { window.location.reload(); }}>
-                Reload Page
+              <Button
+                type="primary"
+                onClick={() => {
+                  window.location.reload();
+                }}
+              >
+                {i18n.t('common:actions.reload')}
               </Button>
             }
           />

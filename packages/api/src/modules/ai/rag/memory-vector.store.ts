@@ -60,8 +60,22 @@ export class MemoryVectorStore implements IVectorStore {
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
   }
 
-  // For testing purposes
-  clear(): void {
+  deleteBySource(source: string): Promise<void> {
+    for (let index = this.store.length - 1; index >= 0; index -= 1) {
+      if (this.store[index]?.chunk.metadata?.['source'] === source) {
+        this.store.splice(index, 1);
+      }
+    }
+    return Promise.resolve();
+  }
+
+  reset(): Promise<void> {
     this.store.length = 0;
+    return Promise.resolve();
+  }
+
+  // Backward-compatible test helper.
+  clear(): void {
+    void this.reset();
   }
 }

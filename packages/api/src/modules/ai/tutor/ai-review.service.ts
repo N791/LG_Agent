@@ -1,10 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/restrict-template-expressions */
-import { Injectable, Logger, NotFoundException, Inject, Optional } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  Inject,
+  Optional,
+  ServiceUnavailableException,
+} from '@nestjs/common';
+import { Role } from '@prisma/client';
 import { PrismaService } from '../../../common/prisma.service';
 import { LLMGatewayService } from '../gateway/llm-gateway.service';
 import { AiReviewDTO, NotificationType, NotificationPriority } from '@lg-agent/contracts';
 import type { INotificationPublisher } from '../../notifications/notification-publisher.interface';
 import { NOTIFICATION_PUBLISHER } from '../../notifications/notification-publisher.interface';
+import type { TenantActor } from '../../../common/tenant/organization-scoped.repository';
+import { TenantScopeService } from '../../../common/tenant/tenant-scope.service';
+import { PromptBuilderService } from '../prompt-builder.service';
 
 @Injectable()
 export class AiReviewService {
@@ -13,12 +24,32 @@ export class AiReviewService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly llmGateway: LLMGatewayService,
+    private readonly promptBuilder: PromptBuilderService,
     @Optional()
     @Inject(NOTIFICATION_PUBLISHER)
     private readonly notificationPublisher?: INotificationPublisher,
+    private readonly tenantScope: TenantScopeService = new TenantScopeService(prisma),
   ) {}
 
-  async generateReview(submissionId: string): Promise<AiReviewDTO> {
+  async getAuthorizedReview(submissionId: string, actor: TenantActor): Promise<AiReviewDTO> {
+    const submission = await this.prisma.submission.findFirst({
+      where: {
+        id: submissionId,
+        ...this.tenantScope.submission(actor),
+        ...(actor.role === Role.TRAINEE && { userId: actor.id }),
+      },
+      select: { userId: true },
+    });
+    if (!submission) {
+      throw new NotFoundException({
+        message: 'errors.ai.submissionNotFound',
+        args: { id: submissionId },
+      });
+    }
+    return this.generateReview(submissionId, actor);
+  }
+
+  async generateReview(submissionId: string, actor?: TenantActor): Promise<AiReviewDTO> {
     const submission = await this.prisma.submission.findUnique({
       where: { id: submissionId },
       include: { task: true },
@@ -31,8 +62,8 @@ export class AiReviewService {
       });
     }
 
-    if (submission.aiReview) {
-      return submission.aiReview as unknown as AiReviewDTO;
+    if (isAiReview(submission.aiReview)) {
+      return submission.aiReview;
     }
 
     // Prepare content for LLM
@@ -41,58 +72,24 @@ export class AiReviewService {
       ? JSON.stringify(submission.report, null, 2)
       : 'No report available.';
 
-    const systemPrompt = `
-You are an expert software engineering mentor evaluating a trainee's failed submission.
-Your task is to analyze the execution logs and test report, identify why the code failed, and provide a structured AI Review Report.
-
-The JSON MUST conform to the following schema structure:
-{
-  "summary": "String, a high-level explanation of why the code failed",
-  "suggestions": ["String", "List of actionable advice to fix the approach"],
-  "errors": [
-    {
-      "file": "String, the path of the file containing the error",
-      "line": "Number, the approximate line number of the error (optional)",
-      "message": "String, explanation of the specific error",
-      "fix": {
-        "strategy": "FULL_FILE",
-        "files": [
-          {
-            "path": "String, the path of the file to fix",
-            "content": "String, the COMPLETE updated syntactically valid code for the file"
-          }
-        ]
-      }
-    }
-  ]
-}
-
-CRITICAL RULES:
-1. ONLY return the valid JSON object. Do not include markdown formatting like \`\`\`json.
-2. The response must be perfectly parseable by JSON.parse().
-3. The "fix" MUST provide the full file content (strategy "FULL_FILE"), do not use diffs or patches. If the file is unknown, omit the fix object.
-`;
-
-    const userPrompt = `
-Task Context:
-${submission.task.description}
-
-Execution Logs:
-${logs.substring(0, 5000)}
-
-Test Report:
-${report.substring(0, 5000)}
-`;
+    const messages = await this.promptBuilder.assembleMessages('ai_review', {
+      taskDescription: submission.task.description ?? '',
+      logs: logs.substring(0, 5000),
+      report: report.substring(0, 5000),
+    });
 
     try {
       this.logger.log(`Requesting AI Review for submission ${submissionId}...`);
       const llmResponse = await this.llmGateway.chat({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
+        messages,
         model: 'deepseek-chat',
         temperature: 0.1,
+        audit: actor
+          ? {
+              userId: actor.id,
+              organizationId: actor.organizationId,
+            }
+          : undefined,
       });
 
       let jsonStr = llmResponse.content.trim();
@@ -106,6 +103,7 @@ ${report.substring(0, 5000)}
       }
 
       const reviewReport = JSON.parse(jsonStr) as AiReviewDTO;
+      await this.promptBuilder.validateOutput('ai_review', reviewReport);
 
       await this.prisma.submission.update({
         where: { id: submissionId },
@@ -127,7 +125,22 @@ ${report.substring(0, 5000)}
       return reviewReport;
     } catch (error) {
       this.logger.error(`Failed to generate AI review: ${(error as Error).message}`);
-      throw new Error('Failed to generate AI Review');
+      throw new ServiceUnavailableException({
+        message: 'AI_REVIEW_UNAVAILABLE',
+        code: (error as Error).message.startsWith('AI_PROVIDER_NOT_CONFIGURED')
+          ? 'AI_PROVIDER_NOT_CONFIGURED'
+          : 'AI_REVIEW_GENERATION_FAILED',
+      });
     }
   }
+}
+
+function isAiReview(value: unknown): value is AiReviewDTO {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const review = value as Record<string, unknown>;
+  return (
+    typeof review['summary'] === 'string' &&
+    Array.isArray(review['suggestions']) &&
+    Array.isArray(review['errors'])
+  );
 }

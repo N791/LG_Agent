@@ -13,8 +13,15 @@ import {
 import { UsersService } from './users.service';
 import { UserPreferenceService } from './user-preference.service';
 import { Prisma } from '@prisma/client';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { PERMISSIONS } from '@lg-agent/contracts';
+import { RequirePermission } from '../authorization';
 import * as bcrypt from 'bcryptjs';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
+import {
+  ChangePasswordRequestDTO,
+  SetPreferenceRequestDTO,
+  UpdateProfileRequestDTO,
+} from '@lg-agent/contracts';
 
 @Controller('users')
 export class UsersController {
@@ -26,7 +33,7 @@ export class UsersController {
   // ---- Self-service profile endpoints (any authenticated user) ----
 
   @Get('me')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.PROFILE_READ)
   async getProfile(@Request() req: { user: { id: string } }) {
     const user = await this.usersService.findById(req.user.id);
     if (!user) throw new BadRequestException('errors.auth.userNotFound');
@@ -35,10 +42,10 @@ export class UsersController {
   }
 
   @Patch('me')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.PROFILE_UPDATE)
   async updateProfile(
     @Request() req: { user: { id: string } },
-    @Body() body: { nickname?: string; email?: string },
+    @Body() body: UpdateProfileRequestDTO,
   ) {
     const data: Prisma.UserUncheckedUpdateInput = {};
     if (body.nickname !== undefined) data.nickname = body.nickname;
@@ -49,34 +56,40 @@ export class UsersController {
   }
 
   @Post('me/change-password')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.PROFILE_UPDATE)
   async changePassword(
     @Request() req: { user: { id: string } },
-    @Body() body: { currentPassword: string; newPassword: string },
+    @Body() body: ChangePasswordRequestDTO,
   ) {
     const user = await this.usersService.findById(req.user.id);
     if (!user) throw new BadRequestException('errors.auth.userNotFound');
 
     const isMatch = await bcrypt.compare(body.currentPassword, user.password);
     if (!isMatch) throw new BadRequestException('errors.auth.passwordIncorrect');
+    if (body.newPassword.length < 12 || body.newPassword === body.currentPassword) {
+      throw new BadRequestException('errors.auth.passwordPolicy');
+    }
 
     const hashedPassword = await bcrypt.hash(body.newPassword, 10);
-    await this.usersService.update(req.user.id, { password: hashedPassword });
+    await this.usersService.update(req.user.id, {
+      password: hashedPassword,
+      mustChangePassword: false,
+    });
     return { success: true };
   }
 
   @Get('me/preferences')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.PROFILE_READ)
   async getPreferences(@Request() req: { user: { id: string } }) {
     return this.userPreferenceService.getAll(req.user.id);
   }
 
   @Put('me/preferences/:key')
-  @Roles('TRAINEE', 'ADMIN', 'MENTOR')
+  @RequirePermission(PERMISSIONS.PROFILE_UPDATE)
   async setPreference(
     @Request() req: { user: { id: string } },
     @Param('key') key: string,
-    @Body() body: { value: string },
+    @Body() body: SetPreferenceRequestDTO,
   ) {
     return this.userPreferenceService.set(req.user.id, key, body.value);
   }
@@ -84,38 +97,51 @@ export class UsersController {
   // ---- Admin CRUD endpoints ----
 
   @Post()
-  @Roles('ADMIN')
-  async create(@Body() createUserDto: Prisma.UserUncheckedCreateInput) {
+  @RequirePermission(PERMISSIONS.USER_MANAGE)
+  async create(
+    @Request() req: { user: TenantActor },
+    @Body() createUserDto: Prisma.UserUncheckedCreateInput,
+  ) {
     if (createUserDto.password) {
       createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
     }
-    return this.usersService.create(createUserDto);
+    return this.usersService.create({
+      ...createUserDto,
+      organizationId: req.user.organizationId,
+    });
   }
 
   @Get()
-  @Roles('ADMIN')
-  findAll() {
-    return this.usersService.findAll();
+  @RequirePermission(PERMISSIONS.USER_READ)
+  findAll(@Request() req: { user: TenantActor }) {
+    return this.usersService.findAll(req.user.organizationId);
   }
 
   @Get(':id')
-  @Roles('ADMIN')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findById(id);
+  @RequirePermission(PERMISSIONS.USER_READ)
+  findOne(@Param('id') id: string, @Request() req: { user: TenantActor }) {
+    return this.usersService.findByIdScoped(id, req.user.organizationId);
   }
 
   @Patch(':id')
-  @Roles('ADMIN')
-  async update(@Param('id') id: string, @Body() updateUserDto: Prisma.UserUncheckedUpdateInput) {
+  @RequirePermission(PERMISSIONS.USER_MANAGE)
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: Prisma.UserUncheckedUpdateInput,
+    @Request() req: { user: TenantActor },
+  ) {
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password as string, 10);
     }
-    return this.usersService.update(id, updateUserDto);
+    const { organizationId: _organizationId, ...safeUpdate } = updateUserDto;
+    await this.usersService.findByIdScoped(id, req.user.organizationId);
+    return this.usersService.update(id, safeUpdate);
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
-  remove(@Param('id') id: string) {
+  @RequirePermission(PERMISSIONS.USER_MANAGE)
+  async remove(@Param('id') id: string, @Request() req: { user: TenantActor }) {
+    await this.usersService.findByIdScoped(id, req.user.organizationId);
     return this.usersService.remove(id);
   }
 }

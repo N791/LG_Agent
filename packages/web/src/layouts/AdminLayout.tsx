@@ -7,6 +7,8 @@ import {
   MonitorOutlined,
   LogoutOutlined,
   SettingOutlined,
+  SearchOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +16,9 @@ import { clearAuth } from '../store/slices/authSlice';
 import { RootState } from '../store';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PERMISSIONS, type Permission } from '@lg-agent/contracts';
+import { usePermissionMenu } from '@lg-agent/permission-react';
+import lgAgentMark from '../assets/lg-agent-mark.svg';
 
 const { Header, Sider, Content } = Layout;
 
@@ -30,52 +35,69 @@ const AdminLayout: React.FC = () => {
     navigate('/login');
   };
 
-  const allMenuItems = [
+  const allMenuItems: {
+    key: string;
+    icon: React.ReactNode;
+    label: string;
+    permission: Permission;
+  }[] = [
     {
       key: '/',
       icon: <DashboardOutlined />,
       label: t('dashboard'),
-      roles: ['ADMIN', 'MENTOR'],
+      permission: PERMISSIONS.ANALYTICS_READ,
     },
     {
       key: '/organizations',
       icon: <BookOutlined />,
       label: t('organizations'),
-      roles: ['ADMIN'],
+      permission: PERMISSIONS.PLATFORM_ORGANIZATION_MANAGE,
     },
     {
       key: '/users',
       icon: <UserOutlined />,
       label: t('users'),
-      roles: ['ADMIN', 'MENTOR'],
+      permission: PERMISSIONS.USER_READ,
     },
     {
       key: '/courses',
       icon: <BookOutlined />,
       label: t('courses'),
-      roles: ['ADMIN', 'MENTOR'],
+      permission: PERMISSIONS.COURSE_READ,
     },
     {
       key: '/submissions',
       icon: <LineChartOutlined />,
       label: t('learningAnalytics'),
-      roles: ['ADMIN', 'MENTOR'],
+      permission: PERMISSIONS.SUBMISSION_READ,
     },
     {
       key: '/observability',
       icon: <MonitorOutlined />,
       label: t('observability'),
-      roles: ['ADMIN'],
+      permission: PERMISSIONS.OBSERVABILITY_READ,
+    },
+    {
+      key: '/retrieval',
+      icon: <SearchOutlined />,
+      label: t('retrieval'),
+      permission: PERMISSIONS.AI_RETRIEVAL_READ,
     },
     {
       key: '/ai-settings',
       icon: <SettingOutlined />,
       label: t('aiSettings'),
-      roles: ['ADMIN'],
+      permission: PERMISSIONS.SYSTEM_CONFIG_READ,
+    },
+    {
+      key: '/authorization',
+      icon: <SafetyCertificateOutlined />,
+      label: t('authorization'),
+      permission: PERMISSIONS.ROLE_READ,
     },
   ];
 
-  const menuItems = allMenuItems.filter((item) => item.roles.includes(user?.role ?? ''));
+  const menuItems = usePermissionMenu(allMenuItems);
 
   const userMenu = {
     items: [
@@ -98,8 +120,20 @@ const AdminLayout: React.FC = () => {
         }}
         theme="light"
       >
-        <div className="h-16 flex items-center justify-center font-bold text-xl tracking-tight border-b border-gray-100">
-          {collapsed ? 'LG' : 'LG Agent'}
+        <div className="h-16 flex items-center justify-center border-b border-gray-100 px-3">
+          <div className="flex items-center gap-2.5 overflow-hidden" aria-label="LG Agent 管理后台">
+            <img src={lgAgentMark} alt="" className="h-9 w-9 shrink-0" />
+            {!collapsed && (
+              <div className="min-w-0 leading-tight">
+                <div className="truncate text-base font-semibold tracking-tight text-slate-900">
+                  LG Agent
+                </div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                  Admin
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <Menu
           theme="light"

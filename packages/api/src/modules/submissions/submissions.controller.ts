@@ -1,7 +1,27 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Res,
+  Req,
+  Headers,
+  HttpCode,
+} from '@nestjs/common';
 import { SubmissionsService } from './submissions.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { Response } from 'express';
+import { PERMISSIONS, RunSubmissionRequestDTO } from '@lg-agent/contracts';
+import { RequireAnyPermission, RequirePermission } from '../authorization';
+import type { TenantActor } from '../../common/tenant/organization-scoped.repository';
+import { endSse, initializeSse, writeSseEvent } from '../../common/sse';
+
+interface AuthenticatedRequest {
+  user: TenantActor;
+}
 
 @Controller('submissions')
 @UseGuards(JwtAuthGuard)
@@ -9,61 +29,74 @@ export class SubmissionsController {
   constructor(private readonly submissionsService: SubmissionsService) {}
 
   @Get()
+  @RequireAnyPermission(PERMISSIONS.SUBMISSION_READ, PERMISSIONS.SUBMISSION_MANAGE)
   findAll(
+    @Req() req: AuthenticatedRequest,
     @Query('userId') userId?: string,
     @Query('courseId') courseId?: string,
     @Query('taskId') taskId?: string,
   ) {
-    return this.submissionsService.findAll({ userId, courseId, taskId });
+    return this.submissionsService.findAll(req.user, { userId, courseId, taskId });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.submissionsService.findOne(id);
+  @RequireAnyPermission(PERMISSIONS.SUBMISSION_READ, PERMISSIONS.SUBMISSION_MANAGE)
+  findOne(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.submissionsService.findOne(id, req.user);
   }
 
   @Post('run')
-  async runSubmission(
-    @Body() body: { taskId: string },
-    @Req() req: { user?: { id?: string; sub?: string } },
-    @Res() res: Response,
-  ) {
-    const userId = req.user?.id ?? req.user?.sub;
-    if (!userId) {
-      res.status(401).send('Unauthorized');
-      return;
-    }
-    const result = await this.submissionsService.submitTask(userId, body.taskId);
-    res.json(result);
+  @RequirePermission(PERMISSIONS.SUBMISSION_CREATE)
+  async runSubmission(@Body() body: RunSubmissionRequestDTO, @Req() req: AuthenticatedRequest) {
+    return this.submissionsService.submitTask(req.user, body.taskId, body.idempotencyKey);
   }
 
   @Get(':id/logs')
-  streamLogs(@Param('id') id: string, @Req() req: import('express').Request, @Res() res: Response) {
-    const stream = this.submissionsService.streamSubmissionLogs(id);
+  @RequireAnyPermission(PERMISSIONS.SUBMISSION_READ, PERMISSIONS.SUBMISSION_MANAGE)
+  async streamLogs(
+    @Param('id') id: string,
+    @Req() req: import('express').Request & AuthenticatedRequest,
+    @Res() res: Response,
+    @Headers('last-event-id') lastEventId?: string,
+  ) {
+    const parsedLastEventId = Number.parseInt(lastEventId ?? '0', 10);
+    const stream = await this.submissionsService.streamSubmissionLogs(
+      id,
+      req.user,
+      Number.isFinite(parsedLastEventId) ? parsedLastEventId : 0,
+    );
 
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
+    initializeSse(res);
 
     const subscription = stream.subscribe({
       next: (event) => {
-        res.write(`data: ${JSON.stringify(event)}\n\n`);
+        writeSseEvent(res, event, event.sequence);
       },
       error: (err: unknown) => {
-        res.write(
-          `data: ${JSON.stringify({ type: 'ERROR', message: (err as Error).message, timestamp: new Date().toISOString() })}\n\n`
-        );
-        res.write('data: [DONE]\n\n');
-        res.end();
+        writeSseEvent(res, { type: 'ERROR', message: (err as Error).message });
+        endSse(res);
       },
       complete: () => {
-        res.write('data: [DONE]\n\n');
-        res.end();
-      }
+        endSse(res);
+      },
     });
 
     req.on('close', () => {
       subscription.unsubscribe();
     });
+  }
+
+  @Post(':id/cancel')
+  @RequirePermission(PERMISSIONS.SUBMISSION_CREATE)
+  @HttpCode(204)
+  cancel(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.submissionsService.cancelSubmission(id, req.user);
+  }
+
+  @Post(':id/replay')
+  @RequirePermission(PERMISSIONS.SUBMISSION_MANAGE)
+  @HttpCode(202)
+  replay(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.submissionsService.replaySubmission(id, req.user);
   }
 }

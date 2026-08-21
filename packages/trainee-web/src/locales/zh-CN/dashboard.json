@@ -22,7 +22,7 @@
   "recent": {
     "title": "最近活动",
     "resumeLearning": "继续学习",
-    "lastActive": "上次活动：",
+    "lastActive": "上次活动：{{time}}",
     "continueWorkspace": "进入工作区",
     "noActivity": "暂无最近活动。",
     "startCourse": "开始一门课程后，即可在此查看进度。"

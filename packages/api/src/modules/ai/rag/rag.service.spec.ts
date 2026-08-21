@@ -12,6 +12,8 @@ import { PrismaService } from '../../../common/prisma.service';
 import { CostCalculator } from '../cost/cost-calculator.service';
 
 import { AiConfigService } from '../ai-config.service';
+import { VECTOR_STORE } from './interfaces';
+import { AiAuditService } from '../audit/ai-audit.service';
 
 describe('RagService', () => {
   let ragService: RagService;
@@ -22,6 +24,10 @@ describe('RagService', () => {
         RagService,
         MarkdownChunker,
         MemoryVectorStore,
+        {
+          provide: VECTOR_STORE,
+          useExisting: MemoryVectorStore,
+        },
         LLMGatewayService,
         ProviderRegistry,
         MockLLMProvider,
@@ -59,6 +65,10 @@ describe('RagService', () => {
             estimate: jest.fn().mockResolvedValue(0),
             calculate: jest.fn().mockResolvedValue(0),
           },
+        },
+        {
+          provide: AiAuditService,
+          useValue: { record: jest.fn().mockResolvedValue(undefined) },
         },
       ],
     }).compile();

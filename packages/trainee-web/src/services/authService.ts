@@ -1,4 +1,5 @@
 import request from '../utils/request';
+import type { AuthTokenPairDTO } from '@lg-agent/contracts';
 
 /**
  * JWT Payload structure matching the backend AuthService.login() token generation.
@@ -10,11 +11,6 @@ export interface JwtPayload {
   organizationId: string;
   exp: number;
   iat: number;
-}
-
-export interface LoginResponse {
-  access_token: string;
-  refresh_token: string;
 }
 
 export interface TokenPair {
@@ -30,13 +26,13 @@ class AuthService {
   /**
    * Authenticate user and return token pair.
    */
-  async login(username: string, password: string): Promise<LoginResponse> {
-    const response = await request.post<LoginResponse>('/auth/login', {
+  async login(username: string, password: string): Promise<AuthTokenPairDTO> {
+    const response = await request.post<AuthTokenPairDTO>('/auth/login', {
       username,
       password,
     });
     // request interceptor unwraps axios .data, so response IS the data
-    const data = response as unknown as LoginResponse;
+    const data = response as unknown as AuthTokenPairDTO;
     return data;
   }
 
@@ -45,11 +41,11 @@ class AuthService {
    * Uses a raw axios instance to avoid the request interceptor (which would
    * try to refresh again on 401, causing infinite loops).
    */
-  async refreshTokens(refreshToken: string): Promise<LoginResponse> {
-    const response = await request.post<LoginResponse>('/auth/refresh', {
+  async refreshTokens(refreshToken: string): Promise<AuthTokenPairDTO> {
+    const response = await request.post<AuthTokenPairDTO>('/auth/refresh', {
       refresh_token: refreshToken,
     });
-    return response as unknown as LoginResponse;
+    return response as unknown as AuthTokenPairDTO;
   }
 
   /**

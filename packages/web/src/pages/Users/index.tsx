@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Select, message, Popconfirm, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getUsers, createUser, updateUser, deleteUser, getOrganizations } from '../../services/api';
+import {
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  getCurrentOrganization,
+} from '../../services/api';
 import { User, Organization } from '../../types';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -31,10 +37,11 @@ const Users: React.FC = () => {
     }
   };
 
-  const fetchOrgs = async () => {
+  const fetchCurrentOrganization = async () => {
     try {
-      const res = await getOrganizations();
-      setOrganizations(res as unknown as Organization[]);
+      const organization = (await getCurrentOrganization()) as unknown as Organization;
+      setOrganizations([organization]);
+      form.setFieldValue('organizationId', organization.id);
     } catch (_e) {
       // Handled globally
     }
@@ -42,8 +49,8 @@ const Users: React.FC = () => {
 
   useEffect(() => {
     void fetchUsers();
-    void fetchOrgs();
-  }, []);
+    void fetchCurrentOrganization();
+  }, [form]);
 
   const showModal = (record?: User) => {
     if (record) {
@@ -55,6 +62,8 @@ const Users: React.FC = () => {
     } else {
       setEditingId(null);
       form.resetFields();
+      const currentOrganization = organizations[0];
+      if (currentOrganization) form.setFieldValue('organizationId', currentOrganization.id);
     }
     setIsModalVisible(true);
   };
@@ -232,7 +241,7 @@ const Users: React.FC = () => {
             label="所属企业"
             rules={[{ required: true, message: '请选择所属企业' }]}
           >
-            <Select placeholder="选择企业">
+            <Select placeholder="当前企业" disabled={organizations.length === 1}>
               {organizations.map((org) => (
                 <Option key={org.id} value={org.id}>
                   {org.name}

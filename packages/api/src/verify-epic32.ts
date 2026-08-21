@@ -1,16 +1,31 @@
 import { SandboxService } from './modules/sandbox/sandbox.service';
 import { EnvDetectorService } from './modules/sandbox/env-detector.service';
 import { DockerExecutor } from './modules/sandbox/docker.executor';
-import { WorkspaceService } from './modules/sandbox/workspace.service';
+import { ExecutionWorkspaceService } from './modules/sandbox/execution-workspace.service';
+import { NodeRuntimeProfile } from './modules/sandbox/node-runtime.profile';
 import { WorkspaceDTO, ExecutionEventType } from '@lg-agent/contracts';
 
 import { ExecutionManager } from './modules/sandbox/execution.manager';
+import type { RuntimeProfileRegistry } from './modules/sandbox/runtime-profile.registry';
 
 async function runTest(pass: boolean) {
   const envDetector = new EnvDetectorService();
-  const workspaceService = new WorkspaceService();
+  const workspaceService = new ExecutionWorkspaceService();
   const executionManager = new ExecutionManager();
-  const dockerExecutor = new DockerExecutor(workspaceService, executionManager);
+  const dockerExecutor = new DockerExecutor(
+    workspaceService,
+    executionManager,
+    {
+      resolve: (_runtime: unknown, action: 'run' | 'build' | 'lint' | 'test', entry: string) => ({
+        profile: new NodeRuntimeProfile(),
+        environment: { language: 'node', version: '20', entry },
+        command: new NodeRuntimeProfile().command(action, entry),
+        image:
+          'node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293',
+      }),
+    } as unknown as RuntimeProfileRegistry,
+    30000,
+  );
 
   const sandboxService = new SandboxService(dockerExecutor, envDetector);
 

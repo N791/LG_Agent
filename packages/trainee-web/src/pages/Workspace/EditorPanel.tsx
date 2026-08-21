@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useEffect } from 'react';
-import Editor, { OnMount, loader } from '@monaco-editor/react';
+import Editor, { loader } from '@monaco-editor/react';
+import type { OnMount } from '@monaco-editor/react';
 // @ts-expect-error No type declarations available for this specific path
 import * as monacoApi from 'monaco-editor/esm/vs/editor/editor.api';
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
@@ -9,6 +10,9 @@ import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
 import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/basic-languages/python/python.contribution';
+import 'monaco-editor/esm/vs/basic-languages/java/java.contribution';
+import 'monaco-editor/esm/vs/basic-languages/go/go.contribution';
+import 'monaco-editor/esm/vs/basic-languages/rust/rust.contribution';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution';
@@ -34,7 +38,7 @@ self.MonacoEnvironment = {
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 loader.config({ monaco });
 import { useWorkspaceStore } from '../../store/workspaceStore';
-import { workspaceService } from '../../services/workspace/WorkspaceService';
+import { useWorkspaceSession, workspaceSessionCommands } from '../../modules/workspace-session';
 import { Breadcrumb, Dropdown, Tooltip } from 'antd';
 import { FileOutlined, CloseOutlined, BgColorsOutlined, CodeOutlined } from '@ant-design/icons';
 import { resolveWorkspaceKeyboardShortcut } from '../../utils/workspaceKeyboardShortcuts';
@@ -52,13 +56,18 @@ const getFileIcon = (filename: string): React.ReactNode => {
     css: '#264de4',
     html: '#e34c26',
     md: '#888',
+    py: '#3776ab',
+    java: '#e76f00',
+    go: '#00add8',
+    rs: '#dea584',
   };
   const color = colorMap[ext ?? ''] ?? '#999';
   return <FileOutlined style={{ color, fontSize: 12 }} />;
 };
 
 // ---- Language detection ----
-const getLanguage = (filename: string): string => {
+const getLanguage = (filename: string, declaredLanguage?: string): string => {
+  if (declaredLanguage) return declaredLanguage;
   if (filename.endsWith('.ts') || filename.endsWith('.tsx')) return 'typescript';
   if (filename.endsWith('.js') || filename.endsWith('.jsx')) return 'javascript';
   if (filename.endsWith('.json')) return 'json';
@@ -67,6 +76,8 @@ const getLanguage = (filename: string): string => {
   if (filename.endsWith('.html')) return 'html';
   if (filename.endsWith('.py')) return 'python';
   if (filename.endsWith('.java')) return 'java';
+  if (filename.endsWith('.go')) return 'go';
+  if (filename.endsWith('.rs')) return 'rust';
   if (filename.endsWith('.sh')) return 'shell';
   if (filename.endsWith('.yaml') || filename.endsWith('.yml')) return 'yaml';
   return 'plaintext';
@@ -81,20 +92,16 @@ const THEME_OPTIONS = [
 
 export const EditorPanel: React.FC = React.memo(() => {
   const { t } = useTranslation('workspace');
-  const activeFile = useWorkspaceStore((state) => state.activeFile);
-  const openFiles = useWorkspaceStore((state) => state.openFiles);
-  const fileContents = useWorkspaceStore((state) => state.fileContents);
-  const setActiveFile = useWorkspaceStore((state) => state.setActiveFile);
-  const closeFile = useWorkspaceStore((state) => state.closeFile);
-  const updateFileContent = useWorkspaceStore((state) => state.updateFileContent);
-  const markFileSaved = useWorkspaceStore((state) => state.markFileSaved);
-  const unsavedChanges = useWorkspaceStore((state) => state.unsavedChanges);
+  const activeFile = useWorkspaceSession((state) => state.activeFile);
+  const openFiles = useWorkspaceSession((state) => state.openFiles);
+  const fileContents = useWorkspaceSession((state) => state.draft);
+  const dirtyFiles = useWorkspaceSession((state) => state.dirtyFiles);
+  const fileMetadata = useWorkspaceSession((state) => state.fileMetadata);
   const editorTheme = useWorkspaceStore((state) => state.editorTheme);
   const setEditorTheme = useWorkspaceStore((state) => state.setEditorTheme);
   const setLeftPanelTab = useWorkspaceStore((state) => state.setLeftPanelTab);
   const cursorPositions = useWorkspaceStore((state) => state.cursorPositions);
   const setCursorPosition = useWorkspaceStore((state) => state.setCursorPosition);
-  const reorderOpenFiles = useWorkspaceStore((state) => state.reorderOpenFiles);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editorRef = useRef<any>(null);
@@ -108,10 +115,9 @@ export const EditorPanel: React.FC = React.memo(() => {
   // ---- Check if active file is readonly ----
   const isActiveFileReadonly = React.useMemo(() => {
     if (!activeFile) return false;
-    const ws = workspaceService.currentWorkspace;
-    const file = ws?.workspace.files.find((f) => f.path === activeFile);
+    const file = fileMetadata[activeFile];
     return file?.readonly === true || file?.locked === true;
-  }, [activeFile]);
+  }, [activeFile, fileMetadata]);
 
   // ---- Cursor restore when activeFile changes ----
   useEffect(() => {
@@ -149,7 +155,7 @@ export const EditorPanel: React.FC = React.memo(() => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'w') {
         e.preventDefault();
         if (activeFile) {
-          closeFile(activeFile);
+          workspaceSessionCommands.close(activeFile);
         }
       }
       // Ctrl+Tab / Ctrl+Shift+Tab: Switch tabs
@@ -158,10 +164,10 @@ export const EditorPanel: React.FC = React.memo(() => {
         const currentIndex = openFiles.indexOf(activeFile ?? '');
         if (e.shiftKey) {
           const prevIndex = currentIndex > 0 ? currentIndex - 1 : openFiles.length - 1;
-          setActiveFile(openFiles[prevIndex] ?? null);
+          workspaceSessionCommands.setActiveFile(openFiles[prevIndex] ?? null);
         } else {
           const nextIndex = currentIndex < openFiles.length - 1 ? currentIndex + 1 : 0;
-          setActiveFile(openFiles[nextIndex] ?? null);
+          workspaceSessionCommands.setActiveFile(openFiles[nextIndex] ?? null);
         }
       }
     };
@@ -169,15 +175,7 @@ export const EditorPanel: React.FC = React.memo(() => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [
-    activeFile,
-    openFiles,
-    closeFile,
-    setActiveFile,
-    setLeftPanelTab,
-    setEditorTheme,
-    editorTheme,
-  ]);
+  }, [activeFile, openFiles, setLeftPanelTab, setEditorTheme, editorTheme]);
 
   const handleEditorMount: OnMount = (editor) => {
     editorRef.current = editor;
@@ -185,16 +183,7 @@ export const EditorPanel: React.FC = React.memo(() => {
     monacoRef.current = monaco;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      const currentFile = useWorkspaceStore.getState().activeFile;
-      if (currentFile) {
-        const content = editor.getValue();
-        try {
-          workspaceService.writeFile(currentFile, content);
-          markFileSaved(currentFile);
-        } catch (err) {
-          console.error(err);
-        }
-      }
+      void workspaceSessionCommands.save();
     });
 
     // Shift+Alt+F: Format document
@@ -241,7 +230,7 @@ export const EditorPanel: React.FC = React.memo(() => {
       if (cursorDebounceRef.current) clearTimeout(cursorDebounceRef.current);
       cursorDebounceRef.current = setTimeout(() => {
         const pos = editor.getPosition();
-        const currentFile = useWorkspaceStore.getState().activeFile;
+        const currentFile = workspaceSessionCommands.getState().activeFile;
         if (pos && currentFile) {
           setCursorPosition(currentFile, { lineNumber: pos.lineNumber, column: pos.column });
         }
@@ -249,7 +238,7 @@ export const EditorPanel: React.FC = React.memo(() => {
     });
 
     // Restore cursor for initial file
-    const currentFile = useWorkspaceStore.getState().activeFile;
+    const currentFile = workspaceSessionCommands.getState().activeFile;
     if (currentFile) {
       const savedPos = useWorkspaceStore.getState().cursorPositions[currentFile];
       if (savedPos) {
@@ -263,10 +252,10 @@ export const EditorPanel: React.FC = React.memo(() => {
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
       if (activeFile && value !== undefined) {
-        updateFileContent(activeFile, value);
+        void workspaceSessionCommands.edit(activeFile, value);
       }
     },
-    [activeFile, updateFileContent],
+    [activeFile],
   );
 
   // ---- Tab drag handlers ----
@@ -282,7 +271,7 @@ export const EditorPanel: React.FC = React.memo(() => {
     e.preventDefault();
     const fromIndex = dragIndexRef.current;
     if (fromIndex !== null && fromIndex !== toIndex) {
-      reorderOpenFiles(fromIndex, toIndex);
+      workspaceSessionCommands.reorderOpenFiles(fromIndex, toIndex);
     }
     dragIndexRef.current = null;
   };
@@ -322,7 +311,7 @@ export const EditorPanel: React.FC = React.memo(() => {
         {openFiles.map((file, index) => {
           const filename = file.split('/').pop() ?? file;
           const isActive = file === activeFile;
-          const isUnsaved = unsavedChanges[file];
+          const isUnsaved = dirtyFiles.includes(file);
 
           return (
             <div
@@ -338,7 +327,7 @@ export const EditorPanel: React.FC = React.memo(() => {
                 onDrop(e, index);
               }}
               onClick={() => {
-                setActiveFile(file);
+                workspaceSessionCommands.setActiveFile(file);
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 cursor-pointer select-none border-r"
               style={{
@@ -376,7 +365,7 @@ export const EditorPanel: React.FC = React.memo(() => {
               <CloseOutlined
                 onClick={(e) => {
                   e.stopPropagation();
-                  closeFile(file);
+                  workspaceSessionCommands.close(file);
                 }}
                 style={{ fontSize: 10, color: isDark ? '#969696' : '#999', marginLeft: 4 }}
                 className="hover:text-white"
@@ -404,7 +393,7 @@ export const EditorPanel: React.FC = React.memo(() => {
             <button
               className="px-2 py-1 mr-1 rounded hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-              aria-label="Switch editor theme"
+              aria-label={t('editorPanel.switchTheme')}
             >
               <BgColorsOutlined style={{ color: isDark ? '#ccc' : '#666', fontSize: 14 }} />
             </button>
@@ -431,7 +420,7 @@ export const EditorPanel: React.FC = React.memo(() => {
         {activeFile && (
           <Editor
             height="100%"
-            language={getLanguage(activeFile)}
+            language={getLanguage(activeFile, fileMetadata[activeFile]?.language)}
             value={fileContents[activeFile]}
             theme={editorTheme}
             onChange={handleEditorChange}

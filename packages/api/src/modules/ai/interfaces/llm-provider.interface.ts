@@ -5,6 +5,13 @@ export interface LLMRequest {
   model?: string;
   temperature?: number;
   stream?: boolean;
+  audit?: {
+    userId?: string;
+    organizationId?: string;
+    conversationId?: string;
+    traceId?: string;
+    promptHash?: string;
+  };
 }
 
 export interface LLMUsage {

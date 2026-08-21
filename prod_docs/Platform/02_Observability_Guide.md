@@ -1,27 +1,38 @@
 # 平台可观测性指南
 
-## 1. 结构化日志 (Structured Logging / Pino)
+## 日志与审计
 
-`lg-agent` 后端完全禁用了标准的 `console.log`，转而使用 `nestjs-pino` 记录日志。
+API 使用 Pino 结构化日志，并通过 CLS 关联 `traceId`、`correlationId`、`reqId`。业务审计写入 `AuditEvent`；AI request/audit、authorization change 和 Submission event 分别有持久记录。代码仍有少量启动 `console.log`，因此不要宣称完全禁用 console。
 
-- **JSON 格式**: 在生产环境中，所有日志都以 JSON 对象的形式输出。
-- **Pretty Print**: 在开发环境中，自动启用 `pino-pretty` 以提高可读性。
-- **请求追踪**: 每一个 HTTP 请求都会自动附加一个唯一的 `req.id` 记录在日志中，以便追踪整个请求的生命周期。
+日志中不得出现 JWT、数据库凭据、对象存储密钥、原始 Prompt 或未脱敏 PII。
 
-## 2. Prometheus 指标 (Metrics)
+## 指标
 
-我们使用 `@willsoto/nestjs-prometheus` 暴露了一个标准的 `/metrics` 接口供 Prometheus 抓取数据。
+已落地的指标族包括：
 
-### 现有指标
+- HTTP latency / release HTTP request status；
+- `ai_token_usage_total`；
+- authorization resolution、registry 与 audit failure；
+- retrieval route、latency、quality/rollout；
+- Sandbox runtime metrics。
 
-- **HTTP 指标**: 自动处理 (例如: `http_request_duration_seconds`)。
-- **AI Token 使用量**: 自定义计数器 `ai_token_usage_total`，按 `provider` (供应商) 和 `model` (模型) 进行分组，追踪 Token 消耗量。
+部署监控前应从 `/api/v1/telemetry/metrics` 或实际 Prometheus registry 核对 metric 名称和 label，避免 dashboard 依赖文档中的概念名。
 
-所有自定义指标的注册与管理仅在 `MonitoringModule` 内部进行。Controller 绝不能直接实例化或操作 Prometheus 计数器，它们必须统一调用 `MonitoringService`。
+## 健康检查
 
-## 3. 健康检查 (Health Checks / Terminus)
+- `GET /api/v1/health`：数据库 ping；当前不检查 Redis、MinIO/S3 或 LLM。
+- `GET /api/v1/health/ready`：permission registry version/digest 必须与当前发布一致，否则 503 fail-closed。
+- Web：`/healthz`、`/readyz`。
 
-应用向 Kubernetes 暴露了一个 `/health` 接口。
+## 发布观察窗
 
-- **存活探针 (Liveness Probe)**: 确认 Node 进程正在运行且未发生死锁。
-- **就绪探针 (Readiness Probe)**: 确认数据库连接正常 (通过 Prisma Health Indicator 检测)，在 Kubernetes 将流量路由到该 Pod 之前生效。
+`deploy/monitoring/epic82-alerts.yaml` 提供发布告警基线。Prometheus 需以 job `lg-agent-registry-readiness` 通过 blackbox exporter 探测 readiness。每次发布至少观察 30 分钟，并关联记录：
+
+- API 5xx、403/404 基线偏移；
+- Pod restart 与 readiness；
+- permission registry/audit failure；
+- authorization P95；
+- 双 Web 可用性；
+- Submission/Sandbox 真实 smoke。
+
+任一 critical 告警或 registry mismatch 触发停止推进或应用回滚。
