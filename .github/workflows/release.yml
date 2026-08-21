@@ -64,6 +64,11 @@ jobs:
             image: lg-agent-trainee-web
     steps:
       - uses: actions/checkout@v4
+      - name: Normalize image namespace
+        shell: bash
+        env:
+          RAW_IMAGE_NAMESPACE: ${{ env.IMAGE_NAMESPACE }}
+        run: printf 'IMAGE_NAMESPACE=%s\n' "${RAW_IMAGE_NAMESPACE,,}" >> "$GITHUB_ENV"
       - name: Validate immutable release tag
         shell: bash
         run: |
