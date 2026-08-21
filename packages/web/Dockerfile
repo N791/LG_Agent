@@ -17,7 +17,7 @@ COPY --from=pruner /app/out/full/ .
 COPY turbo.json tsconfig.base.json ./
 RUN pnpm turbo run build --filter=@lg-agent/web...
 
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS runner
+FROM nginxinc/nginx-unprivileged:stable-alpine3.23 AS runner
 COPY packages/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=installer --chown=101:101 /app/packages/web/dist /usr/share/nginx/html
 EXPOSE 8080
