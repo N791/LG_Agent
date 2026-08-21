@@ -1,0 +1,14 @@
+{
+  "permissionSession": {
+    "loading": "Loading permissions...",
+    "serviceUnavailable": "Permission service unavailable",
+    "retry": "Please try again later.",
+    "versionMismatch": "Permission version mismatch",
+    "versionMismatchDetail": "This console version cannot safely use the server permission registry."
+  },
+  "errors": {
+    "notFound": "The page you requested does not exist.",
+    "forbidden": "You do not have permission to access this page.",
+    "backHome": "Back to home"
+  }
+}

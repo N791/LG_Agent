@@ -12,11 +12,18 @@ import adminZhCN from './locales/zh-CN/admin.json';
 
 import submissionsEnUS from './locales/en-US/submissions.json';
 import observabilityEnUS from './locales/en-US/observability.json';
+import adminEnUS from './locales/en-US/admin.json';
+
+const browserLanguage =
+  typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('en')
+    ? 'en-US'
+    : 'zh-CN';
 
 const resources = {
   'en-US': {
     submissions: submissionsEnUS,
     observability: observabilityEnUS,
+    admin: adminEnUS,
   },
   'zh-CN': {
     common: commonZhCN,
@@ -32,7 +39,7 @@ const resources = {
 
 void i18n.use(initReactI18next).init({
   resources,
-  lng: 'zh-CN', // Default language
+  lng: browserLanguage,
   fallbackLng: 'zh-CN', // Fallback language
   ns: ['common', 'navigation', 'auth', 'dashboard', 'ai', 'submissions', 'observability', 'admin'],
   defaultNS: 'common',
