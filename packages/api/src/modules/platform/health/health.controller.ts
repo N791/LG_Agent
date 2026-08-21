@@ -8,7 +8,7 @@ import {
 } from '../../authorization';
 import { ConfigService } from '@nestjs/config';
 import { resolveStarterTemplate, SCHEMA_IDS } from '@lg-agent/contracts';
-import { SchemaRegistryService } from '../../schemas/schema-registry.service';
+import { SchemaRegistryService } from '../../schemas';
 
 const GOLDEN_TASK_ID = '00000000-0000-0000-0000-000000000002';
 

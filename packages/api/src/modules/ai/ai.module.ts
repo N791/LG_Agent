@@ -87,6 +87,7 @@ import { RetrievalSecurityService } from './retrieval/retrieval-security.service
 import { RetrievalTraceService } from './retrieval/retrieval-trace.service';
 import { RetrievalObservabilityService } from './retrieval/retrieval-observability.service';
 import { IndexJobObservabilityService } from './retrieval/index-job-observability.service';
+import { RetrievalIndexController } from './retrieval/retrieval-index.controller';
 import { RetrievalRolloutService } from './retrieval/retrieval-rollout.service';
 import { RetrievalEvaluatorService } from './retrieval/evaluation/retrieval-evaluator.service';
 import { RetrievalShadowService } from './retrieval/evaluation/retrieval-shadow.service';
@@ -108,7 +109,7 @@ import { WorkspaceModule } from '../workspace';
 
 @Module({
   imports: [ConfigModule, PrismaModule, WorkspaceModule],
-  controllers: [AiController, KnowledgeController, AiAuditController],
+  controllers: [AiController, KnowledgeController, AiAuditController, RetrievalIndexController],
   providers: [
     {
       provide: 'IPromptRepository',

@@ -40,16 +40,19 @@ export class MobileController {
     return this.readModel.getTasks(request.user, { cursor, limit: parsedLimit, status });
   }
 
-  @Get('tasks/:id')
+  @Get('tasks/:taskId')
   @ApiOperation({ summary: 'Get an authorized mobile task detail' })
-  getTask(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
-    return this.readModel.getTask(request.user, id);
+  getTask(@Req() request: AuthenticatedRequest, @Param('taskId') taskId: string) {
+    return this.readModel.getTask(request.user, taskId);
   }
 
-  @Get('submissions/:id/summary')
+  @Get('submissions/:submissionId/summary')
   @RequirePermission(PERMISSIONS.SUBMISSION_READ)
   @ApiOperation({ summary: 'Get a redacted mobile submission conclusion, cause, and actions' })
-  getSubmissionSummary(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
-    return this.readModel.getSubmissionSummary(request.user, id);
+  getSubmissionSummary(
+    @Req() request: AuthenticatedRequest,
+    @Param('submissionId') submissionId: string,
+  ) {
+    return this.readModel.getSubmissionSummary(request.user, submissionId);
   }
 }
