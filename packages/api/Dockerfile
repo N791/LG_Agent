@@ -48,7 +48,12 @@ RUN corepack enable pnpm && npm pkg delete scripts.prepare && pnpm install --fro
 
 # Copy Prisma schema and generate client
 COPY --from=installer /app/packages/api/prisma ./packages/api/prisma
-RUN pnpm --filter @lg-agent/api exec prisma generate --schema=prisma/schema.prisma
+RUN pnpm --filter @lg-agent/api exec prisma generate --schema=prisma/schema.prisma \
+    && rm -rf /root/.cache/node/corepack /root/.npm \
+      /usr/local/lib/node_modules/corepack /usr/local/lib/node_modules/npm \
+    && rm -f /usr/local/bin/corepack /usr/local/bin/npm /usr/local/bin/npx \
+      /usr/local/bin/pnpm /usr/local/bin/pnpx \
+    && ln -s ../packages/api/node_modules/prisma /app/node_modules/prisma
 
 # Copy compiled code
 COPY --from=installer /app/packages/api/dist ./packages/api/dist
