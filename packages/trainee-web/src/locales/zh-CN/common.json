@@ -25,7 +25,7 @@
     "loading": "正在加载权限...",
     "serviceUnavailable": "权限服务不可用",
     "serviceUnavailableDetail": "在确认访问权限之前，工作区将保持锁定。",
-    "updateRequired": "需要更新",
+    "updateRequired": "需要更新 / Update required",
     "updateRequiredDetail": "当前应用版本无法安全使用服务器权限注册表。",
     "unauthorized": "会话未授权",
     "signInAgain": "请重新登录后继续。",
