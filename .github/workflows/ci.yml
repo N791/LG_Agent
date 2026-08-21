@@ -199,6 +199,7 @@ jobs:
 
       - name: Exercise logical backup and restore
         env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epic70_empty
           PGPASSWORD: postgres
         run: |
           psql "$DATABASE_URL" -f packages/api/prisma/tests/sprint18-recovery-fixture.sql
